@@ -21,7 +21,7 @@ public class Member extends BaseEntity {
 
     private String profileUrl;
 
-    private Long oauthId;
+    private String oauthId;
 
     private String deviceId;
 
@@ -29,7 +29,7 @@ public class Member extends BaseEntity {
     private LoginType loginType;
 
     public Member(final String email, final String nickname,
-                  final String profileUrl, final Long oauthId,
+                  final String profileUrl, final String oauthId,
                   final String deviceId, final LoginType loginType) {
         this.email = email;
         this.nickname = nickname;

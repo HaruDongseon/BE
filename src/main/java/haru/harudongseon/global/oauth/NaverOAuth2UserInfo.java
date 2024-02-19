@@ -27,9 +27,9 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
-    public Long getOauthId() {
+    public String getOauthId() {
         final Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-        return (Long) response.get("id");
+        return (String) response.get("id");
     }
 
     public LoginType getOauthType() { return LoginType.NAVER; }

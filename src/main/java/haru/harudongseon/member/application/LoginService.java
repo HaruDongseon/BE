@@ -46,7 +46,7 @@ public class LoginService {
     }
 
     private String createAccessTokenByMemberPresent(final OAuth2UserInfo oauth2UserInfo, final String deviceId) {
-        final Long oauthId = oauth2UserInfo.getOauthId();
+        final String oauthId = oauth2UserInfo.getOauthId();
         final LoginType oauthType = oauth2UserInfo.getOauthType();
         final Optional<Member> optionalMember = memberRepository.findByOauthIdAndLoginType(oauthId, oauthType);
 
