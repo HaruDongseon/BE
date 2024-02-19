@@ -37,6 +37,10 @@ public class LoginService {
             final OAuth2UserInfo googleUserInfo = oauthClientService.getGoogleUserInfo(token);
             return createAccessTokenByMemberPresent(googleUserInfo, deviceId);
         }
+        if (loginType.equals("naver")) {
+            final OAuth2UserInfo naverUserInfo = oauthClientService.getNaverUserInfo(token);
+            return createAccessTokenByMemberPresent(naverUserInfo, deviceId);
+        }
 
         return null;
     }

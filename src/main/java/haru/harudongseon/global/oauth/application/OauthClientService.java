@@ -22,6 +22,9 @@ public class OauthClientService {
     @Value("${oauth2.provider.google.user-info-uri}")
     private String googleUserInfoUri;
 
+    @Value("${oauth2.provider.naver.user-info-uri}")
+    private String naverUserInfoUri;
+
     private final RestTemplate restTemplate;
 
 
@@ -50,6 +53,17 @@ public class OauthClientService {
 
         final Map<String, Object> attributes = response.getBody();
         final OAuthAttributes oAuthAttributes = OAuthAttributes.of(LoginType.GOOGLE, attributes);
+        return oAuthAttributes.getOAuth2UserInfo();
+    }
+
+    public OAuth2UserInfo getNaverUserInfo(final String oauthToken) {
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set(HttpHeaders.AUTHORIZATION, JWT_PREFIX + oauthToken);
+        final HttpEntity<String> request = new HttpEntity<>(httpHeaders);
+        final ResponseEntity<Map> response = restTemplate.exchange(naverUserInfoUri, HttpMethod.GET, request, Map.class);
+
+        final Map<String, Object> attributes = response.getBody();
+        final OAuthAttributes oAuthAttributes = OAuthAttributes.of(LoginType.NAVER, attributes);
         return oAuthAttributes.getOAuth2UserInfo();
     }
 }
