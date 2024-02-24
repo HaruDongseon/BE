@@ -13,6 +13,6 @@ public abstract class OAuth2UserInfo {
     public abstract String getEmail();
     public abstract String getNickname();
     public abstract String getProfileUrl();
-    public abstract Long getOauthId();
+    public abstract String getOauthId();
     public abstract LoginType getOauthType();
 }

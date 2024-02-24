@@ -1,7 +1,7 @@
 package haru.harudongseon.member.presentation;
 
 import haru.harudongseon.member.application.LoginService;
-import haru.harudongseon.member.application.dto.LoginRequest;
+import haru.harudongseon.member.application.dto.OauthLoginResponse;
 import haru.harudongseon.member.application.dto.OauthLoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +17,8 @@ public class LoginController {
 
     // TODO : 로그인 시 생성한 Access Token 어떻게 내려줄지 프론트와 논의 (우선 String 그대로 Access 토큰 반환)
     @PostMapping("/oauth-login")
-    public ResponseEntity<String> memberLogin(@RequestBody final OauthLoginRequest oauthLoginRequest) {
-        final String accessToken = loginService.oauthLogin(oauthLoginRequest);
-        return ResponseEntity.ok(accessToken);
+    public ResponseEntity<OauthLoginResponse> memberLogin(@RequestBody final OauthLoginRequest oauthLoginRequest) {
+        final OauthLoginResponse loginResponse = loginService.oauthLogin(oauthLoginRequest);
+        return ResponseEntity.ok(loginResponse);
     }
 }
