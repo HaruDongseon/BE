@@ -15,7 +15,6 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    // TODO : 로그인 시 생성한 Access Token 어떻게 내려줄지 프론트와 논의 (우선 String 그대로 Access 토큰 반환)
     @PostMapping("/oauth-login")
     public ResponseEntity<OauthLoginResponse> memberLogin(@RequestBody final OauthLoginRequest oauthLoginRequest) {
         final OauthLoginResponse loginResponse = loginService.oauthLogin(oauthLoginRequest);
