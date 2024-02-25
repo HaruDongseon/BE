@@ -33,37 +33,37 @@ public class OauthClientService {
     }
 
     public OAuth2UserInfo getKakaoUserInfo(final String oauthToken) {
+        final HttpEntity<String> request = generateRequest(oauthToken);
+        final ResponseEntity<Map> response = restTemplate.exchange(kakaoUserInfoUri, HttpMethod.GET, request, Map.class);
+
+        return generateOAuth2UserInfo(response, LoginType.KAKAO);
+    }
+
+    public OAuth2UserInfo getGoogleUserInfo(final String oauthToken) {
+        final HttpEntity<String> request = generateRequest(oauthToken);
+        final ResponseEntity<Map> response = restTemplate.exchange(googleUserInfoUri, HttpMethod.GET, request, Map.class);
+
+        return generateOAuth2UserInfo(response, LoginType.GOOGLE);
+    }
+
+    public OAuth2UserInfo getNaverUserInfo(final String oauthToken) {
+        final HttpEntity<String> request = generateRequest(oauthToken);
+        final ResponseEntity<Map> response = restTemplate.exchange(naverUserInfoUri, HttpMethod.GET, request, Map.class);
+
+        return generateOAuth2UserInfo(response, LoginType.NAVER);
+    }
+
+    private HttpEntity<String> generateRequest(final String oauthToken) {
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set(HttpHeaders.AUTHORIZATION, JWT_PREFIX + oauthToken);
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         final HttpEntity<String> request = new HttpEntity<>(httpHeaders);
-        final ResponseEntity<Map> response = restTemplate.exchange(kakaoUserInfoUri, HttpMethod.GET, request, Map.class);
-
-        final Map<String, Object> attributes = response.getBody();
-
-        final OAuthAttributes oAuthAttributes = OAuthAttributes.of(LoginType.KAKAO, attributes);
-        return oAuthAttributes.getOAuth2UserInfo();
+        return request;
     }
 
-    public OAuth2UserInfo getGoogleUserInfo(final String oauthToken) {
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(HttpHeaders.AUTHORIZATION, JWT_PREFIX + oauthToken);
-        final HttpEntity<String> request = new HttpEntity<>(httpHeaders);
-        final ResponseEntity<Map> response = restTemplate.exchange(googleUserInfoUri, HttpMethod.GET, request, Map.class);
-
+    private OAuth2UserInfo generateOAuth2UserInfo(final ResponseEntity<Map> response, final LoginType naver) {
         final Map<String, Object> attributes = response.getBody();
-        final OAuthAttributes oAuthAttributes = OAuthAttributes.of(LoginType.GOOGLE, attributes);
-        return oAuthAttributes.getOAuth2UserInfo();
-    }
-
-    public OAuth2UserInfo getNaverUserInfo(final String oauthToken) {
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(HttpHeaders.AUTHORIZATION, JWT_PREFIX + oauthToken);
-        final HttpEntity<String> request = new HttpEntity<>(httpHeaders);
-        final ResponseEntity<Map> response = restTemplate.exchange(naverUserInfoUri, HttpMethod.GET, request, Map.class);
-
-        final Map<String, Object> attributes = response.getBody();
-        final OAuthAttributes oAuthAttributes = OAuthAttributes.of(LoginType.NAVER, attributes);
+        final OAuthAttributes oAuthAttributes = OAuthAttributes.of(naver, attributes);
         return oAuthAttributes.getOAuth2UserInfo();
     }
 }
