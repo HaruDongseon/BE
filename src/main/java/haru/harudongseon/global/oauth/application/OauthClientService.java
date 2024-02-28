@@ -61,9 +61,9 @@ public class OauthClientService {
         return request;
     }
 
-    private OAuth2UserInfo generateOAuth2UserInfo(final ResponseEntity<Map> response, final LoginType naver) {
+    private OAuth2UserInfo generateOAuth2UserInfo(final ResponseEntity<Map> response, final LoginType loginType) {
         final Map<String, Object> attributes = response.getBody();
-        final OAuthAttributes oAuthAttributes = OAuthAttributes.of(naver, attributes);
+        final OAuthAttributes oAuthAttributes = OAuthAttributes.of(loginType, attributes);
         return oAuthAttributes.getOAuth2UserInfo();
     }
 }
