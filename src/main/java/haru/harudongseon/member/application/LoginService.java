@@ -37,9 +37,11 @@ public class LoginService {
             final OAuth2UserInfo naverUserInfo = oauthClientService.getNaverUserInfo(token);
             return createResponseByMemberPresent(naverUserInfo, deviceId);
         }
-
-        final OAuth2UserInfo googleUserInfo = oauthClientService.getGoogleUserInfo(token);
-        return createResponseByMemberPresent(googleUserInfo, deviceId);
+        if (loginType.equals("google")) {
+            final OAuth2UserInfo googleUserInfo = oauthClientService.getGoogleUserInfo(token);
+            return createResponseByMemberPresent(googleUserInfo, deviceId);
+        }
+        throw new IllegalArgumentException("OAuth 타입이 적절하지 않습니다.");
     }
 
     private OauthLoginResponse createResponseByMemberPresent(final OAuth2UserInfo oauth2UserInfo, final String deviceId) {
