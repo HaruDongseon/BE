@@ -38,4 +38,9 @@ public class Member extends BaseEntity {
         this.deviceId = deviceId;
         this.loginType = loginType;
     }
+
+    public void editProfile(final String nickname, final String profileImageUrl) {
+        this.nickname = nickname;
+        this.profileImageUrl = profileImageUrl;
+    }
 }
