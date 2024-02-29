@@ -1,7 +1,8 @@
-package haru.harudongseon.global.mvc;
+package haru.harudongseon.global.configuration;
 
 import java.util.List;
 
+import haru.harudongseon.global.mvc.MemberArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
