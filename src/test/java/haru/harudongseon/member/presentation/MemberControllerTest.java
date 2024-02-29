@@ -1,5 +1,6 @@
 package haru.harudongseon.member.presentation;
 
+import static haru.harudongseon.common.fixtures.member.MemberFixtures.성하_프로필_이미지_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -24,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -122,13 +124,13 @@ class MemberControllerTest {
 
         private static Stream<Arguments> editRequests() {
             final String nickname = MemberFixtures.성하_닉네임;
-            final String profileImageUrl = MemberFixtures.성하_프로필_이미지_URL;
+            final String profileImageUrl = 성하_프로필_이미지_URL;
 
             return Stream.of(
                     Arguments.arguments(new MyProfileEditRequest(nickname, profileImageUrl)),
-                    Arguments.arguments(new MyProfileEditRequest("edited " + nickname, profileImageUrl)),
-                    Arguments.arguments(new MyProfileEditRequest(nickname, "edited " + profileImageUrl)),
-                    Arguments.arguments(new MyProfileEditRequest("edtied " + nickname, "edited " + profileImageUrl))
+                    Arguments.arguments(new MyProfileEditRequest(nickname + "1", profileImageUrl)),
+                    Arguments.arguments(new MyProfileEditRequest(nickname, profileImageUrl + "a")),
+                    Arguments.arguments(new MyProfileEditRequest(nickname + "1", profileImageUrl + "a"))
             );
         }
 
@@ -138,7 +140,7 @@ class MemberControllerTest {
             // given
             final Long notExistMemberId = -1L;
             final String accessToken = jwtService.createAccessToken(notExistMemberId);
-            final MyProfileEditRequest request = new MyProfileEditRequest("edited nickname", "edited profileImageUrl");
+            final MyProfileEditRequest request = new MyProfileEditRequest("seongha1", 성하_프로필_이미지_URL);
 
             // when
             final ExtractableResponse<Response> response = EDIT_MY_PROFILE_REQUEST(accessToken, request);
@@ -151,7 +153,7 @@ class MemberControllerTest {
         }
 
         @ParameterizedTest
-        @CsvSource(value = {":edited profileUrl", "edited nickname:", ":"}, delimiter = ':')
+        @CsvSource(value = {",https://lh3.googleusercontent.com/a/xxx", "seongha1,", ","}, delimiter = ',')
         @DisplayName("정보가 하나라도 빈 값이면 내 정보 수정이 실패한다.")
         void fail_edit_profile_request_blank(final String nickname, final String profileImageUrl) {
             // given
@@ -167,6 +169,48 @@ class MemberControllerTest {
             assertSoftly(softly -> {
                 softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 softly.assertThat(response.jsonPath().getString("errorMessage")).contains("공백일 수 없습니다.");
+            });
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"aa", "a", "0123456789a"})
+        @DisplayName("수정할 닉네임이 Validation에 위배되면 내 정보 수정에 실패한다.")
+        void fail_not_validated_nickname(final String notValidatedNickname) {
+            // given
+            final Member savedMember = memberBuilder.defaultMember().build();
+            final Long memberId = savedMember.getId();
+            final String profileImageUrl = savedMember.getProfileImageUrl();
+            final String accessToken = jwtService.createAccessToken(memberId);
+            final MyProfileEditRequest request = new MyProfileEditRequest(notValidatedNickname, profileImageUrl);
+
+            // when
+            final ExtractableResponse<Response> response = EDIT_MY_PROFILE_REQUEST(accessToken, request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("수정할 닉네임은 한글, 영문, 숫자, 띄어쓰기 포함 3~10자 여야합니다.");
+            });
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"aa", "www.naver.com", "aa.jpg"})
+        @DisplayName("수정할 프로필 이미지 URL이 Validation에 위배되면 내 정보 수정에 실패한다.")
+        void fail_not_validated_profile_image_url(final String notValidatedProfileImageUrl) {
+            // given
+            final Member savedMember = memberBuilder.defaultMember().build();
+            final Long memberId = savedMember.getId();
+            final String nickname = savedMember.getNickname();
+            final String accessToken = jwtService.createAccessToken(memberId);
+            final MyProfileEditRequest request = new MyProfileEditRequest(nickname, notValidatedProfileImageUrl);
+
+            // when
+            final ExtractableResponse<Response> response = EDIT_MY_PROFILE_REQUEST(accessToken, request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("수정할 프로필 이미지 URL은 URL 형식이어야합니다.");
             });
         }
     }
