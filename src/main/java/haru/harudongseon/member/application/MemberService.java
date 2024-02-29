@@ -1,6 +1,6 @@
 package haru.harudongseon.member.application;
 
-import haru.harudongseon.member.application.dto.MyInfoResponse;
+import haru.harudongseon.member.application.dto.MyProfileResponse;
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,13 +16,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public MyInfoResponse findMyInfo(Long memberId) {
+    public MyProfileResponse findMyProfile(Long memberId) {
         final Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버를 찾을 수 없습니다."));
 
         final String email = findMember.getEmail();
         final String nickname = findMember.getNickname();
         final String profileUrl = findMember.getProfileUrl();
-        return new MyInfoResponse(email, nickname, profileUrl);
+        return new MyProfileResponse(email, nickname, profileUrl);
     }
 }

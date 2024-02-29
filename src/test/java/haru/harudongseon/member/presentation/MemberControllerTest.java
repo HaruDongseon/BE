@@ -1,18 +1,15 @@
 package haru.harudongseon.member.presentation;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.*;
 
 import haru.harudongseon.common.H2TruncateUtils;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.global.jwt.JwtService;
 import haru.harudongseon.member.domain.Member;
 import io.restassured.RestAssured;
-import io.restassured.http.Header;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -48,7 +45,7 @@ class MemberControllerTest {
 
     @Nested
     @DisplayName("내 정보 조회 시")
-    class GetMyInfo {
+    class GetMyProfile {
 
         @Test
         @DisplayName("내 정보 조회에 성공한다.")
@@ -62,7 +59,7 @@ class MemberControllerTest {
             final String accessToken = jwtService.createAccessToken(memberId);
 
             // when
-            final ExtractableResponse<Response> response = GET_MY_INFO_REQUEST(accessToken);
+            final ExtractableResponse<Response> response = GET_MY_PROFILE_REQUEST(accessToken);
             final JsonPath jsonPath = response.jsonPath();
 
             // then
@@ -82,7 +79,7 @@ class MemberControllerTest {
             final String accessToken = jwtService.createAccessToken(notExistMemberId);
 
             // when
-            final ExtractableResponse<Response> response = GET_MY_INFO_REQUEST(accessToken);
+            final ExtractableResponse<Response> response = GET_MY_PROFILE_REQUEST(accessToken);
 
             // then
             assertSoftly(softly -> {
@@ -92,7 +89,7 @@ class MemberControllerTest {
         }
     }
 
-    private static ExtractableResponse<Response> GET_MY_INFO_REQUEST(final String accessToken) {
+    private static ExtractableResponse<Response> GET_MY_PROFILE_REQUEST(final String accessToken) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .when().log().all()

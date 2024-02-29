@@ -2,14 +2,11 @@ package haru.harudongseon.member.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import haru.harudongseon.common.builder.MemberBuilder;
-import haru.harudongseon.member.application.dto.MyInfoResponse;
+import haru.harudongseon.member.application.dto.MyProfileResponse;
 import haru.harudongseon.member.domain.Member;
-import haru.harudongseon.member.domain.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,7 +27,7 @@ class MemberServiceTest {
 
     @Nested
     @DisplayName("내 정보 조회 시")
-    class FindMyInfo {
+    class FindMyProfile {
 
         @Test
         @DisplayName("내 정보 조회에 성공한다.")
@@ -38,10 +35,10 @@ class MemberServiceTest {
             // given
             final Member member = memberBuilder.defaultMember().build();
             final Long memberId = member.getId();
-            final MyInfoResponse expected = new MyInfoResponse(member.getEmail(), member.getNickname(), member.getProfileUrl());
+            final MyProfileResponse expected = new MyProfileResponse(member.getEmail(), member.getNickname(), member.getProfileUrl());
 
             // when
-            final MyInfoResponse actual = memberService.findMyInfo(memberId);
+            final MyProfileResponse actual = memberService.findMyProfile(memberId);
 
             // then
             assertThat(actual).isEqualTo(expected);
@@ -54,7 +51,7 @@ class MemberServiceTest {
             final Long notExistMemberId = -1L;
 
             // when & then
-            assertThatThrownBy(() -> memberService.findMyInfo(notExistMemberId))
+            assertThatThrownBy(() -> memberService.findMyProfile(notExistMemberId))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 멤버를 찾을 수 없습니다.");
         }
