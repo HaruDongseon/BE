@@ -23,8 +23,7 @@ public class LoginService {
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
 
-    // TODO : 로그인 시 생성한 Access Token 어떻게 내려줄지 프론트와 논의 (우선 String 그대로 Access 토큰 반환)
-    // TODO : Refresh Token도 추후에 생각
+    // TODO : Refresh Token는 추후에 생각
     public OauthLoginResponse oauthLogin(final OauthLoginRequest request) {
         final String loginType = request.loginType();
         final String token = request.token();
@@ -32,21 +31,20 @@ public class LoginService {
 
         if (loginType.equals("kakao")) {
             final OAuth2UserInfo kakaoUserInfo = oauthClientService.getKakaoUserInfo(token);
-            return new OauthLoginResponse(createAccessTokenByMemberPresent(kakaoUserInfo, deviceId));
-        }
-        if (loginType.equals("google")) {
-            final OAuth2UserInfo googleUserInfo = oauthClientService.getGoogleUserInfo(token);
-            return new OauthLoginResponse(createAccessTokenByMemberPresent(googleUserInfo, deviceId));
+            return createResponseByMemberPresent(kakaoUserInfo, deviceId);
         }
         if (loginType.equals("naver")) {
             final OAuth2UserInfo naverUserInfo = oauthClientService.getNaverUserInfo(token);
-            return new OauthLoginResponse(createAccessTokenByMemberPresent(naverUserInfo, deviceId));
+            return createResponseByMemberPresent(naverUserInfo, deviceId);
         }
-
-        return null;
+        if (loginType.equals("google")) {
+            final OAuth2UserInfo googleUserInfo = oauthClientService.getGoogleUserInfo(token);
+            return createResponseByMemberPresent(googleUserInfo, deviceId);
+        }
+        throw new IllegalArgumentException("OAuth 타입이 적절하지 않습니다.");
     }
 
-    private String createAccessTokenByMemberPresent(final OAuth2UserInfo oauth2UserInfo, final String deviceId) {
+    private OauthLoginResponse createResponseByMemberPresent(final OAuth2UserInfo oauth2UserInfo, final String deviceId) {
         final String oauthId = oauth2UserInfo.getOauthId();
         final LoginType oauthType = oauth2UserInfo.getOauthType();
         final Optional<Member> optionalMember = memberRepository.findByOauthIdAndLoginType(oauthId, oauthType);
@@ -58,10 +56,12 @@ public class LoginService {
             final Member member = new Member(email, nickname, profileUrl, oauthId, deviceId, oauthType);
             final Member savedMember = memberRepository.save(member);
 
-            return jwtService.createAccessToken(savedMember.getId());
+            final String accessToken = jwtService.createAccessToken(savedMember.getId());
+            return new OauthLoginResponse(accessToken, true);
         }
 
         final Member findMember = optionalMember.get();
-        return jwtService.createAccessToken(findMember.getId());
+        final String accessToken = jwtService.createAccessToken(findMember.getId());
+        return new OauthLoginResponse(accessToken, false);
     }
 }

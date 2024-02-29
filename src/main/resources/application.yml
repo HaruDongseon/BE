@@ -1,4 +1,5 @@
 spring:
+
   security:
     oauth2:
       client:
@@ -31,3 +32,6 @@ spring:
 
           google:
             user-info-uri: ${oauth2.provider.google.user-info.uri}
+  h2:
+    console:
+      enabled: true
