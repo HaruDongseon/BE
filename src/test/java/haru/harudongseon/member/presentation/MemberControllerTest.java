@@ -55,7 +55,7 @@ class MemberControllerTest {
             final Long memberId = savedMember.getId();
             final String email = savedMember.getEmail();
             final String nickname = savedMember.getNickname();
-            final String profileUrl = savedMember.getProfileUrl();
+            final String profileImageUrl = savedMember.getProfileImageUrl();
             final String accessToken = jwtService.createAccessToken(memberId);
 
             // when
@@ -67,7 +67,7 @@ class MemberControllerTest {
                 softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 softly.assertThat(jsonPath.getString("email")).isEqualTo(email);
                 softly.assertThat(jsonPath.getString("nickname")).isEqualTo(nickname);
-                softly.assertThat(jsonPath.getString("profileUrl")).isEqualTo(profileUrl);
+                softly.assertThat(jsonPath.getString("profileImageUrl")).isEqualTo(profileImageUrl);
             });
         }
 

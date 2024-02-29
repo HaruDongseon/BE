@@ -16,7 +16,7 @@ public class MemberBuilder {
 
     private String email;
     private String nickname;
-    private String profileUrl;
+    private String profileImageUrl;
     private String oauthId;
     private String deviceId;
     private LoginType loginType;
@@ -24,7 +24,7 @@ public class MemberBuilder {
     public MemberBuilder defaultMember() {
         this.email = 성하_이메일;
         this.nickname = 성하_닉네임;
-        this.profileUrl = 성하_프로필_URL;
+        this.profileImageUrl = 성하_프로필_이미지_URL;
         this.oauthId = 성하_OAUTH_ID;
         this.deviceId = 성하_DEVICE_ID;
         this.loginType = 성하_LOGIN_TYPE;
@@ -42,8 +42,8 @@ public class MemberBuilder {
         return this;
     }
 
-    public MemberBuilder profileUrl(final String profileUrl) {
-        this.profileUrl = profileUrl;
+    public MemberBuilder profileImageUrl(final String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
         return this;
     }
 
@@ -63,7 +63,7 @@ public class MemberBuilder {
     }
 
     public Member build() {
-        final Member member = new Member(email, nickname, profileUrl, oauthId, deviceId, loginType);
+        final Member member = new Member(email, nickname, profileImageUrl, oauthId, deviceId, loginType);
         return memberRepository.save(member);
     }
 

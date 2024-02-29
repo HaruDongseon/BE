@@ -21,7 +21,7 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
-    public String getProfileUrl() {
+    public String getProfileImageUrl() {
         final Map<String, Object> response = (Map<String, Object>) attributes.get("response");
         return (String) response.get("profile_image");
     }

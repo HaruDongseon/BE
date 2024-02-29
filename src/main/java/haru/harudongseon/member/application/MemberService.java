@@ -22,7 +22,7 @@ public class MemberService {
 
         final String email = findMember.getEmail();
         final String nickname = findMember.getNickname();
-        final String profileUrl = findMember.getProfileUrl();
-        return new MyProfileResponse(email, nickname, profileUrl);
+        final String profileImageUrl = findMember.getProfileImageUrl();
+        return new MyProfileResponse(email, nickname, profileImageUrl);
     }
 }
