@@ -19,7 +19,7 @@ public class Member extends BaseEntity {
 
     private String nickname;
 
-    private String profileUrl;
+    private String profileImageUrl;
 
     private String oauthId;
 
@@ -29,13 +29,18 @@ public class Member extends BaseEntity {
     private LoginType loginType;
 
     public Member(final String email, final String nickname,
-                  final String profileUrl, final String oauthId,
+                  final String profileImageUrl, final String oauthId,
                   final String deviceId, final LoginType loginType) {
         this.email = email;
         this.nickname = nickname;
-        this.profileUrl = profileUrl;
+        this.profileImageUrl = profileImageUrl;
         this.oauthId = oauthId;
         this.deviceId = deviceId;
         this.loginType = loginType;
+    }
+
+    public void editProfile(final String nickname, final String profileImageUrl) {
+        this.nickname = nickname;
+        this.profileImageUrl = profileImageUrl;
     }
 }

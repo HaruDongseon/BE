@@ -19,7 +19,7 @@ public class GoogleOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
-    public String getProfileUrl() {
+    public String getProfileImageUrl() {
         return (String) attributes.get("picture");
     }
 

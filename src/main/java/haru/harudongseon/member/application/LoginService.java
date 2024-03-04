@@ -52,7 +52,7 @@ public class LoginService {
         if (optionalMember.isEmpty()) {
             final String email = oauth2UserInfo.getEmail();
             final String nickname = oauth2UserInfo.getNickname();
-            final String profileUrl = oauth2UserInfo.getProfileUrl();
+            final String profileUrl = oauth2UserInfo.getProfileImageUrl();
             final Member member = new Member(email, nickname, profileUrl, oauthId, deviceId, oauthType);
             final Member savedMember = memberRepository.save(member);
 

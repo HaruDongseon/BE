@@ -43,6 +43,10 @@ public class JwtService {
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
+    public Long extractMemberId(final String token) {
+        return JWT.decode(token).getClaim(MEMBER_ID_CLAIM).asLong();
+    }
+
     public TokenStatus validateToken(final String token) {
         try {
             JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
