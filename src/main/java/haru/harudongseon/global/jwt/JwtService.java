@@ -17,7 +17,7 @@ public class JwtService {
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String MEMBER_ID_CLAIM = "memberId";
 
-    @Value("${jwt.secretKey}")
+    @Value("${jwt.secret-key}")
     private String secretKey;
 
     @Value("${jwt.access.expiration}")
