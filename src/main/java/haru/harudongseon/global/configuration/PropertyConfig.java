@@ -1,4 +1,4 @@
-package haru.harudongseon.global.oauth.config;
+package haru.harudongseon.global.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
