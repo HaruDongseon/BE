@@ -16,13 +16,13 @@ public class OauthClientService {
 
     private static final String JWT_PREFIX = "Bearer ";
 
-    @Value("${oauth2.provider.kakao.user-info-uri}")
+    @Value("${oauth2.kakao.user-info-uri}")
     private String kakaoUserInfoUri;
 
-    @Value("${oauth2.provider.google.user-info-uri}")
+    @Value("${oauth2.google.user-info-uri}")
     private String googleUserInfoUri;
 
-    @Value("${oauth2.provider.naver.user-info-uri}")
+    @Value("${oauth2.naver.user-info-uri}")
     private String naverUserInfoUri;
 
     private final RestTemplate restTemplate;
