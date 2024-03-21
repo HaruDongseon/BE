@@ -1,4 +1,4 @@
-package haru.harudongseon.common.fixtures.member;
+package haru.harudongseon.common.fixtures;
 
 import haru.harudongseon.global.oauth.LoginType;
 

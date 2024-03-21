@@ -1,6 +1,6 @@
 package haru.harudongseon.common.builder;
 
-import static haru.harudongseon.common.fixtures.member.MemberFixtures.*;
+import static haru.harudongseon.common.fixtures.MemberFixtures.*;
 
 import haru.harudongseon.global.oauth.LoginType;
 import haru.harudongseon.member.domain.Member;

@@ -1,6 +1,6 @@
 package haru.harudongseon.member.presentation;
 
-import static haru.harudongseon.common.fixtures.member.MemberFixtures.성하_프로필_이미지_URL;
+import static haru.harudongseon.common.fixtures.MemberFixtures.성하_프로필_이미지_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.H2TruncateUtils;
 import haru.harudongseon.common.builder.MemberBuilder;
-import haru.harudongseon.common.fixtures.member.MemberFixtures;
+import haru.harudongseon.common.fixtures.MemberFixtures;
 import haru.harudongseon.global.jwt.JwtService;
 import haru.harudongseon.member.application.dto.MyProfileEditRequest;
 import haru.harudongseon.member.domain.Member;
