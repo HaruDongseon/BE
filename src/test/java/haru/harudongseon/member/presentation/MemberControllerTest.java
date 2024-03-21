@@ -7,7 +7,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import java.util.stream.Stream;
 
 import haru.harudongseon.common.E2ETest;
-import haru.harudongseon.common.H2TruncateUtils;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.common.fixtures.MemberFixtures;
 import haru.harudongseon.global.jwt.JwtService;
@@ -17,7 +16,6 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,32 +25,14 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 class MemberControllerTest extends E2ETest {
 
-    private static final String JWT_PREFIX = "Bearer ";
-
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private H2TruncateUtils h2TruncateUtils;
-
     @Autowired
     private MemberBuilder memberBuilder;
-
-    @Autowired
-    private JwtService jwtService;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = this.port;
-        h2TruncateUtils.truncateAll();
-    }
 
     @Nested
     @DisplayName("내 정보 조회 시")
