@@ -42,7 +42,7 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PatchMapping("/me")
-    public ResponseEntity<MyProfileResponse> editMyProfile(@Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
+    public ResponseEntity<Void> editMyProfile(@Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
                                                           @Valid @RequestBody MyProfileEditRequest request) {
         memberService.editMyProfile(authMemberDto.memberId(), request);
         return ResponseEntity.ok().build();
