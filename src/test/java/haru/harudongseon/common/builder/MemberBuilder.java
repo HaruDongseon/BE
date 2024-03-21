@@ -1,6 +1,6 @@
 package haru.harudongseon.common.builder;
 
-import static haru.harudongseon.common.fixtures.member.MemberFixtures.*;
+import static haru.harudongseon.common.fixtures.MemberFixtures.*;
 
 import haru.harudongseon.global.oauth.LoginType;
 import haru.harudongseon.member.domain.Member;
@@ -22,12 +22,12 @@ public class MemberBuilder {
     private LoginType loginType;
 
     public MemberBuilder defaultMember() {
-        this.email = 성하_이메일;
-        this.nickname = 성하_닉네임;
-        this.profileImageUrl = 성하_프로필_이미지_URL;
-        this.oauthId = 성하_OAUTH_ID;
-        this.deviceId = 성하_DEVICE_ID;
-        this.loginType = 성하_LOGIN_TYPE;
+        this.email = 기본_이메일;
+        this.nickname = 기본_닉네임;
+        this.profileImageUrl = 기본_프로필_이미지_URL;
+        this.oauthId = 기본_OAUTH_ID;
+        this.deviceId = 기본_DEVICE_ID;
+        this.loginType = 기본_LOGIN_TYPE;
 
         return this;
     }

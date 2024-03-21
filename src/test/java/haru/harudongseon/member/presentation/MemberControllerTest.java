@@ -1,14 +1,14 @@
 package haru.harudongseon.member.presentation;
 
-import static haru.harudongseon.common.fixtures.member.MemberFixtures.성하_프로필_이미지_URL;
+import static haru.harudongseon.common.fixtures.MemberFixtures.기본_프로필_이미지_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.util.stream.Stream;
 
-import haru.harudongseon.common.H2TruncateUtils;
+import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.builder.MemberBuilder;
-import haru.harudongseon.common.fixtures.member.MemberFixtures;
+import haru.harudongseon.common.fixtures.MemberFixtures;
 import haru.harudongseon.global.jwt.JwtService;
 import haru.harudongseon.member.application.dto.MyProfileEditRequest;
 import haru.harudongseon.member.domain.Member;
@@ -16,8 +16,6 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,34 +25,14 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class MemberControllerTest {
-    
-    private static final String JWT_PREFIX = "Bearer ";
-
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private H2TruncateUtils h2TruncateUtils;
+class MemberControllerTest extends E2ETest {
 
     @Autowired
     private MemberBuilder memberBuilder;
-    
-    @Autowired
-    private JwtService jwtService;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = this.port;
-        h2TruncateUtils.truncateAll();
-    }
 
     @Nested
     @DisplayName("내 정보 조회 시")
@@ -123,8 +101,8 @@ class MemberControllerTest {
         }
 
         private static Stream<Arguments> editRequests() {
-            final String nickname = MemberFixtures.성하_닉네임;
-            final String profileImageUrl = 성하_프로필_이미지_URL;
+            final String nickname = MemberFixtures.기본_닉네임;
+            final String profileImageUrl = 기본_프로필_이미지_URL;
 
             return Stream.of(
                     Arguments.arguments(new MyProfileEditRequest(nickname, profileImageUrl)),
@@ -140,7 +118,7 @@ class MemberControllerTest {
             // given
             final Long notExistMemberId = -1L;
             final String accessToken = jwtService.createAccessToken(notExistMemberId);
-            final MyProfileEditRequest request = new MyProfileEditRequest("seongha1", 성하_프로필_이미지_URL);
+            final MyProfileEditRequest request = new MyProfileEditRequest("seongha1", 기본_프로필_이미지_URL);
 
             // when
             final ExtractableResponse<Response> response = EDIT_MY_PROFILE_REQUEST(accessToken, request);
