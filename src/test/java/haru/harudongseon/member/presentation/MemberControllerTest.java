@@ -6,6 +6,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.util.stream.Stream;
 
+import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.H2TruncateUtils;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.common.fixtures.member.MemberFixtures;
@@ -16,7 +17,6 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,15 +27,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class MemberControllerTest {
-    
+class MemberControllerTest extends E2ETest {
+
     private static final String JWT_PREFIX = "Bearer ";
 
     @LocalServerPort
@@ -46,7 +44,7 @@ class MemberControllerTest {
 
     @Autowired
     private MemberBuilder memberBuilder;
-    
+
     @Autowired
     private JwtService jwtService;
 
