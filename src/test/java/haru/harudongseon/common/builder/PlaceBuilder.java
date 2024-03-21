@@ -4,6 +4,7 @@ import static haru.harudongseon.common.fixtures.PlaceFixtures.*;
 
 import java.math.BigDecimal;
 
+import haru.harudongseon.place.application.dto.PlaceAddRequest;
 import haru.harudongseon.place.domain.Place;
 import haru.harudongseon.place.domain.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,5 +67,16 @@ public class PlaceBuilder {
     public Place build() {
         final Place place = new Place(providerPlaceId, name, category, latitude, longitude, addressName);
         return placeRepository.save(place);
+    }
+
+    public PlaceAddRequest buildPlaceAddRequest(final Place place) {
+        return new PlaceAddRequest(
+                place.getProviderPlaceId(),
+                place.getName(),
+                place.getCategory(),
+                place.getCoordinates().getLatitude(),
+                place.getCoordinates().getLongitude(),
+                place.getAddressName()
+        );
     }
 }
