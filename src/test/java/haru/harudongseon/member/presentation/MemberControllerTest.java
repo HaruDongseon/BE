@@ -1,6 +1,6 @@
 package haru.harudongseon.member.presentation;
 
-import static haru.harudongseon.common.fixtures.MemberFixtures.성하_프로필_이미지_URL;
+import static haru.harudongseon.common.fixtures.MemberFixtures.기본_프로필_이미지_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -121,8 +121,8 @@ class MemberControllerTest extends E2ETest {
         }
 
         private static Stream<Arguments> editRequests() {
-            final String nickname = MemberFixtures.성하_닉네임;
-            final String profileImageUrl = 성하_프로필_이미지_URL;
+            final String nickname = MemberFixtures.기본_닉네임;
+            final String profileImageUrl = 기본_프로필_이미지_URL;
 
             return Stream.of(
                     Arguments.arguments(new MyProfileEditRequest(nickname, profileImageUrl)),
@@ -138,7 +138,7 @@ class MemberControllerTest extends E2ETest {
             // given
             final Long notExistMemberId = -1L;
             final String accessToken = jwtService.createAccessToken(notExistMemberId);
-            final MyProfileEditRequest request = new MyProfileEditRequest("seongha1", 성하_프로필_이미지_URL);
+            final MyProfileEditRequest request = new MyProfileEditRequest("seongha1", 기본_프로필_이미지_URL);
 
             // when
             final ExtractableResponse<Response> response = EDIT_MY_PROFILE_REQUEST(accessToken, request);
