@@ -1,5 +1,6 @@
 package haru.harudongseon.place.presentation;
 
+import haru.harudongseon.global.exception.ErrorResponse;
 import haru.harudongseon.place.application.PlaceService;
 import haru.harudongseon.place.application.dto.PlaceAddRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
