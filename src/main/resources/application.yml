@@ -8,7 +8,9 @@ oauth2:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:haru-dongseon;MODE=MySQL
+    url: jdbc:h2:~/haru-dongseon;MODE=MySQL
+    username: sa
+    password:
 
   h2:
     console:
