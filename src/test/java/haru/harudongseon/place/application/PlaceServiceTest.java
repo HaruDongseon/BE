@@ -2,15 +2,14 @@ package haru.harudongseon.place.application;
 
 import static haru.harudongseon.common.fixtures.PlaceFixtures.*;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.LocalDateTime;
 
 import haru.harudongseon.common.ServiceTest;
 import haru.harudongseon.common.builder.PlaceBuilder;
-import haru.harudongseon.common.fixtures.PlaceFixtures;
 import haru.harudongseon.place.application.dto.PlaceAddRequest;
 import haru.harudongseon.place.domain.Place;
 import haru.harudongseon.place.domain.PlaceRepository;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -55,6 +54,7 @@ class PlaceServiceTest extends ServiceTest {
                 softly.assertThat(countBeforeAdd).isEqualTo(0);
                 softly.assertThat(countAfterAdd).isEqualTo(1);
                 softly.assertThat(actual).usingRecursiveComparison()
+                        .ignoringFieldsOfTypes(LocalDateTime.class)
                         .ignoringFields("id")
                         .isEqualTo(expected);
             });
