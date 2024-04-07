@@ -15,7 +15,7 @@ public class Place extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long providerPlaceId;
+    private String providerPlaceId;
 
     private String name;
 
@@ -27,7 +27,7 @@ public class Place extends BaseEntity {
     private String addressName;
     private int selectCount;
 
-    public Place(final Long providerPlaceId, final String name,
+    public Place(final String providerPlaceId, final String name,
                  final String category, final BigDecimal latitude,
                  final BigDecimal longitude, final String addressName) {
         this.providerPlaceId = providerPlaceId;

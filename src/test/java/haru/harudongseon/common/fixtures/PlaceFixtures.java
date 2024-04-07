@@ -7,7 +7,7 @@ import haru.harudongseon.place.domain.Place;
 
 public class PlaceFixtures {
 
-    public static final Long 기본_외부_공급자_ID = 16618597L;
+    public static final String 기본_외부_공급자_ID = "ChIJs5ydyTiuEmsR0fRSlU0C7k0";
     public static final String 기본_장소_이름 = "장생당약국";
     public static final String 기본_장소_카테고리 = "약국";
     public static final BigDecimal 기본_장소_위도 = new BigDecimal("127.058970");
