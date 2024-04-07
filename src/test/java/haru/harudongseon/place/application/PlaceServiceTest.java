@@ -34,7 +34,7 @@ class PlaceServiceTest extends ServiceTest {
         @DisplayName("기존에 장소가 없을 때는 장소가 추가된다.")
         void success_not_exist_place_add_place() {
             // given
-            final Long providerPlaceId = 기본_외부_공급자_ID;
+            final String providerPlaceId = 기본_외부_공급자_ID;
             final PlaceAddRequest request = new PlaceAddRequest(providerPlaceId,
                                                                 기본_장소_이름,
                                                                 기본_장소_카테고리,
@@ -65,7 +65,7 @@ class PlaceServiceTest extends ServiceTest {
         void success_exist_place_select_count_1_increase() {
             // given
             final Place expected = placeBuilder.defaultPlace().build();
-            final Long providerPlaceId = 기본_외부_공급자_ID;
+            final String providerPlaceId = 기본_외부_공급자_ID;
             final PlaceAddRequest request = new PlaceAddRequest(providerPlaceId,
                                                                 기본_장소_이름,
                                                                 기본_장소_카테고리,

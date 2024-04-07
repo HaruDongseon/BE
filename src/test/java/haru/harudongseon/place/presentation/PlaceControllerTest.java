@@ -89,7 +89,7 @@ class PlaceControllerTest extends E2ETest {
         }
 
         private static Stream<Arguments> failNullRequests() {
-            final Long providerPlaceId = 기본_외부_공급자_ID;
+            final String providerPlaceId = 기본_외부_공급자_ID;
             final String name = 기본_장소_이름;
             final String category = 기본_장소_카테고리;
             final BigDecimal latitude = 기본_장소_위도;
@@ -125,7 +125,7 @@ class PlaceControllerTest extends E2ETest {
         }
 
         private static Stream<Arguments> failCoordinateWrongValidationRequests() {
-            final Long providerPlaceId = 기본_외부_공급자_ID;
+            final String providerPlaceId = 기본_외부_공급자_ID;
             final String name = 기본_장소_이름;
             final String category = 기본_장소_카테고리;
             final BigDecimal latitude = 기본_장소_위도;

@@ -11,7 +11,7 @@ public record PlaceAddRequest(
 
         @NotNull(message = "외부 제공자의 장소 ID는 공백일 수 없습니다.")
         @Schema(description = "외부 제공자 장소 ID(카카오 장소 ID)", nullable = false, example = "16618597")
-        Long providerPlaceId,
+        String providerPlaceId,
 
         @NotBlank(message = "장소 이름은 공백일 수 없습니다.")
         @Schema(description = "장소 이름", nullable = false, example = "장생당약국")

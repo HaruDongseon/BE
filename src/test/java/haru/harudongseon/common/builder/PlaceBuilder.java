@@ -16,7 +16,7 @@ public class PlaceBuilder {
     @Autowired
     private PlaceRepository placeRepository;
 
-    private Long providerPlaceId;
+    private String providerPlaceId;
     private String name;
     private String category;
     private BigDecimal latitude;
@@ -34,7 +34,7 @@ public class PlaceBuilder {
         return this;
     }
 
-    public PlaceBuilder providerPlaceId(final Long providerPlaceId) {
+    public PlaceBuilder providerPlaceId(final String providerPlaceId) {
         this.providerPlaceId = providerPlaceId;
         return this;
     }
