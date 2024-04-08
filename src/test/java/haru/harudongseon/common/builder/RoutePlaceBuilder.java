@@ -4,7 +4,6 @@ import static haru.harudongseon.common.fixtures.RoutePlaceFixtures.*;
 
 import java.math.BigDecimal;
 
-import haru.harudongseon.routeplace.application.dto.RoutePlaceAddRequest;
 import haru.harudongseon.routeplace.domain.RoutePlace;
 import haru.harudongseon.routeplace.domain.RoutePlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,16 +66,5 @@ public class RoutePlaceBuilder {
     public RoutePlace build() {
         final RoutePlace routePlace = new RoutePlace(providerPlaceId, name, category, latitude, longitude, addressName);
         return routePlaceRepository.save(routePlace);
-    }
-
-    public RoutePlaceAddRequest buildPlaceAddRequest(final RoutePlace routePlace) {
-        return new RoutePlaceAddRequest(
-                routePlace.getProviderPlaceId(),
-                routePlace.getName(),
-                routePlace.getCategory(),
-                routePlace.getCoordinates().getLatitude(),
-                routePlace.getCoordinates().getLongitude(),
-                routePlace.getAddressName()
-        );
     }
 }
