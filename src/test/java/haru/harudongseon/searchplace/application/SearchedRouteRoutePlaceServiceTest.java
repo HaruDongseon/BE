@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class SearchedPlaceServiceTest extends ServiceTest {
+class SearchedRouteRoutePlaceServiceTest extends ServiceTest {
 
     @Autowired
     private MemberBuilder memberBuilder;
@@ -35,7 +35,7 @@ class SearchedPlaceServiceTest extends ServiceTest {
 
     @Nested
     @DisplayName("최근 검색 장소 추가 시")
-    class AddRecentSearchedPlace {
+    class AddRecentSearchedRoutePlace {
 
         @Test
         @DisplayName("이전에 존재하지 않은 검색 장소면 추가에 성공한다.")

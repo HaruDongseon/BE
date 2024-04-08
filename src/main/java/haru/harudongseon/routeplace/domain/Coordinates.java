@@ -1,4 +1,4 @@
-package haru.harudongseon.place.domain;
+package haru.harudongseon.routeplace.domain;
 
 import java.math.BigDecimal;
 

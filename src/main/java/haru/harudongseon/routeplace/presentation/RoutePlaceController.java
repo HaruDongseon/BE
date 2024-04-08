@@ -1,8 +1,8 @@
-package haru.harudongseon.place.presentation;
+package haru.harudongseon.routeplace.presentation;
 
 import haru.harudongseon.global.exception.ErrorResponse;
-import haru.harudongseon.place.application.PlaceService;
-import haru.harudongseon.place.application.dto.PlaceAddRequest;
+import haru.harudongseon.routeplace.application.RoutePlaceService;
+import haru.harudongseon.routeplace.application.dto.RoutePlaceAddRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,16 +20,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/places")
 @RequiredArgsConstructor
-public class PlaceController {
+public class RoutePlaceController {
 
-    private final PlaceService placeService;
+    private final RoutePlaceService routePlaceService;
 
     @Operation(summary = "장소 추가 API")
     @ApiResponse(responseCode = "200", description = "장소 추가 성공")
     @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PostMapping
-    public ResponseEntity<Void> addPlace(@RequestBody @Valid final PlaceAddRequest request) {
-        placeService.addPlace(request);
+    public ResponseEntity<Void> addPlace(@RequestBody @Valid final RoutePlaceAddRequest request) {
+        routePlaceService.addPlace(request);
         return ResponseEntity.ok().build();
     }
 }

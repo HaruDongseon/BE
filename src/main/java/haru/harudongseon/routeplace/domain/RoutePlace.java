@@ -1,4 +1,4 @@
-package haru.harudongseon.place.domain;
+package haru.harudongseon.routeplace.domain;
 
 import java.math.BigDecimal;
 
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Place extends BaseEntity {
+public class RoutePlace extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,9 +27,9 @@ public class Place extends BaseEntity {
     private String addressName;
     private int selectCount;
 
-    public Place(final String providerPlaceId, final String name,
-                 final String category, final BigDecimal latitude,
-                 final BigDecimal longitude, final String addressName) {
+    public RoutePlace(final String providerPlaceId, final String name,
+                      final String category, final BigDecimal latitude,
+                      final BigDecimal longitude, final String addressName) {
         this.providerPlaceId = providerPlaceId;
         this.name = name;
         this.category = category;

@@ -1,4 +1,4 @@
-package haru.harudongseon.place.application.dto;
+package haru.harudongseon.routeplace.application.dto;
 
 import java.math.BigDecimal;
 
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record PlaceAddRequest(
+public record RoutePlaceAddRequest(
 
         @NotNull(message = "외부 제공자의 장소 ID는 공백일 수 없습니다.")
         @Schema(description = "외부 제공자 장소 ID(카카오 장소 ID)", nullable = false, example = "16618597")
