@@ -25,7 +25,6 @@ public class RoutePlace extends BaseEntity {
     private Coordinates coordinates;
 
     private String addressName;
-    private int selectCount;
 
     public RoutePlace(final String providerPlaceId, final String name,
                       final String category, final BigDecimal latitude,
@@ -35,10 +34,5 @@ public class RoutePlace extends BaseEntity {
         this.category = category;
         this.coordinates = new Coordinates(latitude, longitude);
         this.addressName = addressName;
-        this.selectCount = 0;
-    }
-
-    public void select() {
-        this.selectCount++;
     }
 }
