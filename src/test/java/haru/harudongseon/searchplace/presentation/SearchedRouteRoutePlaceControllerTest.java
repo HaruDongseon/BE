@@ -22,7 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-class SearchedPlaceControllerTest extends E2ETest {
+class SearchedRouteRoutePlaceControllerTest extends E2ETest {
 
     @Autowired
     private MemberBuilder memberBuilder;
@@ -32,7 +32,7 @@ class SearchedPlaceControllerTest extends E2ETest {
 
     @Nested
     @DisplayName("검색한 장소 추가 시")
-    class AddSearchedPlace {
+    class AddSearchedRoutePlace {
 
         @Test
         @DisplayName("해당 장소를 검색하지 않았었다면, 검색한 장소에 추가한다.")
