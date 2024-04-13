@@ -1,5 +1,6 @@
 package haru.harudongseon.member.application;
 
+import static haru.harudongseon.common.fixtures.MemberFixtures.기본_프로필_이미지_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -9,7 +10,9 @@ import haru.harudongseon.member.application.dto.MyProfileEditRequest;
 import haru.harudongseon.member.application.dto.MyProfileResponse;
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
+import haru.harudongseon.member.exception.MemberException;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -152,6 +155,33 @@ public class MemberServiceTest extends ServiceTest {
             assertThatThrownBy(() -> memberService.editMyProfile(notExistMemberId, request))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 멤버를 찾을 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("중복되는 닉네임으로 수정 시 예외가 발생한다.")
+        void throws_duplicate_nickname() {
+            // given
+            final Member member1 = memberBuilder.defaultMember().build();
+            final Member member2 = memberBuilder.defaultMember().nickname("new seongha").build();
+            final String duplicateNickname = member1.getNickname();
+            final MyProfileEditRequest request = new MyProfileEditRequest(duplicateNickname, 기본_프로필_이미지_URL);
+
+            // when & then
+            assertThatThrownBy(() -> memberService.editMyProfile(member2.getId(), request))
+                    .isInstanceOf(MemberException.DuplicateNicknameException.class)
+                    .hasMessage("중복되는 닉네임이 존재합니다.");
+        }
+
+        @Test
+        @DisplayName("자신의 기존 닉네임은 중복되더라도 그대로 수정에 성공한다.")
+        void not_throws_original_my_nickname() {
+            // given
+            final Member member1 = memberBuilder.defaultMember().build();
+            final String originalMyNickname = member1.getNickname();
+            final MyProfileEditRequest request = new MyProfileEditRequest(originalMyNickname, 기본_프로필_이미지_URL);
+
+            // when & then
+            Assertions.assertDoesNotThrow(() -> memberService.editMyProfile(member1.getId(), request));
         }
     }
 }

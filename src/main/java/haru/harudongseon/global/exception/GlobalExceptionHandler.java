@@ -2,6 +2,7 @@ package haru.harudongseon.global.exception;
 
 import java.util.Random;
 
+import haru.harudongseon.member.exception.MemberException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -54,9 +55,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = {
-            IllegalArgumentException.class
+            IllegalArgumentException.class,
+            MemberException.DuplicateNicknameException.class
     })
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(final IllegalArgumentException exception) {
+    public ResponseEntity<ErrorResponse> handleBadRequestException(final RuntimeException exception) {
         final String errorMessage = exception.getMessage();
         log.warn(errorMessage);
 
