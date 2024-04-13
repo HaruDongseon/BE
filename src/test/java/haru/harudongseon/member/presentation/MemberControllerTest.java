@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.common.fixtures.MemberFixtures;
-import haru.harudongseon.global.jwt.JwtService;
 import haru.harudongseon.member.application.dto.MyProfileEditRequest;
 import haru.harudongseon.member.domain.Member;
 import io.restassured.RestAssured;
@@ -190,6 +189,42 @@ class MemberControllerTest extends E2ETest {
                 softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 softly.assertThat(response.jsonPath().getString("errorMessage")).contains("수정할 프로필 이미지 URL은 URL 형식이어야합니다.");
             });
+        }
+
+        @Test
+        @DisplayName("수정할 닉네임이 중복된다면 내 정보 수정에 실패한다.")
+        void fail_duplicate_nickname() {
+            // given
+            final Member member1 = memberBuilder.defaultMember().build();
+            final Member member2 = memberBuilder.defaultMember().nickname("new seongha").build();
+            final String accessToken = jwtService.createAccessToken(member2.getId());
+            final String duplicateNickname = member1.getNickname();
+            final MyProfileEditRequest request = new MyProfileEditRequest(duplicateNickname, 기본_프로필_이미지_URL);
+
+            // when
+            final ExtractableResponse<Response> response = EDIT_MY_PROFILE_REQUEST(accessToken, request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("중복되는 닉네임이 존재합니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("수정할 닉네임이 기존 닉네임이면 그대로 수정에 성공한다.")
+        void success_original_my_nickname() {
+            // given
+            final Member member1 = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member1.getId());
+            final String originalMyNickname = member1.getNickname();
+            final MyProfileEditRequest request = new MyProfileEditRequest(originalMyNickname, 기본_프로필_이미지_URL);
+
+            // when
+            final ExtractableResponse<Response> response = EDIT_MY_PROFILE_REQUEST(accessToken, request);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         }
     }
 

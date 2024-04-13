@@ -4,6 +4,7 @@ import haru.harudongseon.member.application.dto.MyProfileEditRequest;
 import haru.harudongseon.member.application.dto.MyProfileResponse;
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
+import haru.harudongseon.member.exception.MemberException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,15 @@ public class MemberService {
         final Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버를 찾을 수 없습니다."));
 
+        final String nickname = request.nickname();
+        if (checkNicknameDuplicate(memberId, nickname)) {
+            throw new MemberException.DuplicateNicknameException();
+        }
+
         findMember.editProfile(request.nickname(), request.profileImageUrl());
+    }
+
+    private boolean checkNicknameDuplicate(final Long memberId, final String nickname) {
+        return memberRepository.existsByIdNotAndNickname(memberId, nickname);
     }
 }
