@@ -31,3 +31,10 @@ jwt:
     expiration: 100000000
   refresh:
     expiration: 10000000000
+
+aws:
+  s3:
+    region: aaaa
+    bucket: aaaa
+    image-directory: aaaa
+    domain: https://aaa.com/
