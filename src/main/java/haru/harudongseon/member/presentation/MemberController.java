@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,7 +53,7 @@ public class MemberController {
     @Operation(summary = "멤버 이미지 저장 API")
     @ApiResponse(responseCode = "200", description = "이미지 저장 성공")
     @ApiResponse(responseCode = "500", description = "파일 업로드 예외(관리자 문의)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    @PostMapping("/image")
+    @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MemberImageSaveResponse> saveMemberImage(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
             @RequestPart(name = "image") MultipartFile image
