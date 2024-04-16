@@ -1,4 +1,4 @@
-package haru.harudongseon.routeplace.domain;
+package haru.harudongseon.route.domain.routeplace;
 
 import java.util.Optional;
 

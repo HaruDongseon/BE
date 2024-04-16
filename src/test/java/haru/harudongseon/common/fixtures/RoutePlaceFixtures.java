@@ -2,7 +2,7 @@ package haru.harudongseon.common.fixtures;
 
 import java.math.BigDecimal;
 
-import haru.harudongseon.routeplace.domain.RoutePlace;
+import haru.harudongseon.route.domain.routeplace.RoutePlace;
 
 public class RoutePlaceFixtures {
 

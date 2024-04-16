@@ -4,8 +4,8 @@ import static haru.harudongseon.common.fixtures.RoutePlaceFixtures.*;
 
 import java.math.BigDecimal;
 
-import haru.harudongseon.routeplace.domain.RoutePlace;
-import haru.harudongseon.routeplace.domain.RoutePlaceRepository;
+import haru.harudongseon.route.domain.routeplace.RoutePlace;
+import haru.harudongseon.route.domain.routeplace.RoutePlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
