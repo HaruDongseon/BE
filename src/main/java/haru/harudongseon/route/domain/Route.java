@@ -26,7 +26,7 @@ public class Route {
 
     private List<MoveWay> moveWays = new ArrayList<>();
 
-    @OneToMany(mappedBy = "route")
+    @OneToMany
     @JoinColumn(name = "route_id")
     private List<RoutePlace> routePlaces = new ArrayList<>();
 
