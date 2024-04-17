@@ -1,5 +1,6 @@
 package haru.harudongseon.route.domain;
 
+import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.routetag.domain.RouteTag;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class SelectedTag {
+public class SelectedTag extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
