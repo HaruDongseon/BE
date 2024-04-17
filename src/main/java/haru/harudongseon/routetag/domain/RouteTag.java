@@ -7,10 +7,12 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class RouteTag {
 
     @Id
@@ -18,4 +20,16 @@ public class RouteTag {
     private Long id;
 
     private String name;
+
+    private Long selectCount;
+
+    public RouteTag(final String name) {
+        this.name = name;
+        this.selectCount = 1L;
+    }
+
+    public RouteTag(final String name, final Long selectCount) {
+        this.name = name;
+        this.selectCount = selectCount;
+    }
 }
