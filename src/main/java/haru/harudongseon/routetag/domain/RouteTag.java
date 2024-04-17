@@ -18,4 +18,16 @@ public class RouteTag {
     private Long id;
 
     private String name;
+
+    private Long selectCount;
+
+    public RouteTag(final String name) {
+        this.name = name;
+        this.selectCount = 1L;
+    }
+
+    public RouteTag(final String name, final Long selectCount) {
+        this.name = name;
+        this.selectCount = selectCount;
+    }
 }
