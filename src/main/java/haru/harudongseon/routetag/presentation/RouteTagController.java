@@ -21,7 +21,7 @@ public class RouteTagController {
 
     private final RouteTagService routeTagService;
 
-    @Operation(summary = "내 정보 조회 API")
+    @Operation(summary = "동선 태그 검색 API")
     @ApiResponse(responseCode = "200", description = "검색 성공")
     @GetMapping("/search")
     public ResponseEntity<RouteTagSearchResponse> searchByKeyword(@Parameter(description = "검색할 키워드", example = "데이트") @RequestParam("keyword") final String keyword) {
