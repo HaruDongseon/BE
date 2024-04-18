@@ -1,4 +1,4 @@
-package haru.harudongseon.routetag;
+package haru.harudongseon.routetag.presentation;
 
 import haru.harudongseon.routetag.application.RouteTagService;
 import haru.harudongseon.routetag.application.dto.RouteTagSearchResponse;

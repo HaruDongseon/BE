@@ -1,4 +1,4 @@
-package haru.harudongseon.routetag;
+package haru.harudongseon.routetag.presentation;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 

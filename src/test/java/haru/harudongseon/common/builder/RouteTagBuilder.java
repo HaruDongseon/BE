@@ -11,15 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class RouteTagBuilder {
 
-    private final RouteTagRepository routeTagRepository;
+    @Autowired
+    private RouteTagRepository routeTagRepository;
 
     private String name;
     private Long selectCount;
-
-    @Autowired
-    public RouteTagBuilder(final RouteTagRepository routeTagRepository) {
-        this.routeTagRepository = routeTagRepository;
-    }
 
     public RouteTagBuilder defaultRouteTag() {
         this.name = 기본_태그_이름;
