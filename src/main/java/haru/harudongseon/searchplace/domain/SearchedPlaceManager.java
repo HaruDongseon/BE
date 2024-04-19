@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import haru.harudongseon.member.domain.Member;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -37,5 +38,16 @@ public class SearchedPlaceManager {
 
     public List<SearchedPlace> getRecentSearchedPlace(final Long memberId) {
         return searchedPlaceRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId);
+    }
+
+    public void deleteById(final Long id, final Long memberId) {
+        if (!searchedPlaceRepository.existsByIdAndMemberId(id, memberId)) {
+            throw new EntityNotFoundException("해당하는 검색 장소가 존재하지 않습니다.");
+        }
+        searchedPlaceRepository.deleteById(id);
+    }
+
+    public void deleteAll() {
+        searchedPlaceRepository.deleteAll();
     }
 }

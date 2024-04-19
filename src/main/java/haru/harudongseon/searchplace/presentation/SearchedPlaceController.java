@@ -50,4 +50,25 @@ public class SearchedPlaceController {
         final RecentSearchedPlacesResponse response = searchedPlaceService.findRecentSearchedPlace(memberId);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "검색 장소 삭제 API")
+    @ApiResponse(responseCode = "204", description = "검색 장소 삭제 성공")
+    @ApiResponse(responseCode = "404", description = "검색 장소 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @DeleteMapping("/{searched-place-id}")
+    public ResponseEntity<Void> delete(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
+            @PathVariable("searched-place-id") Long searchedPlaceId
+    ) {
+        final Long memberId = authMemberDto.memberId();
+        searchedPlaceService.delete(searchedPlaceId, memberId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "검색 장소 전체 삭제 API")
+    @ApiResponse(responseCode = "204", description = "검색 장소 전체 삭제 성공")
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAll() {
+        searchedPlaceService.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
 }

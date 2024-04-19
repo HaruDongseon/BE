@@ -34,4 +34,12 @@ public class SearchedPlaceService {
         final List<SearchedPlace> recentSearchedPlace = searchedPlaceManager.getRecentSearchedPlace(memberId);
         return RecentSearchedPlacesResponse.from(recentSearchedPlace);
     }
+
+    public void delete(final Long searchedPlaceId, final Long memberId) {
+        searchedPlaceManager.deleteById(searchedPlaceId, memberId);
+    }
+
+    public void deleteAll() {
+        searchedPlaceManager.deleteAll();
+    }
 }

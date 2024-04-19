@@ -199,6 +199,100 @@ class SearchedRouteRoutePlaceControllerTest extends E2ETest {
         }
     }
 
+    @Nested
+    @DisplayName("검색한 장소 삭제 시")
+    class Delete {
+
+        @Test
+        @DisplayName("삭제에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final SearchedPlace searchedPlace = searchPlaceBuilder.defaultSearchPlace(member).build();
+            final Long searchedPlaceId = searchedPlace.getId();
+
+            // when
+            final ExtractableResponse<Response> response = DELETE_SEARCHED_PLACE_REQUEST(accessToken, searchedPlaceId);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
+
+        @Test
+        @DisplayName("멤버가 가진 검색 장소가 아니라면 삭제에 실패한다.")
+        void fail_not_have_member_searched_place() {
+            // given
+            final Member member1 = memberBuilder.defaultMember().build();
+            final Member member2 = memberBuilder.defaultMember().build();
+            final String member2AccessToken = jwtService.createAccessToken(member2.getId());
+            final SearchedPlace member1SearchedPlace = searchPlaceBuilder.defaultSearchPlace(member1).build();
+
+            final Long notExistSearchedPlaceId = -1L;
+            final Long member1SearchedPlaceId = member1SearchedPlace.getId();
+
+
+            // when
+            final ExtractableResponse<Response> response1 = DELETE_SEARCHED_PLACE_REQUEST(member2AccessToken, notExistSearchedPlaceId);
+            final ExtractableResponse<Response> response2 = DELETE_SEARCHED_PLACE_REQUEST(member2AccessToken, member1SearchedPlaceId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response1.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+            });
+        }
+
+        @Test
+        @DisplayName("둘 중 하나라도 존재하지 않는 멤버, 검색 장소 ID라면 삭제에 실패한다.")
+        void fail_not_exist_member_and_not_exist_search_place() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String existAccessToken = jwtService.createAccessToken(member.getId());
+            final SearchedPlace searchedPlace = searchPlaceBuilder.defaultSearchPlace(member).build();
+
+            final Long notExistMemberId = -1L;
+            final String notExistMemberAccessToken = jwtService.createAccessToken(notExistMemberId);
+            final Long notExistSearchedPlaceId = -1L;
+
+            // when
+            final ExtractableResponse<Response> response1 = DELETE_SEARCHED_PLACE_REQUEST(notExistMemberAccessToken, notExistSearchedPlaceId);
+            final ExtractableResponse<Response> response2 = DELETE_SEARCHED_PLACE_REQUEST(notExistMemberAccessToken, searchedPlace.getId());
+            final ExtractableResponse<Response> response3 = DELETE_SEARCHED_PLACE_REQUEST(existAccessToken, notExistSearchedPlaceId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response1.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response3.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("검색한 장소 전체 삭제 시")
+    class DeleteAll {
+
+        @Test
+        @DisplayName("전체 삭제에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "1").build();
+            searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "2").build();
+            searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "3").build();
+            searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "4").build();
+            searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "5").build();
+
+            // when
+            final ExtractableResponse<Response> response = DELETE_ALL_SEARCHED_PLACE_REQUEST(accessToken);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
+    }
+
     private static ExtractableResponse<Response> ADD_SEARCHED_PLACE_REQUEST(final String accessToken, final SearchedPlaceAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
@@ -213,9 +307,26 @@ class SearchedRouteRoutePlaceControllerTest extends E2ETest {
     private static ExtractableResponse<Response> FIND_RECENT_SEARCHED_PLACE_REQUEST(final String accessToken) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().log().all()
                 .get("/searched-places/recent")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> DELETE_SEARCHED_PLACE_REQUEST(final String accessToken, final Long searchedPlaceId) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .delete("/searched-places/{searched-place-id}", searchedPlaceId)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> DELETE_ALL_SEARCHED_PLACE_REQUEST(final String accessToken) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .delete("/searched-places")
                 .then().log().all()
                 .extract();
     }

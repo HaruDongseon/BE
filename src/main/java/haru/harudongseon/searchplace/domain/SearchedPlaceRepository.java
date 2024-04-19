@@ -9,4 +9,5 @@ public interface SearchedPlaceRepository extends JpaRepository<SearchedPlace, Lo
 
     Optional<SearchedPlace> findByMemberIdAndKeyword(final Long memberId, final String keyword);
     List<SearchedPlace> findAllByMemberIdOrderByCreatedAtDesc(final Long memberId);
+    boolean existsByIdAndMemberId(final Long id, final Long memberId);
 }
