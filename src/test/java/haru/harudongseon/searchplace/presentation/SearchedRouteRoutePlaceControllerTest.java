@@ -2,11 +2,16 @@ package haru.harudongseon.searchplace.presentation;
 
 import static haru.harudongseon.common.fixtures.SearchPlaceFixtures.기본_검색_장소_키워드;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
+import java.util.List;
 
 import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.common.builder.SearchPlaceBuilder;
 import haru.harudongseon.member.domain.Member;
+import haru.harudongseon.searchplace.application.dto.RecentSearchedPlaceResponse;
+import haru.harudongseon.searchplace.application.dto.RecentSearchedPlacesResponse;
 import haru.harudongseon.searchplace.application.dto.SearchedPlaceAddRequest;
 import haru.harudongseon.searchplace.domain.SearchedPlace;
 import io.restassured.RestAssured;
@@ -126,6 +131,74 @@ class SearchedRouteRoutePlaceControllerTest extends E2ETest {
         }
     }
 
+    @Nested
+    @DisplayName("최근 검색한 장소 조회 시")
+    class FindRecentSearchedPlace {
+
+        @Test
+        @DisplayName("최근 검색한 장소 순서대로 조회에 성공한다.")
+        void success_with_recent_order() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final SearchedPlace searchedPlace1 = searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "1").build();
+            final SearchedPlace searchedPlace2 = searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "2").build();
+            final SearchedPlace searchedPlace3 = searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "3").build();
+            final SearchedPlace searchedPlace4 = searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "4").build();
+            final SearchedPlace searchedPlace5 = searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "5").build();
+            final List<SearchedPlace> searchedPlaces = List.of(searchedPlace5, searchedPlace4, searchedPlace3, searchedPlace2, searchedPlace1);
+            final List<RecentSearchedPlaceResponse> expected = RecentSearchedPlacesResponse.from(searchedPlaces).getSearchedPlaces();
+
+            // when
+            final ExtractableResponse<Response> response = FIND_RECENT_SEARCHED_PLACE_REQUEST(accessToken);
+            final RecentSearchedPlacesResponse recentSearchedPlacesResponse = response.as(RecentSearchedPlacesResponse.class);
+            final List<RecentSearchedPlaceResponse> actual = recentSearchedPlacesResponse.getSearchedPlaces();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(expected).usingRecursiveFieldByFieldElementComparator()
+                        .isEqualTo(actual);
+            });
+        }
+
+        @Test
+        @DisplayName("최근 검색한 장소가 없으면 빈 리스트가 반환된다.")
+        void success_not_exist_recent_search_place_empty_list() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            // when
+            final ExtractableResponse<Response> response = FIND_RECENT_SEARCHED_PLACE_REQUEST(accessToken);
+            final RecentSearchedPlacesResponse recentSearchedPlacesResponse = response.as(RecentSearchedPlacesResponse.class);
+            final List<RecentSearchedPlaceResponse> actual = recentSearchedPlacesResponse.getSearchedPlaces();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual).isEmpty();
+            });
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 멤버면 조회에 실패한다.")
+        void fail_not_exist_member() {
+            // given
+            final Long notExistMemberId = -1L;
+            final String notExistAccessToken = jwtService.createAccessToken(notExistMemberId);
+
+            // when
+            final ExtractableResponse<Response> response = FIND_RECENT_SEARCHED_PLACE_REQUEST(notExistAccessToken);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("해당하는 멤버를 찾을 수 없습니다.");
+            });
+        }
+    }
+
     private static ExtractableResponse<Response> ADD_SEARCHED_PLACE_REQUEST(final String accessToken, final SearchedPlaceAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
@@ -133,6 +206,16 @@ class SearchedRouteRoutePlaceControllerTest extends E2ETest {
                 .body(request)
                 .when().log().all()
                 .post("/searched-places")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> FIND_RECENT_SEARCHED_PLACE_REQUEST(final String accessToken) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().log().all()
+                .get("/searched-places/recent")
                 .then().log().all()
                 .extract();
     }

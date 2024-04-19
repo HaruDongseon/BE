@@ -34,4 +34,8 @@ public class SearchedPlaceManager {
             searchedPlaceRepository.delete(oldestSearchedPlace);
         }
     }
+
+    public List<SearchedPlace> getRecentSearchedPlace(final Long memberId) {
+        return searchedPlaceRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId);
+    }
 }

@@ -4,6 +4,7 @@ import haru.harudongseon.global.exception.ErrorResponse;
 import haru.harudongseon.global.mvc.AuthMemberDto;
 import haru.harudongseon.global.mvc.AuthPrincipal;
 import haru.harudongseon.searchplace.application.SearchedPlaceService;
+import haru.harudongseon.searchplace.application.dto.RecentSearchedPlacesResponse;
 import haru.harudongseon.searchplace.application.dto.SearchedPlaceAddRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,10 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "SEARCHED PLACE API", description = "검색한 장소 관련 API")
 @RestController
@@ -39,5 +37,17 @@ public class SearchedPlaceController {
         final Long memberId = authMemberDto.memberId();
         searchedPlaceService.addSearchedPlace(memberId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "최근 검색 장소 조회 API")
+    @ApiResponse(responseCode = "200", description = "최근 검색 장소 조회 성공")
+    @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @GetMapping("/recent")
+    public ResponseEntity<RecentSearchedPlacesResponse> addSearchedPlace(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto
+    ) {
+        final Long memberId = authMemberDto.memberId();
+        final RecentSearchedPlacesResponse response = searchedPlaceService.findRecentSearchedPlace(memberId);
+        return ResponseEntity.ok(response);
     }
 }
