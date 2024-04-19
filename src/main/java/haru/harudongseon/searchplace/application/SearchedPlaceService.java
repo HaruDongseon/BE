@@ -1,8 +1,12 @@
 package haru.harudongseon.searchplace.application;
 
+import java.util.List;
+
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
+import haru.harudongseon.searchplace.application.dto.RecentSearchedPlacesResponse;
 import haru.harudongseon.searchplace.application.dto.SearchedPlaceAddRequest;
+import haru.harudongseon.searchplace.domain.SearchedPlace;
 import haru.harudongseon.searchplace.domain.SearchedPlaceManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +26,12 @@ public class SearchedPlaceService {
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버를 찾을 수 없습니다."));
         final String searchKeyword = request.keyword();
         searchedPlaceManager.save(member, searchKeyword);
+    }
+
+    public RecentSearchedPlacesResponse findRecentSearchedPlace(final Long memberId) {
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버를 찾을 수 없습니다."));
+        final List<SearchedPlace> recentSearchedPlace = searchedPlaceManager.getRecentSearchedPlace(memberId);
+        return RecentSearchedPlacesResponse.from(recentSearchedPlace);
     }
 }
