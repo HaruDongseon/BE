@@ -67,6 +67,30 @@ class SearchedRouteRoutePlaceControllerTest extends E2ETest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         }
 
+        @Test
+        @DisplayName("최근 검색 장소가 최대 개수라면, 가장 오래된 검색 장소를 삭제하고 새로 추가한다.")
+        void success_max_searched_place_delete_oldest_and_add_new() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final SearchedPlace searchedPlace1 = searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드).build();
+            final SearchedPlace searchedPlace2 = searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "2").build();
+            final SearchedPlace searchedPlace3 = searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "3").build();
+            final SearchedPlace searchedPlace4 = searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "4").build();
+            final SearchedPlace oldestSearchedPlace = searchPlaceBuilder.member(member).keyword(기본_검색_장소_키워드 + "5").build();
+
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final String keyword = "new " + 기본_검색_장소_키워드;
+            final SearchedPlaceAddRequest request = new SearchedPlaceAddRequest(keyword);
+
+
+            // when
+            final ExtractableResponse<Response> response = ADD_SEARCHED_PLACE_REQUEST(accessToken, request);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        }
+
         @ParameterizedTest
         @ValueSource(strings = {"", " "})
         @DisplayName("검색 키워드가 공백이라면 추가에 실패한다.")
