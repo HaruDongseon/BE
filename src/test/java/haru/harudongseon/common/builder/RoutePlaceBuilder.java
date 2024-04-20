@@ -1,11 +1,11 @@
 package haru.harudongseon.common.builder;
 
-import static haru.harudongseon.common.fixtures.RoutePlaceFixtures.*;
+import static haru.harudongseon.common.fixtures.PlaceFixtures.*;
 
 import java.math.BigDecimal;
 
-import haru.harudongseon.route.domain.routeplace.RoutePlace;
-import haru.harudongseon.route.domain.routeplace.RoutePlaceRepository;
+import haru.harudongseon.place.domain.Place;
+import haru.harudongseon.place.domain.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,11 +13,12 @@ import org.springframework.stereotype.Component;
 public class RoutePlaceBuilder {
 
     @Autowired
-    private RoutePlaceRepository routePlaceRepository;
+    private PlaceRepository placeRepository;
 
     private String providerPlaceId;
     private String name;
     private String category;
+    private String photoReference;
     private BigDecimal latitude;
     private BigDecimal longitude;
     private String addressName;
@@ -26,6 +27,7 @@ public class RoutePlaceBuilder {
         this.providerPlaceId = 기본_외부_공급자_ID;
         this.name = 기본_장소_이름;
         this.category = 기본_장소_카테고리;
+        this.photoReference = 기본_장소_사진_참조;
         this.latitude = 기본_장소_위도;
         this.longitude = 기본_장소_경도;
         this.addressName = 기본_장소_주소_이름;
@@ -48,6 +50,11 @@ public class RoutePlaceBuilder {
         return this;
     }
 
+    public RoutePlaceBuilder photoReference(final String photoReference) {
+        this.photoReference = photoReference;
+        return this;
+    }
+
     public RoutePlaceBuilder latitude(final BigDecimal latitude) {
         this.latitude = latitude;
         return this;
@@ -63,8 +70,8 @@ public class RoutePlaceBuilder {
         return this;
     }
 
-    public RoutePlace build() {
-        final RoutePlace routePlace = new RoutePlace(providerPlaceId, name, category, latitude, longitude, addressName);
-        return routePlaceRepository.save(routePlace);
+    public Place build() {
+        final Place place = new Place(providerPlaceId, name, category, photoReference, latitude, longitude, addressName);
+        return placeRepository.save(place);
     }
 }

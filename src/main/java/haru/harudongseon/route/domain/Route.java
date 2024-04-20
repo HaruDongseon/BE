@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import haru.harudongseon.global.BaseEntity;
-import haru.harudongseon.route.domain.routeplace.RoutePlace;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
