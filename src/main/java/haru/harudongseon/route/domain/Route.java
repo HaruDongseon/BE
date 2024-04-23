@@ -24,14 +24,15 @@ public class Route extends BaseEntity {
     @OneToMany(mappedBy = "route")
     private List<SelectedTag> tags = new ArrayList<>();
 
-    private List<MoveWay> moveWays = new ArrayList<>();
+    private String moveWays;
 
     @OneToMany
     @JoinColumn(name = "route_id")
     private List<RoutePlace> routePlaces = new ArrayList<>();
 
-    public Route(final LocalDate date, final String title) {
+    public Route(final LocalDate date, final String title, final String moveWays) {
         this.date = date;
         this.title = title;
+        this.moveWays = moveWays;
     }
 }

@@ -1,5 +1,7 @@
 package haru.harudongseon.likeplace.domain;
 
+import java.util.List;
+
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.likeplace.domain.placedetails.PlaceDetails;
 import haru.harudongseon.member.domain.Member;
@@ -24,8 +26,8 @@ public class LikePlace extends BaseEntity {
     private String providerPlaceId;
     private String name;
 
-    @Embedded
-    private PhotoReferences photoReferences;
+    @ElementCollection
+    private List<String> photoReferences;
 
     @Embedded
     private Coordinates coordinates;
@@ -40,7 +42,7 @@ public class LikePlace extends BaseEntity {
     private PlaceDetails placeDetails;
 
     public LikePlace(final Member member, final String providerPlaceId,
-                     final String name, final PhotoReferences photoReferences,
+                     final String name, final List<String> photoReferences,
                      final Coordinates coordinates, final String openingHours,
                      final String addressName, final String phoneNumber,
                      final String website, final String url,

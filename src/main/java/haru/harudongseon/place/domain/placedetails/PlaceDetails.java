@@ -1,6 +1,8 @@
 package haru.harudongseon.place.domain.placedetails;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,8 +12,13 @@ import lombok.NoArgsConstructor;
 @Getter
 public class PlaceDetails {
 
+    @Enumerated(value = EnumType.STRING)
     private Reservable reservable;
+
+    @Enumerated(value = EnumType.STRING)
     private TakeoutAvailable takeoutAvailable;
+
+    @Enumerated(value = EnumType.STRING)
     private DeliveryAvailable deliveryAvailable;
 
     public PlaceDetails(final Reservable reservable, final TakeoutAvailable takeoutAvailable,

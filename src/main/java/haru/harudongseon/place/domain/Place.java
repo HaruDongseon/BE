@@ -1,5 +1,7 @@
 package haru.harudongseon.place.domain;
 
+import java.util.List;
+
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.place.domain.placedetails.PlaceDetails;
 import jakarta.persistence.*;
@@ -17,8 +19,8 @@ public class Place extends BaseEntity {
     private String providerPlaceId;
     private String name;
 
-    @Embedded
-    private PhotoReferences photoReferences;
+    @ElementCollection
+    private List<String> photoReferences;
 
     @Embedded
     private Coordinates coordinates;
@@ -33,7 +35,7 @@ public class Place extends BaseEntity {
     private PlaceDetails placeDetails;
 
     public Place(final String providerPlaceId, final String name,
-                 final PhotoReferences photoReferences, final Coordinates coordinates,
+                 final List<String> photoReferences, final Coordinates coordinates,
                  final String openingHours, final String addressName,
                  final String phoneNumber, final String website,
                  final String url, final PlaceDetails placeDetails) {
