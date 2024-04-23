@@ -1,8 +1,7 @@
 package haru.harudongseon.place.domain;
 
-import java.math.BigDecimal;
-
 import haru.harudongseon.global.BaseEntity;
+import haru.harudongseon.place.domain.placedetails.PlaceDetails;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,27 +15,37 @@ public class Place extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String providerPlaceId;
-
     private String name;
 
-    private String category;
-
-    private String photoReference;
+    @Embedded
+    private PhotoReferences photoReferences;
 
     @Embedded
     private Coordinates coordinates;
 
+    private String openingHours;
     private String addressName;
+    private String phoneNumber;
+    private String website;
+    private String url;
+
+    @Embedded
+    private PlaceDetails placeDetails;
 
     public Place(final String providerPlaceId, final String name,
-                 final String category, final String photoReference,
-                 final BigDecimal latitude, final BigDecimal longitude,
-                 final String addressName) {
+                 final PhotoReferences photoReferences, final Coordinates coordinates,
+                 final String openingHours, final String addressName,
+                 final String phoneNumber, final String website,
+                 final String url, final PlaceDetails placeDetails) {
         this.providerPlaceId = providerPlaceId;
         this.name = name;
-        this.category = category;
-        this.photoReference = photoReference;
-        this.coordinates = new Coordinates(latitude, longitude);
+        this.photoReferences = photoReferences;
+        this.coordinates = coordinates;
+        this.openingHours = openingHours;
         this.addressName = addressName;
+        this.phoneNumber = phoneNumber;
+        this.website = website;
+        this.url = url;
+        this.placeDetails = placeDetails;
     }
 }
