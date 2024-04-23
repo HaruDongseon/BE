@@ -20,6 +20,13 @@ public class PlaceFixtures {
     public static final BigDecimal 기본_장소_위도 = new BigDecimal("127.058970");
     public static final BigDecimal 기본_장소_경도 = new BigDecimal("37.506051");
     public static final Coordinates 기본_장소_좌표 = new Coordinates(기본_장소_위도, 기본_장소_경도);
+    public static final String 기본_장소_영업_시간 = "월요일: 오전 7:00 ~ 오후 11:00 " +
+                                                "화요일: 오전 7:00 ~ 오후 11:00 " +
+                                                "수요일: 오전 7:00 ~ 오후 11:00 " +
+                                                "목요일: 오전 7:00 ~ 오후 11:00 " +
+                                                "금요일: 오전 7:00 ~ 오후 11:00 " +
+                                                "토요일: 오전 7:00 ~ 오후 11:00 " +
+                                                "일요일: 오전 9:00 ~ 오후 11:00 ";
     public static final String 기본_장소_주소_이름 = "서울 대치동";
     public static final String 기본_장소_전화번호 = "1234-1234";
     public static final String 기본_장소_웹사이트 = "http://www.starbucks.co.kr/";
@@ -27,6 +34,6 @@ public class PlaceFixtures {
     public static final PlaceDetails 기본_장소_세부_정보 = new PlaceDetails(Reservable.FALSE, TakeoutAvailable.TRUE, DeliveryAvailable.NONE);
 
     public static Place 기본_장소_Entity() {
-        return new Place(기본_외부_공급자_ID, 기본_장소_이름, 기본_장소_사진_참조, 기본_장소_좌표, 기본_장소_주소_이름, 기본_장소_전화번호, 기본_장소_웹사이트, 기본_장소_URL, 기본_장소_세부_정보);
+        return new Place(기본_외부_공급자_ID, 기본_장소_이름, 기본_장소_사진_참조, 기본_장소_좌표, 기본_장소_영업_시간, 기본_장소_주소_이름, 기본_장소_전화번호, 기본_장소_웹사이트, 기본_장소_URL, 기본_장소_세부_정보);
     }
 }

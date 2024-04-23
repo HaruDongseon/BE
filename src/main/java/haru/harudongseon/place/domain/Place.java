@@ -23,6 +23,7 @@ public class Place extends BaseEntity {
     @Embedded
     private Coordinates coordinates;
 
+    private String openingHours;
     private String addressName;
     private String phoneNumber;
     private String website;
@@ -33,13 +34,14 @@ public class Place extends BaseEntity {
 
     public Place(final String providerPlaceId, final String name,
                  final PhotoReferences photoReferences, final Coordinates coordinates,
-                 final String addressName, final String phoneNumber,
-                 final String website, final String url,
-                 final PlaceDetails placeDetails) {
+                 final String openingHours, final String addressName,
+                 final String phoneNumber, final String website,
+                 final String url, final PlaceDetails placeDetails) {
         this.providerPlaceId = providerPlaceId;
         this.name = name;
         this.photoReferences = photoReferences;
         this.coordinates = coordinates;
+        this.openingHours = openingHours;
         this.addressName = addressName;
         this.phoneNumber = phoneNumber;
         this.website = website;
