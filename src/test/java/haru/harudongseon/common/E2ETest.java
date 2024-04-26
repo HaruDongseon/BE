@@ -2,6 +2,7 @@ package haru.harudongseon.common;
 
 import haru.harudongseon.global.jwt.JwtService;
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,4 +28,8 @@ public abstract class E2ETest {
         h2TruncateUtils.truncateAll();
     }
 
+    @AfterEach
+    void tearDown() {
+        h2TruncateUtils.truncateAll();
+    }
 }

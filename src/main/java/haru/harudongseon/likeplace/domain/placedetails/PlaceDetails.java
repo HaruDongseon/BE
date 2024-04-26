@@ -14,6 +14,13 @@ public class PlaceDetails {
     private TakeoutAvailable takeoutAvailable;
     private DeliveryAvailable deliveryAvailable;
 
+    public PlaceDetails(final String reservableName, final String takeoutAvailableName,
+                        final String deliveryAvailableName) {
+        this.reservable = Reservable.findValue(reservableName);
+        this.takeoutAvailable = TakeoutAvailable.findValue(takeoutAvailableName);
+        this.deliveryAvailable = DeliveryAvailable.findValue(deliveryAvailableName);
+    }
+
     public PlaceDetails(final Reservable reservable, final TakeoutAvailable takeoutAvailable,
                         final DeliveryAvailable deliveryAvailable) {
         this.reservable = reservable;
