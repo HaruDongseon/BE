@@ -12,19 +12,19 @@ public class PlaceDetails {
 
     private Reservable reservable;
     private TakeoutAvailable takeoutAvailable;
-    private DeliveryAvailable deliveryAvailable;
+    private ParkingAvailable parkingAvailable;
 
     public PlaceDetails(final String reservableName, final String takeoutAvailableName,
-                        final String deliveryAvailableName) {
+                        final String parkingAvailableName) {
         this.reservable = Reservable.findValue(reservableName);
         this.takeoutAvailable = TakeoutAvailable.findValue(takeoutAvailableName);
-        this.deliveryAvailable = DeliveryAvailable.findValue(deliveryAvailableName);
+        this.parkingAvailable = ParkingAvailable.findValue(parkingAvailableName);
     }
 
     public PlaceDetails(final Reservable reservable, final TakeoutAvailable takeoutAvailable,
-                        final DeliveryAvailable deliveryAvailable) {
+                        final ParkingAvailable parkingAvailable) {
         this.reservable = reservable;
         this.takeoutAvailable = takeoutAvailable;
-        this.deliveryAvailable = deliveryAvailable;
+        this.parkingAvailable = parkingAvailable;
     }
 }

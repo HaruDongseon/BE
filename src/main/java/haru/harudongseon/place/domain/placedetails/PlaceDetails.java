@@ -19,12 +19,12 @@ public class PlaceDetails {
     private TakeoutAvailable takeoutAvailable;
 
     @Enumerated(value = EnumType.STRING)
-    private DeliveryAvailable deliveryAvailable;
+    private ParkingAvailable parkingAvailable;
 
     public PlaceDetails(final Reservable reservable, final TakeoutAvailable takeoutAvailable,
-                        final DeliveryAvailable deliveryAvailable) {
+                        final ParkingAvailable parkingAvailable) {
         this.reservable = reservable;
         this.takeoutAvailable = takeoutAvailable;
-        this.deliveryAvailable = deliveryAvailable;
+        this.parkingAvailable = parkingAvailable;
     }
 }

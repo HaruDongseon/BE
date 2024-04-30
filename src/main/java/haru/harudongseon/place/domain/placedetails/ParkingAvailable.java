@@ -1,5 +1,5 @@
 package haru.harudongseon.place.domain.placedetails;
 
-public enum DeliveryAvailable {
-    NONE, TRUE, FALSE
+public enum ParkingAvailable {
+    NONE, TRUE, FALSE;
 }

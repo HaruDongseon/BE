@@ -7,7 +7,7 @@ public enum TakeoutAvailable {
 
     public static TakeoutAvailable findValue(final String name) {
         return Arrays.stream(TakeoutAvailable.values())
-                .filter(reservable -> reservable.name().equals(name))
+                .filter(takeoutAvailable -> takeoutAvailable.name().equals(name))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 TakeoutAvailable이 없습니다."));
     }

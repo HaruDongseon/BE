@@ -18,6 +18,7 @@ public class Place extends BaseEntity {
     private Long id;
     private String providerPlaceId;
     private String name;
+    private String category;
 
     @ElementCollection
     private List<String> photoReferences;
@@ -29,25 +30,27 @@ public class Place extends BaseEntity {
     private String addressName;
     private String phoneNumber;
     private String website;
-    private String url;
+    private String googleMapsUri;
 
     @Embedded
     private PlaceDetails placeDetails;
 
     public Place(final String providerPlaceId, final String name,
                  final List<String> photoReferences, final Coordinates coordinates,
-                 final String openingHours, final String addressName,
-                 final String phoneNumber, final String website,
-                 final String url, final PlaceDetails placeDetails) {
+                 final String category, final String openingHours,
+                 final String addressName, final String phoneNumber,
+                 final String website, final String googleMapsUri,
+                 final PlaceDetails placeDetails) {
         this.providerPlaceId = providerPlaceId;
         this.name = name;
+        this.category = category;
         this.photoReferences = photoReferences;
         this.coordinates = coordinates;
         this.openingHours = openingHours;
         this.addressName = addressName;
         this.phoneNumber = phoneNumber;
         this.website = website;
-        this.url = url;
+        this.googleMapsUri = googleMapsUri;
         this.placeDetails = placeDetails;
     }
 }

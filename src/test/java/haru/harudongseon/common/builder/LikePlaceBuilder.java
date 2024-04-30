@@ -9,7 +9,7 @@ import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.domain.Coordinates;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplace.domain.LikePlaceRepository;
-import haru.harudongseon.likeplace.domain.placedetails.DeliveryAvailable;
+import haru.harudongseon.likeplace.domain.placedetails.ParkingAvailable;
 import haru.harudongseon.likeplace.domain.placedetails.PlaceDetails;
 import haru.harudongseon.likeplace.domain.placedetails.Reservable;
 import haru.harudongseon.likeplace.domain.placedetails.TakeoutAvailable;
@@ -26,6 +26,7 @@ public class LikePlaceBuilder {
     private Member member;
     private String providerPlaceId;
     private String name;
+    private String category;
     private List<String> photoReferences;
     private BigDecimal latitude;
     private BigDecimal longitude;
@@ -37,12 +38,13 @@ public class LikePlaceBuilder {
     private String url;
     private Reservable reservable;
     private TakeoutAvailable takeoutAvailable;
-    private DeliveryAvailable deliveryAvailable;
+    private ParkingAvailable parkingAvailable;
 
     public LikePlaceBuilder defaultLikePlace(final Member member) {
         this.member = member;
         this.providerPlaceId = 기본_외부_공급자_ID;
         this.name = 기본_보관_장소_이름;
+        this.category = 기본_보관_장소_카테고리;
         this.photoReferences = 기본_보관_장소_사진_참조;
         this.latitude = 기본_보관_장소_위도;
         this.longitude = 기본_보관_장소_경도;
@@ -53,7 +55,7 @@ public class LikePlaceBuilder {
         this.url = 기본_보관_장소_URL;
         this.reservable = 기본_보관_장소_예약_가능_여부;
         this.takeoutAvailable = 기본_보관_장소_포장_가능_여부;
-        this.deliveryAvailable = 기본_보관_장소_배달_가능_여부;
+        this.parkingAvailable = 기본_보관_장소_주차_가능_여부;
 
         return this;
     }
@@ -70,6 +72,11 @@ public class LikePlaceBuilder {
 
     public LikePlaceBuilder name(final String name) {
         this.name = name;
+        return this;
+    }
+
+    public LikePlaceBuilder category(final String category) {
+        this.category = category;
         return this;
     }
 
@@ -123,16 +130,16 @@ public class LikePlaceBuilder {
         return this;
     }
 
-    public LikePlaceBuilder deliveryAvailable(final DeliveryAvailable deliveryAvailable) {
-        this.deliveryAvailable = deliveryAvailable;
+    public LikePlaceBuilder parkingAvailable(final ParkingAvailable parkingAvailable) {
+        this.parkingAvailable = parkingAvailable;
         return this;
     }
 
     public LikePlace build() {
         final Coordinates coordinates = new Coordinates(latitude, longitude);
-        final PlaceDetails placeDetails = new PlaceDetails(reservable, takeoutAvailable, deliveryAvailable);
+        final PlaceDetails placeDetails = new PlaceDetails(reservable, takeoutAvailable, parkingAvailable);
         final LikePlace likePlace = new LikePlace(
-                member, providerPlaceId, name, photoReferences,
+                member, providerPlaceId, name, category, photoReferences,
                 coordinates, openingHours, addressName, phoneNumber,
                 website, url, placeDetails
         );
@@ -142,9 +149,9 @@ public class LikePlaceBuilder {
     public LikePlaceAddRequest buildAddRequest() {
         this.member = null;
         return new LikePlaceAddRequest(
-                providerPlaceId, name, photoReferences, latitude, longitude,
+                providerPlaceId, name, category, photoReferences, latitude, longitude,
                 openingHours, addressName, phoneNumber, website, url,
-                reservable.name(), takeoutAvailable.name(), deliveryAvailable.name()
+                reservable.name(), takeoutAvailable.name(), parkingAvailable.name()
         );
     }
 }
