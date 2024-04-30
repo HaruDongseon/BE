@@ -1,6 +1,6 @@
 package haru.harudongseon.place.domain;
 
-import java.util.List;
+import java.util.Set;
 
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.place.domain.placedetails.PlaceDetails;
@@ -21,7 +21,7 @@ public class Place extends BaseEntity {
     private String category;
 
     @ElementCollection
-    private List<String> photoReferences;
+    private Set<String> photoReferences;
 
     @Embedded
     private Coordinates coordinates;
@@ -36,7 +36,7 @@ public class Place extends BaseEntity {
     private PlaceDetails placeDetails;
 
     public Place(final String providerPlaceId, final String name,
-                 final List<String> photoReferences, final Coordinates coordinates,
+                 final Set<String> photoReferences, final Coordinates coordinates,
                  final String category, final String openingHours,
                  final String addressName, final String phoneNumber,
                  final String website, final String googleMapsUri,
