@@ -57,7 +57,7 @@ public record LikePlaceAddRequest(
 
         @NotBlank(message = "장소 구글 검색 URL은 공백일 수 없습니다.")
         @Schema(description = "보관 장소 구글 검색 URL", nullable = false, example = "https://maps.google.com/?cid=9514396914460199663")
-        String googleMapsUrl,
+        String googleMapsUri,
 
         @NotBlank(message = "예약 가능 여부는 공백일 수 없습니다. 정보가 없다면 NONE을 입력하세요.")
         @Schema(description = "보관 장소 예약 가능 여부", nullable = false, example = "false")
@@ -75,6 +75,6 @@ public record LikePlaceAddRequest(
     public LikePlace toEntity(final Member member) {
         final Coordinates coordinates = new Coordinates(latitude, longitude);
         final PlaceDetails placeDetails = new PlaceDetails(reservable, takeoutAvailable, parkingAvailable);
-        return new LikePlace(member, providerPlaceId, name, category, photoReferences, coordinates, openingHours, addressName, phoneNumber, website, googleMapsUrl, placeDetails);
+        return new LikePlace(member, providerPlaceId, name, category, photoReferences, coordinates, openingHours, addressName, phoneNumber, website, googleMapsUri, placeDetails);
     }
 }
