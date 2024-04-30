@@ -420,7 +420,7 @@ class LikePlaceControllerTest extends E2ETest {
                         "\t\"addressName\" : \"인천광역시 부평구 경원대로 1397\",\n" +
                         "\t\"phoneNumber\" : \"1522-3232\",\n" +
                         "\t\"website\" : \"http://www.starbucks.co.kr/\",\n" +
-                        "\t\"url\" : \"https://maps.google.com/?cid=9514396914460199663\",\n" +
+                        "\t\"googleMapsUrl\" : \"https://maps.google.com/?cid=9514396914460199663\",\n" +
                         "\t\"reservable\" : \"FALSE\",\n" +
                         "\t\"takeoutAvailable\" : \"TRUE\",\n" +
                         "\t\"parkingAvailable\" : \"FALSE\"\n" +
@@ -445,7 +445,7 @@ class LikePlaceControllerTest extends E2ETest {
                         "\t\"addressName\" : \"인천광역시 부평구 경원대로 1397\",\n" +
                         "\t\"phoneNumber\" : \"1522-3232\",\n" +
                         "\t\"website\" : \"http://www.starbucks.co.kr/\",\n" +
-                        "\t\"url\" : \"https://maps.google.com/?cid=9514396914460199663\",\n" +
+                        "\t\"googleMapsUrl\" : \"https://maps.google.com/?cid=9514396914460199663\",\n" +
                         "\t\"reservable\" : \"FALSE\",\n" +
                         "\t\"takeoutAvailable\" : \"TRUE\",\n" +
                         "\t\"parkingAvailable\" : \"FALSE\"\n" +
