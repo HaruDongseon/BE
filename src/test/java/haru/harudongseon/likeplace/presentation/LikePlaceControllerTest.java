@@ -95,6 +95,27 @@ class LikePlaceControllerTest extends E2ETest {
             });
         }
 
+        @ParameterizedTest
+        @ValueSource(strings = {"", " "})
+        @DisplayName("보관 장소의 카테고리가 없다면, 추가에 실패한다.")
+        void fail_not_exist_category(final String notExistCategory) {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final LikePlaceAddRequest notExistNameRequest = likePlaceBuilder.defaultLikePlace(null)
+                    .category(notExistCategory).buildAddRequest();
+
+            // when
+            final ExtractableResponse<Response> response = ADD_LIKE_PLACE_REQUEST(accessToken, notExistNameRequest);
+
+            // then
+            assertSoftly(softly -> {
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("카테고리는 공백일 수 없습니다.");
+            });
+        }
+
+
         @Test
         @DisplayName("보관 장소의 사진 참조는 비어있더라도 추가에 성공한다.")
         void success_empty_photo_references() {
@@ -291,10 +312,10 @@ class LikePlaceControllerTest extends E2ETest {
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
             final LikePlaceAddRequest notExistReservableRequest = new LikePlaceAddRequest(
-                    기본_외부_공급자_ID, 기본_보관_장소_이름, 기본_보관_장소_사진_참조,
+                    기본_외부_공급자_ID, 기본_보관_장소_이름, 기본_보관_장소_카테고리, 기본_보관_장소_사진_참조,
                     기본_보관_장소_위도, 기본_보관_장소_경도, 기본_보관_장소_영업_시간,
                     기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_URL,
-                    notExistReservable, 기본_보관_장소_포장_가능_여부.name(), 기본_보관_장소_배달_가능_여부.name()
+                    notExistReservable, 기본_보관_장소_포장_가능_여부.name(), 기본_보관_장소_주차_가능_여부.name()
             );
 
             // when
@@ -314,15 +335,15 @@ class LikePlaceControllerTest extends E2ETest {
             // given
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
-            final LikePlaceAddRequest notExistReservableRequest = new LikePlaceAddRequest(
-                    기본_외부_공급자_ID, 기본_보관_장소_이름, 기본_보관_장소_사진_참조,
+            final LikePlaceAddRequest notExistTakeoutAvailableRequest = new LikePlaceAddRequest(
+                    기본_외부_공급자_ID, 기본_보관_장소_이름, 기본_보관_장소_카테고리, 기본_보관_장소_사진_참조,
                     기본_보관_장소_위도, 기본_보관_장소_경도, 기본_보관_장소_영업_시간,
                     기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_URL,
-                    기본_보관_장소_예약_가능_여부.name(), notExistTakeoutAvailable, 기본_보관_장소_배달_가능_여부.name()
+                    기본_보관_장소_예약_가능_여부.name(), notExistTakeoutAvailable, 기본_보관_장소_주차_가능_여부.name()
             );
 
             // when
-            final ExtractableResponse<Response> response = ADD_LIKE_PLACE_REQUEST(accessToken, notExistReservableRequest);
+            final ExtractableResponse<Response> response = ADD_LIKE_PLACE_REQUEST(accessToken, notExistTakeoutAvailableRequest);
 
             // then
             assertSoftly(softly -> {
@@ -333,25 +354,25 @@ class LikePlaceControllerTest extends E2ETest {
 
         @ParameterizedTest
         @ValueSource(strings = {"", " "})
-        @DisplayName("보관 장소의 배달 가능 여부가 없다면, 추가에 실패한다.")
-        void fail_not_exist_delivery_available(final String notExistDeliveryAvailable) {
+        @DisplayName("보관 장소의 주차 가능 여부가 없다면, 추가에 실패한다.")
+        void fail_not_exist_parking_available(final String notExistParkingAvailable) {
             // given
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
-            final LikePlaceAddRequest notExistReservableRequest = new LikePlaceAddRequest(
-                    기본_외부_공급자_ID, 기본_보관_장소_이름, 기본_보관_장소_사진_참조,
+            final LikePlaceAddRequest notExistParkingAvailableRequest = new LikePlaceAddRequest(
+                    기본_외부_공급자_ID, 기본_보관_장소_이름, 기본_보관_장소_카테고리, 기본_보관_장소_사진_참조,
                     기본_보관_장소_위도, 기본_보관_장소_경도, 기본_보관_장소_영업_시간,
                     기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_URL,
-                    기본_보관_장소_예약_가능_여부.name(), 기본_보관_장소_포장_가능_여부.name(), notExistDeliveryAvailable
+                    기본_보관_장소_예약_가능_여부.name(), 기본_보관_장소_포장_가능_여부.name(), notExistParkingAvailable
             );
 
             // when
-            final ExtractableResponse<Response> response = ADD_LIKE_PLACE_REQUEST(accessToken, notExistReservableRequest);
+            final ExtractableResponse<Response> response = ADD_LIKE_PLACE_REQUEST(accessToken, notExistParkingAvailableRequest);
 
             // then
             assertSoftly(softly -> {
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("배달 가능 여부는 공백일 수 없습니다. 정보가 없다면 NONE을 입력하세요.");
+                assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("주차 가능 여부는 공백일 수 없습니다. 정보가 없다면 NONE을 입력하세요.");
             });
         }
 
@@ -402,7 +423,7 @@ class LikePlaceControllerTest extends E2ETest {
                         "\t\"url\" : \"https://maps.google.com/?cid=9514396914460199663\",\n" +
                         "\t\"reservable\" : \"FALSE\",\n" +
                         "\t\"takeoutAvailable\" : \"TRUE\",\n" +
-                        "\t\"deliveryAvailable\" : \"FALSE\"\n" +
+                        "\t\"parkingAvailable\" : \"FALSE\"\n" +
                         "}")
                 .when().log().all()
                 .post("/like-places")
@@ -427,7 +448,7 @@ class LikePlaceControllerTest extends E2ETest {
                         "\t\"url\" : \"https://maps.google.com/?cid=9514396914460199663\",\n" +
                         "\t\"reservable\" : \"FALSE\",\n" +
                         "\t\"takeoutAvailable\" : \"TRUE\",\n" +
-                        "\t\"deliveryAvailable\" : \"FALSE\"\n" +
+                        "\t\"parkingAvailable\" : \"FALSE\"\n" +
                         "}")
                 .when().log().all()
                 .post("/like-places")

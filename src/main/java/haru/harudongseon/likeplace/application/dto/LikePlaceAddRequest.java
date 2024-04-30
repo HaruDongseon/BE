@@ -22,6 +22,10 @@ public record LikePlaceAddRequest(
         @Schema(description = "보관 장소 이름", nullable = false, example = "스타벅스 부평점")
         String name,
 
+        @NotBlank(message = "카테고리는 공백일 수 없습니다.")
+        @Schema(description = "보관 장소 카테고리", nullable = false, example = "커피숍/커피 전문점")
+        String category,
+
         @Schema(description = "구글 장소 이미지 요청 Reference 리스트", nullable = false, example = "[AxxB, AVVx, AccB]")
         List<String> photoReferences,
 
@@ -63,14 +67,14 @@ public record LikePlaceAddRequest(
         @Schema(description = "보관 장소 포장 가능 여부", nullable = false, example = "true")
         String takeoutAvailable,
 
-        @NotBlank(message = "배달 가능 여부는 공백일 수 없습니다. 정보가 없다면 NONE을 입력하세요.")
-        @Schema(description = "보관 장소 배달 예약 가능 여부", nullable = false, example = "false")
-        String deliveryAvailable
+        @NotBlank(message = "주차 가능 여부는 공백일 수 없습니다. 정보가 없다면 NONE을 입력하세요.")
+        @Schema(description = "보관 장소 주차 예약 가능 여부", nullable = false, example = "false")
+        String parkingAvailable
 ) {
 
     public LikePlace toEntity(final Member member) {
         final Coordinates coordinates = new Coordinates(latitude, longitude);
-        final PlaceDetails placeDetails = new PlaceDetails(reservable, takeoutAvailable, deliveryAvailable);
-        return new LikePlace(member, providerPlaceId, name, photoReferences, coordinates, openingHours, addressName, phoneNumber, website, url, placeDetails);
+        final PlaceDetails placeDetails = new PlaceDetails(reservable, takeoutAvailable, parkingAvailable);
+        return new LikePlace(member, providerPlaceId, name, category, photoReferences, coordinates, openingHours, addressName, phoneNumber, website, url, placeDetails);
     }
 }
