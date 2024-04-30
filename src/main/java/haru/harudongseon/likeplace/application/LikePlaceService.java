@@ -1,6 +1,7 @@
 package haru.harudongseon.likeplace.application;
 
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
+import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplace.domain.LikePlaceRepository;
 import haru.harudongseon.member.domain.Member;
@@ -24,5 +25,12 @@ public class LikePlaceService {
         final LikePlace likePlace = request.toEntity(findMember);
         final LikePlace savedLikePlace = likePlaceRepository.save(likePlace);
         return savedLikePlace.getId();
+    }
+
+    public LikePlaceResponse findLikePlace(final Long likePlaceId) {
+        final LikePlace findLikePlace = likePlaceRepository.findById(likePlaceId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 보관 장소를 찾을 수 없습니다."));
+
+        return LikePlaceResponse.from(findLikePlace);
     }
 }

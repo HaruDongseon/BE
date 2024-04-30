@@ -7,6 +7,8 @@ import haru.harudongseon.common.ServiceTest;
 import haru.harudongseon.common.builder.LikePlaceBuilder;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
+import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
+import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.member.domain.Member;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +36,7 @@ class LikePlaceServiceTest extends ServiceTest {
         void success() {
             // given
             final Member member = memberBuilder.defaultMember().build();
-            final LikePlaceAddRequest request = likePlaceBuilder.defaultLikePlace(null).buildAddRequest();
+            final LikePlaceAddRequest request = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
 
             // when
             final Long savedLikePlaceId = likePlaceService.addLikePlace(member.getId(), request);
@@ -54,6 +56,41 @@ class LikePlaceServiceTest extends ServiceTest {
             assertThatThrownBy(() -> likePlaceService.addLikePlace(notExistMemberId, request))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 멤버를 찾을 수 없습니다.");
+        }
+    }
+
+    @Nested
+    @DisplayName("보관 장소 조회 시")
+    class FindLikePlace {
+
+        @Test
+        @DisplayName("보관 장소 ID에 해당하는 보관 장소 조회에 성공한다.")
+        void success() {
+            // given
+            final Member savedMember = memberBuilder.defaultMember().build();
+            final LikePlace savedLikePlace = likePlaceBuilder.defaultLikePlace(savedMember).build();
+            final Long targetLikePlaceId = savedLikePlace.getId();
+            final LikePlaceResponse expected = LikePlaceResponse.from(savedLikePlace);
+
+            // when
+            final LikePlaceResponse actual = likePlaceService.findLikePlace(targetLikePlaceId);
+
+            // then
+            assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("보관 장소 ID에 해당하는 보관 장소가 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_like_place() {
+            // given
+            final Member savedMember = memberBuilder.defaultMember().build();
+            likePlaceBuilder.defaultLikePlace(savedMember).build();
+            final Long notExistLikePlaceId = -1L;
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceService.findLikePlace(notExistLikePlaceId))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 보관 장소를 찾을 수 없습니다.");
         }
     }
 }
