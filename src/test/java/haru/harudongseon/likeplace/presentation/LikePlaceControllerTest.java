@@ -11,6 +11,8 @@ import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.builder.LikePlaceBuilder;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
+import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
+import haru.harudongseon.likeplace.domain.LikePlaceRepository;
 import haru.harudongseon.member.domain.Member;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -32,6 +34,9 @@ class LikePlaceControllerTest extends E2ETest {
 
     @Autowired
     private LikePlaceBuilder likePlaceBuilder;
+
+    @Autowired
+    private LikePlaceRepository likePlaceRepository;
 
     @Nested
     @DisplayName("보관 장소 추가 시")
@@ -395,6 +400,59 @@ class LikePlaceControllerTest extends E2ETest {
         }
     }
 
+    @Nested
+    @DisplayName("보관 장소 조회 시")
+    class FindLikePlace {
+
+        @Test
+        @DisplayName("보관 장소 ID에 해당하는 조회에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final LikePlaceBuilder builder = likePlaceBuilder.defaultLikePlace(member);
+            final LikePlaceAddRequest addRequest = builder.buildAddRequest();
+
+            final ExtractableResponse<Response> addResponse = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest);
+            final String location = addResponse.header("Location");
+            final long targetLikePlaceId = Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
+
+            final LikePlaceResponse expected = LikePlaceResponse.from(addRequest.toEntity(member));
+
+            // when
+            final ExtractableResponse<Response> response = FIND_LIKE_PLACE_REQUEST(accessToken, targetLikePlaceId);
+            final LikePlaceResponse actual = response.as(LikePlaceResponse.class);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(response.jsonPath().getLong("id")).isEqualTo(targetLikePlaceId);
+                softly.assertThat(actual).usingRecursiveComparison().ignoringFields("id").isEqualTo(expected);
+            });
+        }
+
+        @Test
+        @DisplayName("보관 장소 ID에 해당하는 보관 장소가 존재하지 않으면 조회에 실패한다.")
+        void fail_not_exits_like_place() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final LikePlaceAddRequest addRequest = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
+            ADD_LIKE_PLACE_REQUEST(accessToken, addRequest);
+
+            final Long notExistLikePlaceId = -1L;
+
+            // when
+            final ExtractableResponse<Response> response = FIND_LIKE_PLACE_REQUEST(accessToken, notExistLikePlaceId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("해당하는 보관 장소를 찾을 수 없습니다.");
+            });
+        }
+    }
+
     private static ExtractableResponse<Response> ADD_LIKE_PLACE_REQUEST(final String accessToken, final LikePlaceAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
@@ -452,6 +510,15 @@ class LikePlaceControllerTest extends E2ETest {
                         "}")
                 .when().log().all()
                 .post("/like-places")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> FIND_LIKE_PLACE_REQUEST(final String accessToken, final Long likePlaceId) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .get("/like-places/{like-place-id}", likePlaceId)
                 .then().log().all()
                 .extract();
     }

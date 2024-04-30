@@ -7,6 +7,7 @@ import haru.harudongseon.global.mvc.AuthMemberDto;
 import haru.harudongseon.global.mvc.AuthPrincipal;
 import haru.harudongseon.likeplace.application.LikePlaceService;
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
+import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -17,10 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "LIKE PLACE API", description = "보관 장소 관련 API")
 @RestController
@@ -42,5 +40,16 @@ public class LikePlaceController {
         final Long memberId = authMemberDto.memberId();
         final Long likePlaceId = likePlaceService.addLikePlace(memberId, request);
         return ResponseEntity.created(URI.create("/like-places/" + likePlaceId)).build();
+    }
+
+    @Operation(summary = "보관 장소 조회 API")
+    @ApiResponse(responseCode = "200", description = "보관 장소 조회 성공")
+    @ApiResponse(responseCode = "404", description = "보관 장소 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @GetMapping("/{like-place-id}")
+    public ResponseEntity<LikePlaceResponse> findLikePlace(
+            @PathVariable("like-place-id") Long likePlaceId
+    ) {
+        final LikePlaceResponse response = likePlaceService.findLikePlace(likePlaceId);
+        return ResponseEntity.ok(response);
     }
 }
