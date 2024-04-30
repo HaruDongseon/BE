@@ -1,7 +1,10 @@
 package haru.harudongseon.likeplace.application;
 
+import java.util.List;
+
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
+import haru.harudongseon.likeplace.application.dto.RecentLikePlacesResponse;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplace.domain.LikePlaceRepository;
 import haru.harudongseon.member.domain.Member;
@@ -32,5 +35,10 @@ public class LikePlaceService {
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 보관 장소를 찾을 수 없습니다."));
 
         return LikePlaceResponse.from(findLikePlace);
+    }
+
+    public RecentLikePlacesResponse findRecentLikePlace(final Long memberId) {
+        final List<LikePlace> likePlaces = likePlaceRepository.findRecentThreeByMemberId(memberId);
+        return RecentLikePlacesResponse.from(likePlaces);
     }
 }
