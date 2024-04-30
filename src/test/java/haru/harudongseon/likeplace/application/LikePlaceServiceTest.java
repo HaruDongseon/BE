@@ -3,11 +3,14 @@ package haru.harudongseon.likeplace.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
+
 import haru.harudongseon.common.ServiceTest;
 import haru.harudongseon.common.builder.LikePlaceBuilder;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
+import haru.harudongseon.likeplace.application.dto.RecentLikePlacesResponse;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.member.domain.Member;
 import jakarta.persistence.EntityNotFoundException;
@@ -92,5 +95,44 @@ class LikePlaceServiceTest extends ServiceTest {
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 보관 장소를 찾을 수 없습니다.");
         }
+    }
+
+    @Nested
+    @DisplayName("최근 보관 장소 조회 시")
+    class FindRecentLikePlace {
+
+        @Test
+        @DisplayName("최근에 저장한 보관 장소 순으로 최대 3개까지 조회에 성공한다.")
+        void success() {
+            // given
+            final Member savedMember = memberBuilder.defaultMember().build();
+            final LikePlace savedLikePlace1 = likePlaceBuilder.defaultLikePlace(savedMember).build();
+            final LikePlace savedLikePlace2 = likePlaceBuilder.defaultLikePlace(savedMember).build();
+            final LikePlace savedLikePlace3 = likePlaceBuilder.defaultLikePlace(savedMember).build();
+            final LikePlace savedLikePlace4 = likePlaceBuilder.defaultLikePlace(savedMember).build();
+
+            final RecentLikePlacesResponse expected = RecentLikePlacesResponse.from(List.of(savedLikePlace4, savedLikePlace3, savedLikePlace2));
+
+            // when
+            final RecentLikePlacesResponse actual = likePlaceService.findRecentLikePlace(savedMember.getId());
+
+            // then
+            assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("저장한 보관 장소가 없다면, 빈 리스트로 조회된다.")
+        void success_not_exist_like_place_empty_list() {
+            // given
+            final Member savedMember = memberBuilder.defaultMember().build();
+
+            // when
+            final RecentLikePlacesResponse response = likePlaceService.findRecentLikePlace(savedMember.getId());
+            final List<LikePlaceResponse> likePlaces = response.getLikePlaces();
+
+            // then
+            assertThat(likePlaces).isEmpty();
+        }
+
     }
 }

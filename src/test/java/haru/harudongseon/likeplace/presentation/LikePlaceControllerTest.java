@@ -6,12 +6,15 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 
 import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.builder.LikePlaceBuilder;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
+import haru.harudongseon.likeplace.application.dto.RecentLikePlacesResponse;
+import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplace.domain.LikePlaceRepository;
 import haru.harudongseon.member.domain.Member;
 import io.restassured.RestAssured;
@@ -128,7 +131,7 @@ class LikePlaceControllerTest extends E2ETest {
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
             final LikePlaceAddRequest notExistNameRequest = likePlaceBuilder.defaultLikePlace(null)
-                    .photoReferences(Collections.emptyList()).buildAddRequest();
+                    .photoReferences(Collections.emptySet()).buildAddRequest();
 
             // when
             final ExtractableResponse<Response> response = ADD_LIKE_PLACE_REQUEST(accessToken, notExistNameRequest);
@@ -453,6 +456,75 @@ class LikePlaceControllerTest extends E2ETest {
         }
     }
 
+    @Nested
+    @DisplayName("최근 보관 장소 조회 시 ")
+    class FindRecentLikePlace {
+
+        @Test
+        @DisplayName("최근에 저장한 순서로 최대 3개의 보관 장소가 조회된다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final LikePlaceAddRequest addRequest1 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
+            final LikePlaceAddRequest addRequest2 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
+            final LikePlaceAddRequest addRequest3 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
+            final LikePlaceAddRequest addRequest4 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
+
+            final ExtractableResponse<Response> addResponse1 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest1);
+            final ExtractableResponse<Response> addResponse2 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest2);
+            final ExtractableResponse<Response> addResponse3 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest3);
+            final ExtractableResponse<Response> addResponse4 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest4);
+
+            final Long likePlace2Id = getLikePlaceId(addResponse2);
+            final Long likePlace3Id = getLikePlaceId(addResponse3);
+            final Long likePlace4Id = getLikePlaceId(addResponse4);
+
+            final LikePlace likePlace2 = addRequest2.toEntity(member);
+            final LikePlace likePlace3 = addRequest3.toEntity(member);
+            final LikePlace likePlace4 = addRequest4.toEntity(member);
+
+            final List<LikePlaceResponse> expected = List.of(LikePlaceResponse.from(likePlace4), LikePlaceResponse.from(likePlace3), LikePlaceResponse.from(likePlace2));
+
+            // when
+            final ExtractableResponse<Response> response = FIND_RECENT_LIKE_PLACE_REQUEST(accessToken);
+            final List<LikePlaceResponse> actual = response.as(RecentLikePlacesResponse.class).getLikePlaces();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual.get(0).getId()).isEqualTo(likePlace4Id);
+                softly.assertThat(actual.get(1).getId()).isEqualTo(likePlace3Id);
+                softly.assertThat(actual.get(2).getId()).isEqualTo(likePlace2Id);
+                softly.assertThat(actual).usingRecursiveFieldByFieldElementComparatorIgnoringFields("id").isEqualTo(expected);
+            });
+        }
+
+        @Test
+        @DisplayName("추가한 보관 장소가 없다면 빈 리스트가 조회된다.")
+        void success_not_exist_like_place_empty_list() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            // when
+            final ExtractableResponse<Response> response = FIND_RECENT_LIKE_PLACE_REQUEST(accessToken);
+            final List<LikePlaceResponse> actual = response.as(RecentLikePlacesResponse.class).getLikePlaces();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual).isEmpty();
+            });
+        }
+
+        private Long getLikePlaceId(final ExtractableResponse<Response> addResponse1) {
+            final String location = addResponse1.header("Location");
+            return Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
+        }
+    }
+
     private static ExtractableResponse<Response> ADD_LIKE_PLACE_REQUEST(final String accessToken, final LikePlaceAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
@@ -519,6 +591,15 @@ class LikePlaceControllerTest extends E2ETest {
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .when().log().all()
                 .get("/like-places/{like-place-id}", likePlaceId)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> FIND_RECENT_LIKE_PLACE_REQUEST(final String accessToken) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .get("/like-places/recent")
                 .then().log().all()
                 .extract();
     }

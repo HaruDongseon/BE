@@ -1,7 +1,7 @@
 package haru.harudongseon.likeplace.application.dto;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 import haru.harudongseon.likeplace.domain.LikePlace;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,7 +26,7 @@ public class LikePlaceResponse {
     private String category;
 
     @Schema(description = "구글 장소 이미지 요청 Reference 리스트", example = "[AxxB, AVVx, AccB]")
-    private List<String> photoReferences;
+    private Set<String> photoReferences;
 
     @Schema(description = "보관 장소 위도(10진수 9자, 소수점 6자 이내)", example = "127.058970")
     private BigDecimal latitude;
@@ -60,7 +60,7 @@ public class LikePlaceResponse {
 
     private LikePlaceResponse(final Long id, final String providerPlaceId,
                               final String name, final String category,
-                              final List<String> photoReferences, final BigDecimal latitude,
+                              final Set<String> photoReferences, final BigDecimal latitude,
                               final BigDecimal longitude, final String openingHours,
                               final String addressName, final String phoneNumber,
                               final String website, final String googleMapsUri,
@@ -88,7 +88,7 @@ public class LikePlaceResponse {
         final String providerPlaceId = likePlace.getProviderPlaceId();
         final String name = likePlace.getName();
         final String category = likePlace.getCategory();
-        final List<String> photoReferences = likePlace.getPhotoReferences();
+        final Set<String> photoReferences = likePlace.getPhotoReferences();
         final BigDecimal latitude = likePlace.getCoordinates().getLatitude();
         final BigDecimal longitude = likePlace.getCoordinates().getLongitude();
         final String openingHours = likePlace.getOpeningHours();
