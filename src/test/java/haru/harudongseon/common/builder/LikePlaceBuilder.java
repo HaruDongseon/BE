@@ -3,7 +3,7 @@ package haru.harudongseon.common.builder;
 import static haru.harudongseon.common.fixtures.LikePlaceFixtures.*;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.domain.Coordinates;
@@ -27,7 +27,7 @@ public class LikePlaceBuilder {
     private String providerPlaceId;
     private String name;
     private String category;
-    private List<String> photoReferences;
+    private Set<String> photoReferences;
     private BigDecimal latitude;
     private BigDecimal longitude;
 
@@ -80,7 +80,7 @@ public class LikePlaceBuilder {
         return this;
     }
 
-    public LikePlaceBuilder photoReferences(final List<String> photoReferences) {
+    public LikePlaceBuilder photoReferences(final Set<String> photoReferences) {
         this.photoReferences = photoReferences;
         return this;
     }

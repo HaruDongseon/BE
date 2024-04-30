@@ -131,7 +131,7 @@ class LikePlaceControllerTest extends E2ETest {
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
             final LikePlaceAddRequest notExistNameRequest = likePlaceBuilder.defaultLikePlace(null)
-                    .photoReferences(Collections.emptyList()).buildAddRequest();
+                    .photoReferences(Collections.emptySet()).buildAddRequest();
 
             // when
             final ExtractableResponse<Response> response = ADD_LIKE_PLACE_REQUEST(accessToken, notExistNameRequest);

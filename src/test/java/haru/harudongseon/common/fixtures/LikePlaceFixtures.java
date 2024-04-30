@@ -1,7 +1,7 @@
 package haru.harudongseon.common.fixtures;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 import haru.harudongseon.likeplace.domain.Coordinates;
 import haru.harudongseon.likeplace.domain.LikePlace;
@@ -16,7 +16,7 @@ public class LikePlaceFixtures {
     public static final String 기본_외부_공급자_ID = "ChIJ07n0DkZ8ezUR7wp5kpXtCYQ";
     public static final String 기본_보관_장소_이름 = "스타벅스 부평점";
     public static final String 기본_보관_장소_카테고리 = "커피숍/커피 전문점";
-    public static final List<String> 기본_보관_장소_사진_참조 = List.of("ATJ83zhSSAtk1", "ATJ83zhSSAtk2", "ATJ83zhSSAtk3");
+    public static final Set<String> 기본_보관_장소_사진_참조 = Set.of("ATJ83zhSSAtk1", "ATJ83zhSSAtk2", "ATJ83zhSSAtk3");
     public static final BigDecimal 기본_보관_장소_위도 = new BigDecimal("127.058970");
     public static final BigDecimal 기본_보관_장소_경도 = new BigDecimal("37.506051");
     public static final Coordinates 기본_보관_장소_좌표 = new Coordinates(기본_보관_장소_위도, 기본_보관_장소_경도);
