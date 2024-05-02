@@ -3,12 +3,11 @@ package haru.harudongseon.route.domain;
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.routetag.domain.RouteTag;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 public class SelectedTag extends BaseEntity {
 
@@ -24,8 +23,9 @@ public class SelectedTag extends BaseEntity {
     @JoinColumn
     private RouteTag routeTag;
 
-    public SelectedTag(final Route route, final RouteTag routeTag) {
+    public void associate(final Route route, final RouteTag routeTag) {
         this.route = route;
         this.routeTag = routeTag;
+        route.getTags().add(this);
     }
 }
