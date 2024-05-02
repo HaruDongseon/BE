@@ -46,6 +46,7 @@ public class RouteService {
             final Optional<RouteTag> optionalRouteTag = routeTagRepository.findByName(tagName);
             if (optionalRouteTag.isPresent()) {
                 final RouteTag findRouteTag = optionalRouteTag.get();
+                findRouteTag.select();
                 final SelectedTag selectedTag = savedRoute.addTag(findRouteTag);
                 selectedTagRepository.save(selectedTag);
             }

@@ -54,7 +54,7 @@ RouteServiceTest extends ServiceTest {
     class AddRoute {
 
         @Test
-        @DisplayName("추가할 태그가 존재하지 않는다면, 태그를 저장하고 동선 추가에 성공한다.")
+        @DisplayName("추가할 장소는 존재하고 태그가 존재하지 않는다면, 태그를 저장하고 동선 추가에 성공한다.")
         void success_when_not_exist_tag_save_tag() {
             // given
             final Member member = memberBuilder.defaultMember().build();
@@ -89,8 +89,8 @@ RouteServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("추가할 장소가 존재하지 않는다면, 장소를 추가하고 동선 성공에 성공한다.")
-        void success_when_not_exist_place_save_place() {
+        @DisplayName("추가할 태그는 존재하고 장소가 존재하지 않는다면, 장소를 추가하고 해당 태그 선택 횟수를 1 증가시킨 후 동선 성공에 성공한다.")
+        void success_when_not_exist_place_tag_select_count_1_increase_save_place() {
             // given
             final Member member = memberBuilder.defaultMember().build();
 
@@ -110,11 +110,15 @@ RouteServiceTest extends ServiceTest {
 
             final Optional<Place> beforePlace1 = placeRepository.findByProviderPlaceId(routePlaceDto1.providerPlaceId());
             final Optional<Place> beforePlace2 = placeRepository.findByProviderPlaceId(routePlaceDto2.providerPlaceId());
+            final Long beforeRouteTag1SelectCount = routeTag1.getSelectCount();
+            final Long beforeRouteTag2SelectCount = routeTag2.getSelectCount();
 
             // when
             final Long savedRouteId = routeService.addRoute(member.getId(), routeAddRequest);
             final Optional<Place> afterPlace1 = placeRepository.findByProviderPlaceId(routePlaceDto1.providerPlaceId());
             final Optional<Place> afterPlace2 = placeRepository.findByProviderPlaceId(routePlaceDto2.providerPlaceId());
+            final RouteTag afterRouteTag1 = routeTagRepository.findByName(routeTag1.getName()).get();
+            final RouteTag afterRouteTag2 = routeTagRepository.findByName(routeTag2.getName()).get();
 
             // then
             assertSoftly(softly -> {
@@ -122,6 +126,8 @@ RouteServiceTest extends ServiceTest {
                 softly.assertThat(beforePlace2.isEmpty()).isTrue();
                 softly.assertThat(afterPlace1.isPresent()).isTrue();
                 softly.assertThat(afterPlace2.isPresent()).isTrue();
+                softly.assertThat(afterRouteTag1.getSelectCount()).isEqualTo(beforeRouteTag1SelectCount + 1);
+                softly.assertThat(afterRouteTag2.getSelectCount()).isEqualTo(beforeRouteTag2SelectCount + 1);
                 softly.assertThat(savedRouteId).isNotNull();
             });
         }
@@ -169,8 +175,8 @@ RouteServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("추가할 태그와 장소가 모두 존재한다면, 저장하지 않고 조회하여 동선 추가에 성공한다.")
-        void success_when_exist_all_find_tag_and_place() {
+        @DisplayName("추가할 태그와 장소가 모두 존재한다면, 저장하지 않고 조회하고 해당 태그 선택 횟수를 1 증가시킨 후 동선 추가에 성공한다.")
+        void success_when_exist_all_find_tag_and_place_and_tag_increase_1_select_count() {
             // given
             final Member member = memberBuilder.defaultMember().build();
 
@@ -193,6 +199,9 @@ RouteServiceTest extends ServiceTest {
             final Optional<Place> beforePlace2 = placeRepository.findByProviderPlaceId(routePlaceDto2.providerPlaceId());
             final Optional<RouteTag> beforeRouteTag1 = routeTagRepository.findByName(routeTag1.getName());
             final Optional<RouteTag> beforeRouteTag2 = routeTagRepository.findByName(routeTag2.getName());
+            final Long beforeRouteTag1SelectCount = beforeRouteTag1.get().getSelectCount();
+            final Long beforeRouteTag2SelectCount = beforeRouteTag2.get().getSelectCount();
+
 
             // when
             final Long savedRouteId = routeService.addRoute(member.getId(), routeAddRequest);
@@ -211,6 +220,8 @@ RouteServiceTest extends ServiceTest {
                 softly.assertThat(afterRouteTag2.get().getId()).isEqualTo(beforeRouteTag2.get().getId());
                 softly.assertThat(afterPlace1.get().getId()).isEqualTo(beforePlace1.get().getId());
                 softly.assertThat(afterPlace2.get().getId()).isEqualTo(beforePlace2.get().getId());
+                softly.assertThat(afterRouteTag1.get().getSelectCount()).isEqualTo(beforeRouteTag1SelectCount + 1);
+                softly.assertThat(afterRouteTag2.get().getSelectCount()).isEqualTo(beforeRouteTag2SelectCount + 1);
                 softly.assertThat(savedRouteId).isNotNull();
             });
         }
