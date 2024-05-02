@@ -300,7 +300,7 @@ class LikePlaceControllerTest extends E2ETest {
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
             final LikePlaceAddRequest notExistNameRequest = likePlaceBuilder.defaultLikePlace(null)
-                    .url(notExistUrl).buildAddRequest();
+                    .googleMapsUri(notExistUrl).buildAddRequest();
 
             // when
             final ExtractableResponse<Response> response = ADD_LIKE_PLACE_REQUEST(accessToken, notExistNameRequest);
@@ -322,7 +322,7 @@ class LikePlaceControllerTest extends E2ETest {
             final LikePlaceAddRequest notExistReservableRequest = new LikePlaceAddRequest(
                     기본_외부_공급자_ID, 기본_보관_장소_이름, 기본_보관_장소_카테고리, 기본_보관_장소_사진_참조,
                     기본_보관_장소_위도, 기본_보관_장소_경도, 기본_보관_장소_영업_시간,
-                    기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_URL,
+                    기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_구글_맵_URL,
                     notExistReservable, 기본_보관_장소_포장_가능_여부.name(), 기본_보관_장소_주차_가능_여부.name()
             );
 
@@ -346,7 +346,7 @@ class LikePlaceControllerTest extends E2ETest {
             final LikePlaceAddRequest notExistTakeoutAvailableRequest = new LikePlaceAddRequest(
                     기본_외부_공급자_ID, 기본_보관_장소_이름, 기본_보관_장소_카테고리, 기본_보관_장소_사진_참조,
                     기본_보관_장소_위도, 기본_보관_장소_경도, 기본_보관_장소_영업_시간,
-                    기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_URL,
+                    기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_구글_맵_URL,
                     기본_보관_장소_예약_가능_여부.name(), notExistTakeoutAvailable, 기본_보관_장소_주차_가능_여부.name()
             );
 
@@ -370,7 +370,7 @@ class LikePlaceControllerTest extends E2ETest {
             final LikePlaceAddRequest notExistParkingAvailableRequest = new LikePlaceAddRequest(
                     기본_외부_공급자_ID, 기본_보관_장소_이름, 기본_보관_장소_카테고리, 기본_보관_장소_사진_참조,
                     기본_보관_장소_위도, 기본_보관_장소_경도, 기본_보관_장소_영업_시간,
-                    기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_URL,
+                    기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_구글_맵_URL,
                     기본_보관_장소_예약_가능_여부.name(), 기본_보관_장소_포장_가능_여부.name(), notExistParkingAvailable
             );
 

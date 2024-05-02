@@ -21,6 +21,13 @@ public class PlaceDetails {
     @Enumerated(value = EnumType.STRING)
     private ParkingAvailable parkingAvailable;
 
+    public PlaceDetails(final String reservableName, final String takeoutAvailableName,
+                        final String parkingAvailableName) {
+        this.reservable = Reservable.findValue(reservableName);
+        this.takeoutAvailable = TakeoutAvailable.findValue(takeoutAvailableName);
+        this.parkingAvailable = ParkingAvailable.findValue(parkingAvailableName);
+    }
+
     public PlaceDetails(final Reservable reservable, final TakeoutAvailable takeoutAvailable,
                         final ParkingAvailable parkingAvailable) {
         this.reservable = reservable;

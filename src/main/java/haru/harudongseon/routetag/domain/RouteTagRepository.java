@@ -1,6 +1,7 @@
 package haru.harudongseon.routetag.domain;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,6 @@ public interface RouteTagRepository extends JpaRepository<RouteTag, Long> {
             "ELSE 3 END"
     )
     List<RouteTag> findByKeywordContainingIgnoreCaseAndOrderBySelectCountDesc(@Param("keyword") final String keyword);
+
+    Optional<RouteTag> findByName(final String name);
 }

@@ -35,7 +35,7 @@ public class LikePlaceBuilder {
     private String addressName;
     private String phoneNumber;
     private String website;
-    private String url;
+    private String googleMapsUri;
     private Reservable reservable;
     private TakeoutAvailable takeoutAvailable;
     private ParkingAvailable parkingAvailable;
@@ -52,7 +52,7 @@ public class LikePlaceBuilder {
         this.addressName = 기본_보관_장소_주소_이름;
         this.phoneNumber = 기본_보관_장소_전화번호;
         this.website = 기본_보관_장소_웹사이트;
-        this.url = 기본_보관_장소_URL;
+        this.googleMapsUri = 기본_보관_장소_구글_맵_URL;
         this.reservable = 기본_보관_장소_예약_가능_여부;
         this.takeoutAvailable = 기본_보관_장소_포장_가능_여부;
         this.parkingAvailable = 기본_보관_장소_주차_가능_여부;
@@ -115,8 +115,8 @@ public class LikePlaceBuilder {
         return this;
     }
 
-    public LikePlaceBuilder url(final String url) {
-        this.url = url;
+    public LikePlaceBuilder googleMapsUri(final String googleMapsUri) {
+        this.googleMapsUri = googleMapsUri;
         return this;
     }
 
@@ -141,7 +141,7 @@ public class LikePlaceBuilder {
         final LikePlace likePlace = new LikePlace(
                 member, providerPlaceId, name, category, photoReferences,
                 coordinates, openingHours, addressName, phoneNumber,
-                website, url, placeDetails
+                website, googleMapsUri, placeDetails
         );
         return likePlaceRepository.save(likePlace);
     }
@@ -150,7 +150,7 @@ public class LikePlaceBuilder {
         this.member = null;
         return new LikePlaceAddRequest(
                 providerPlaceId, name, category, photoReferences, latitude, longitude,
-                openingHours, addressName, phoneNumber, website, url,
+                openingHours, addressName, phoneNumber, website, googleMapsUri,
                 reservable.name(), takeoutAvailable.name(), parkingAvailable.name()
         );
     }

@@ -29,4 +29,8 @@ public class RouteTag extends BaseEntity {
         this.name = name;
         this.selectCount = selectCount;
     }
+
+    public void select() {
+        this.selectCount++;
+    }
 }
