@@ -36,8 +36,8 @@ public class Place extends BaseEntity {
     private PlaceDetails placeDetails;
 
     public Place(final String providerPlaceId, final String name,
-                 final Set<String> photoReferences, final Coordinates coordinates,
-                 final String category, final String openingHours,
+                 final String category, final Set<String> photoReferences,
+                 final Coordinates coordinates, final String openingHours,
                  final String addressName, final String phoneNumber,
                  final String website, final String googleMapsUri,
                  final PlaceDetails placeDetails) {
