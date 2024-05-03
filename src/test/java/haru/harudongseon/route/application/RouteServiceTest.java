@@ -59,13 +59,13 @@ RouteServiceTest extends ServiceTest {
             // given
             final Member member = memberBuilder.defaultMember().build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
             final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
             final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
@@ -94,11 +94,11 @@ RouteServiceTest extends ServiceTest {
             // given
             final Member member = memberBuilder.defaultMember().build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
 
             final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
 
@@ -138,11 +138,11 @@ RouteServiceTest extends ServiceTest {
             // given
             final Member member = memberBuilder.defaultMember().build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
 
             final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
 
@@ -184,13 +184,13 @@ RouteServiceTest extends ServiceTest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
             final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
             final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
@@ -232,11 +232,11 @@ RouteServiceTest extends ServiceTest {
             // given
             final Member member = memberBuilder.defaultMember().build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
 
             final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
 
