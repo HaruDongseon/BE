@@ -146,6 +146,17 @@ public class LikePlaceBuilder {
         return likePlaceRepository.save(likePlace);
     }
 
+    public LikePlace buildEntity() {
+        final Coordinates coordinates = new Coordinates(latitude, longitude);
+        final PlaceDetails placeDetails = new PlaceDetails(reservable, takeoutAvailable, parkingAvailable);
+        final LikePlace likePlace = new LikePlace(
+                member, providerPlaceId, name, category, photoReferences,
+                coordinates, openingHours, addressName, phoneNumber,
+                website, googleMapsUri, placeDetails
+        );
+        return likePlace;
+    }
+
     public LikePlaceAddRequest buildAddRequest() {
         this.member = null;
         return new LikePlaceAddRequest(

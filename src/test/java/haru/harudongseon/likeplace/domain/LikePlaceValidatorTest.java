@@ -34,7 +34,8 @@ class LikePlaceValidatorTest {
         final Member member = memberBuilder.defaultMember().build();
         final LikePlace duplicatePhotoLikePlace = likePlaceBuilder.defaultLikePlace(member)
                 .photoReferences(List.of(기본_보관_장소_사진_참조1, 기본_보관_장소_사진_참조1, 기본_보관_장소_사진_참조2))
-                .build();
+                .buildEntity();
+
 
         // when & then
         assertThatThrownBy(() -> likePlaceValidator.validatePhotoDuplicate(duplicatePhotoLikePlace))

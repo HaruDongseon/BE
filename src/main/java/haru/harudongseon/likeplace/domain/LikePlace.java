@@ -29,6 +29,7 @@ public class LikePlace extends BaseEntity {
     private String category;
 
     @ElementCollection
+    @Column(unique = true)
     private List<String> photoReferences = new ArrayList<>();
 
     @Embedded

@@ -488,10 +488,14 @@ class LikePlaceControllerTest extends E2ETest {
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
 
-            final LikePlaceAddRequest addRequest1 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
-            final LikePlaceAddRequest addRequest2 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
-            final LikePlaceAddRequest addRequest3 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
-            final LikePlaceAddRequest addRequest4 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
+            final LikePlaceAddRequest addRequest1 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference1")).buildAddRequest();
+            final LikePlaceAddRequest addRequest2 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference2")).buildAddRequest();
+            final LikePlaceAddRequest addRequest3 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference3")).buildAddRequest();
+            final LikePlaceAddRequest addRequest4 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference4")).buildAddRequest();
 
             final ExtractableResponse<Response> addResponse1 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest1);
             final ExtractableResponse<Response> addResponse2 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest2);
