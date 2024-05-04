@@ -2,6 +2,7 @@ package haru.harudongseon.global.exception;
 
 import java.util.Random;
 
+import haru.harudongseon.likeplace.exception.LikePlaceException;
 import haru.harudongseon.member.exception.MemberException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {
             IllegalArgumentException.class,
             MemberException.DuplicateNicknameException.class,
-            HttpMessageNotReadableException.class
+            HttpMessageNotReadableException.class,
+            LikePlaceException.PhotoDuplicateException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequestException(final RuntimeException exception) {
         final String errorMessage = exception.getMessage();
