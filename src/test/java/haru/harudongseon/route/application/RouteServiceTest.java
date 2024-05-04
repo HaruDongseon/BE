@@ -1,11 +1,12 @@
 package haru.harudongseon.route.application;
 
 import static haru.harudongseon.common.fixtures.RouteFixtures.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import haru.harudongseon.common.ServiceTest;
 import haru.harudongseon.common.builder.MemberBuilder;
@@ -67,8 +68,8 @@ RouteServiceTest extends ServiceTest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, List.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
 
             final Optional<RouteTag> beforeRouteTag1 = routeTagRepository.findByName(기본_동선_태그1);
             final Optional<RouteTag> beforeRouteTag2 = routeTagRepository.findByName(기본_동선_태그2);
@@ -106,7 +107,10 @@ RouteServiceTest extends ServiceTest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             final Optional<Place> beforePlace1 = placeRepository.findByProviderPlaceId(routePlaceDto1.providerPlaceId());
             final Optional<Place> beforePlace2 = placeRepository.findByProviderPlaceId(routePlaceDto2.providerPlaceId());
@@ -144,9 +148,10 @@ RouteServiceTest extends ServiceTest {
             final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             final Optional<Place> beforePlace1 = placeRepository.findByProviderPlaceId(routePlaceDto1.providerPlaceId());
             final Optional<Place> beforePlace2 = placeRepository.findByProviderPlaceId(routePlaceDto2.providerPlaceId());
@@ -192,8 +197,10 @@ RouteServiceTest extends ServiceTest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             final Optional<Place> beforePlace1 = placeRepository.findByProviderPlaceId(routePlaceDto1.providerPlaceId());
             final Optional<Place> beforePlace2 = placeRepository.findByProviderPlaceId(routePlaceDto2.providerPlaceId());
@@ -238,9 +245,10 @@ RouteServiceTest extends ServiceTest {
             final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             final Long notExistMemberId = -1L;
 

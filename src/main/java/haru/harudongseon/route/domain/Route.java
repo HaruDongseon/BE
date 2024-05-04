@@ -1,8 +1,8 @@
 package haru.harudongseon.route.domain;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.member.domain.Member;
@@ -29,12 +29,12 @@ public class Route extends BaseEntity {
     private String title;
 
     @OneToMany(mappedBy = "route")
-    private Set<SelectedTag> tags = new HashSet<>();
+    private List<SelectedTag> tags = new ArrayList<>();
 
     private String moveWays;
 
     @OneToMany(mappedBy = "route")
-    private Set<RoutePlace> routePlaces = new HashSet<>();
+    private List<RoutePlace> routePlaces = new ArrayList<>();
 
     public Route(final Member member, final LocalDate date,
                  final String title, final String moveWays) {

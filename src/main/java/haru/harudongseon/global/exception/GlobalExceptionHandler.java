@@ -4,6 +4,7 @@ import java.util.Random;
 
 import haru.harudongseon.likeplace.exception.LikePlaceException;
 import haru.harudongseon.member.exception.MemberException;
+import haru.harudongseon.route.exception.RouteException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -60,7 +61,9 @@ public class GlobalExceptionHandler {
             IllegalArgumentException.class,
             MemberException.DuplicateNicknameException.class,
             HttpMessageNotReadableException.class,
-            LikePlaceException.PhotoDuplicateException.class
+            LikePlaceException.PhotoDuplicateException.class,
+            RouteException.DuplicateTagException.class,
+            RouteException.DuplicateRoutePlacePhotoException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequestException(final RuntimeException exception) {
         final String errorMessage = exception.getMessage();

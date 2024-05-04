@@ -3,7 +3,7 @@ package haru.harudongseon.common.builder;
 import static haru.harudongseon.common.fixtures.PlaceFixtures.*;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 import haru.harudongseon.place.domain.Coordinates;
 import haru.harudongseon.place.domain.Place;
@@ -25,7 +25,7 @@ public class PlaceBuilder {
     private String providerPlaceId;
     private String name;
     private String category;
-    private Set<String> photoReferences;
+    private List<String> photoReferences;
     private BigDecimal latitude;
     private BigDecimal longitude;
 
@@ -91,7 +91,7 @@ public class PlaceBuilder {
         return this;
     }
 
-    public PlaceBuilder photoReferences(final Set<String> photoReferences) {
+    public PlaceBuilder photoReferences(final List<String> photoReferences) {
         this.photoReferences = photoReferences;
         return this;
     }

@@ -1,7 +1,7 @@
 package haru.harudongseon.common.fixtures;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 import haru.harudongseon.place.domain.Coordinates;
 import haru.harudongseon.place.domain.Place;
@@ -19,8 +19,13 @@ public class PlaceFixtures {
 
     public static final String 기본_장소1_카테고리 = "커피숍/커피 전문점";
     public static final String 기본_장소2_카테고리 = "일본 음식점";
-    public static final Set<String> 기본_장소1_사진_참조 = Set.of("ATJ83zhSSAtk1", "ATJ83zhSSAtk2", "ATJ83zhSSAtk3");
-    public static final Set<String> 기본_장소2_사진_참조 = Set.of("VDSDFVadsfh23", "VDSDFVadsfh24");
+    public static final String 기본_장소1_사진_참조1 = "ATJ83zhSSAtk1";
+    public static final String 기본_장소1_사진_참조2 = "ATJ83zhSSAtk2";
+    public static final String 기본_장소1_사진_참조3 = "ATJ83zhSSAtk3";
+    public static final String 기본_장소2_사진_참조1 = "VDSDFVadsfh23";
+    public static final String 기본_장소2_사진_참조2 = "VDSDFVadsfh24";
+    public static final List<String> 기본_장소1_사진_참조 = List.of(기본_장소1_사진_참조1, 기본_장소1_사진_참조2, 기본_장소1_사진_참조3);
+    public static final List<String> 기본_장소2_사진_참조 = List.of(기본_장소2_사진_참조1, 기본_장소2_사진_참조2);
     public static final BigDecimal 기본_장소1_위도 = new BigDecimal("127.058970");
     public static final BigDecimal 기본_장소2_위도 = new BigDecimal("37.541962");
     public static final BigDecimal 기본_장소1_경도 = new BigDecimal("37.506051");

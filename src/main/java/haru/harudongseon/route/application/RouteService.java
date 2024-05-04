@@ -1,5 +1,6 @@
 package haru.harudongseon.route.application;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,19 +30,33 @@ public class RouteService {
     private final PlaceRepository placeRepository;
     private final RoutePlaceRepository routePlaceRepository;
 
+    private final RouteValidator routeValidator;
+
     public Long addRoute(final Long memberId, final RouteAddRequest request) {
         final Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버를 찾을 수 없습니다."));
+
+        final List<String> tagNames = request.tag();
+        final List<RoutePlaceDto> routePlaces = request.routePlaces();
+        validateDuplicate(tagNames, routePlaces);
+
         final Route route = new Route(findMember, request.date(), request.title(), request.moveWay());
         final Route savedRoute = routeRepository.save(route);
 
-        addTag(request.tag(), savedRoute);
-        addPlace(request.routePlaces(), savedRoute);
+        addTag(tagNames, savedRoute);
+        addPlace(routePlaces, savedRoute);
 
         return savedRoute.getId();
     }
 
-    private void addTag(final Set<String> tagNames, final Route savedRoute) {
+    private void validateDuplicate(final List<String> tagNames, final List<RoutePlaceDto> routePlaces) {
+        routeValidator.validateDuplicateTag(tagNames);
+        routePlaces.forEach(routePlaceDto ->
+                routeValidator.validateDuplicatePlacePhotoReference(routePlaceDto.photoReferences())
+        );
+    }
+
+    private void addTag(final List<String> tagNames, final Route savedRoute) {
         for (String tagName : tagNames) {
             final Optional<RouteTag> optionalRouteTag = routeTagRepository.findByName(tagName);
             if (optionalRouteTag.isPresent()) {
@@ -59,7 +74,7 @@ public class RouteService {
         }
     }
 
-    private void addPlace(final Set<RoutePlaceDto> routePlaces, final Route savedRoute) {
+    private void addPlace(final List<RoutePlaceDto> routePlaces, final Route savedRoute) {
         for (RoutePlaceDto routePlaceDto : routePlaces) {
             final String providerPlaceId = routePlaceDto.providerPlaceId();
             final Optional<Place> optionalPlace = placeRepository.findByProviderPlaceId(providerPlaceId);

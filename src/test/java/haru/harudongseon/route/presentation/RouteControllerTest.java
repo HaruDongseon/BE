@@ -1,11 +1,12 @@
 package haru.harudongseon.route.presentation;
 
+import static haru.harudongseon.common.fixtures.PlaceFixtures.*;
 import static haru.harudongseon.common.fixtures.RouteFixtures.*;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.builder.MemberBuilder;
@@ -66,8 +67,10 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -92,13 +95,14 @@ class RouteControllerTest extends E2ETest {
             final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-
             final RouteTagBuilder defaultRouteTagBuilder = routeTagBuilder.defaultRouteTag();
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -123,9 +127,10 @@ class RouteControllerTest extends E2ETest {
             final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -156,8 +161,10 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -188,8 +195,8 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Collections.EMPTY_SET, 기본_동선_이동수단, routePlaceDtos);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Collections.emptyList(), 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -220,8 +227,10 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), "NONE", routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, "NONE", routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -252,7 +261,9 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Collections.EMPTY_SET, 기본_동선_이동수단, Collections.EMPTY_SET);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, Collections.emptyList());
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -261,6 +272,69 @@ class RouteControllerTest extends E2ETest {
             assertSoftly(softly -> {
                 softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
                 softly.assertThat(response.header("Location")).contains("/routes/");
+            });
+        }
+
+        @Test
+        @DisplayName("동선에 중복된 태그가 존재하면 실패한다.")
+        void fail_duplicate_tag() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+
+            final List<String> duplicateTag = List.of(기본_동선_태그1, 기본_동선_태그1);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, duplicateTag, 기본_동선_이동수단, routePlaceDtos);
+
+            // when
+            final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("동선에 중복된 태그가 존재합니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("동선에 포함된 장소 각각에 중복된 사진이 존재하면 실패한다.")
+        void fail_duplicate_route_place_photo_references() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final List<String> duplicateRoutePlace1PhotoReferences = List.of(기본_장소1_사진_참조1, 기본_장소1_사진_참조1, 기본_장소1_사진_참조2);
+            final List<String> duplicateRoutePlace2PhotoReferences = List.of(기본_장소2_사진_참조1, 기본_장소2_사진_참조1, 기본_장소2_사진_참조2);
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder
+                    .photoReferences(duplicateRoutePlace1PhotoReferences)
+                    .buildRoutePlaceDto();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder
+                    .photoReferences(duplicateRoutePlace2PhotoReferences)
+                    .buildRoutePlaceDto();
+
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> duplicateRoutePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, duplicateRoutePlaceDtos);
+
+            // when
+            final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("동선 장소에 중복된 사진이 존재합니다.");
             });
         }
 
@@ -280,9 +354,10 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(notExistMemberAccessToken, routeAddRequest);
@@ -313,8 +388,10 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest nullDateRequest = new RouteAddRequest(null, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest nullDateRequest = new RouteAddRequest(null, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, nullDateRequest);
@@ -376,8 +453,10 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest notExistTitleRequest = new RouteAddRequest(기본_동선_날짜, notExistTitle, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest notExistTitleRequest = new RouteAddRequest(기본_동선_날짜, notExistTitle, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, notExistTitleRequest);
@@ -409,8 +488,10 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest notExistTitleRequest = new RouteAddRequest(기본_동선_날짜, overLengthTitle, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest notExistTitleRequest = new RouteAddRequest(기본_동선_날짜, overLengthTitle, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, notExistTitleRequest);
@@ -442,8 +523,10 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest notExistMoveWaysRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), notExistMoveWays, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest notExistMoveWaysRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, notExistMoveWays, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, notExistMoveWaysRequest);
@@ -474,13 +557,14 @@ class RouteControllerTest extends E2ETest {
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
             final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> overCountRoutePlaceDtos = new HashSet<>();
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> overCountRoutePlaceDtos = new ArrayList<>();
             final int maxCount = 30;
             for (int i = 0; i < maxCount + 1; i++) {
                 overCountRoutePlaceDtos.add(defaultPlace1Builder.name("place" + i).buildRoutePlaceDto());
             }
 
-            final RouteAddRequest nullDateRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, overCountRoutePlaceDtos);
+            final RouteAddRequest nullDateRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, overCountRoutePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, nullDateRequest);
