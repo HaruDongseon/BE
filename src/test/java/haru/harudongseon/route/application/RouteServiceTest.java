@@ -18,6 +18,8 @@ import haru.harudongseon.place.domain.Place;
 import haru.harudongseon.place.domain.PlaceRepository;
 import haru.harudongseon.route.application.dto.RouteAddRequest;
 import haru.harudongseon.route.application.dto.RoutePlaceDto;
+import haru.harudongseon.route.application.dto.RouteResponse;
+import haru.harudongseon.route.domain.Route;
 import haru.harudongseon.routetag.domain.RouteTag;
 import haru.harudongseon.routetag.domain.RouteTagRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -100,8 +102,6 @@ RouteServiceTest extends ServiceTest {
 
             final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
             final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
-
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
 
             final RouteTagBuilder defaultRouteTagBuilder = routeTagBuilder.defaultRouteTag();
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
@@ -256,6 +256,69 @@ RouteServiceTest extends ServiceTest {
             assertThatThrownBy(() -> routeService.addRoute(notExistMemberId, routeAddRequest))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 멤버를 찾을 수 없습니다.");
+        }
+    }
+
+    @Nested
+    @DisplayName("동선 조회 시")
+    class FindRoute {
+
+        @Test
+        @DisplayName("동선 조회에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+
+            final RouteTagBuilder defaultRouteTagBuilder = routeTagBuilder.defaultRouteTag();
+            final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
+            final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
+
+
+            final Route route = routeBuilder.defaultRoute(member).build();
+            route.addTag(routeTag1);
+            route.addTag(routeTag2);
+            route.addPlace(place1);
+            route.addPlace(place2);
+
+            final RouteResponse expected = RouteResponse.from(route);
+
+            // when
+            final RouteResponse response = routeService.findRoute(route.getId(), member.getId());
+
+            // then
+            assertThat(response).usingRecursiveComparison().isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_member_id_and_route_id() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route = routeBuilder.defaultRoute(member).build();
+
+            final Long notExistMemberId = -1L;
+            final Long notExistRouteId = -1L;
+
+            // when & then
+            assertSoftly(softly -> {
+                softly.assertThatThrownBy(() -> routeService.findRoute(route.getId(), notExistMemberId))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+                softly.assertThatThrownBy(() -> routeService.findRoute(notExistRouteId, member.getId()))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+                softly.assertThatThrownBy(() -> routeService.findRoute(notExistRouteId, notExistMemberId))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+            });
         }
     }
 }

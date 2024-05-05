@@ -2,7 +2,6 @@ package haru.harudongseon.route.application;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
@@ -10,6 +9,7 @@ import haru.harudongseon.place.domain.Place;
 import haru.harudongseon.place.domain.PlaceRepository;
 import haru.harudongseon.route.application.dto.RouteAddRequest;
 import haru.harudongseon.route.application.dto.RoutePlaceDto;
+import haru.harudongseon.route.application.dto.RouteResponse;
 import haru.harudongseon.route.domain.*;
 import haru.harudongseon.routetag.domain.RouteTag;
 import haru.harudongseon.routetag.domain.RouteTagRepository;
@@ -90,5 +90,13 @@ public class RouteService {
                 routePlaceRepository.save(routePlace);
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public RouteResponse findRoute(final Long routeId, final Long memberId) {
+        final Route findRoute = routeRepository.findByIdAndMemberId(routeId, memberId)
+                .orElseThrow(() -> new EntityNotFoundException("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다."));
+
+        return RouteResponse.from(findRoute);
     }
 }
