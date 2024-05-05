@@ -20,6 +20,7 @@ import haru.harudongseon.place.domain.Place;
 import haru.harudongseon.route.application.dto.RouteAddRequest;
 import haru.harudongseon.route.application.dto.RoutePlaceDto;
 import haru.harudongseon.route.application.dto.RouteResponse;
+import haru.harudongseon.route.application.dto.RoutesResponse;
 import haru.harudongseon.route.domain.Route;
 import haru.harudongseon.routetag.domain.RouteTag;
 import io.restassured.RestAssured;
@@ -663,6 +664,85 @@ class RouteControllerTest extends E2ETest {
         }
     }
 
+    @Nested
+    @DisplayName("동선 기간 조회 시")
+    class FindRouteByPeriod {
+
+        @Test
+        @DisplayName("조회할 월의 첫 날짜와 마지막 날짜를 입력하여 월별 기간 조회에 성공한다.")
+        void success_monthly() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final RouteAddRequest firstOfMonthAddRequest = new RouteAddRequest(동선_5월_첫날_날짜, 기본_동선_제목, Collections.emptyList(), 기본_동선_이동수단, Collections.emptyList());
+            final RouteAddRequest lastOfMonthAddRequest = new RouteAddRequest(동선_5월_마지막날_날짜, 기본_동선_제목, Collections.emptyList(), 기본_동선_이동수단, Collections.emptyList());
+            final RouteAddRequest middleOfMonthAddRequest = new RouteAddRequest(동선_5월_둘째주_마지막날_날짜, 기본_동선_제목, Collections.emptyList(), 기본_동선_이동수단, Collections.emptyList());
+
+            ADD_ROUTE_REQUEST(accessToken, firstOfMonthAddRequest);
+            ADD_ROUTE_REQUEST(accessToken, lastOfMonthAddRequest);
+            ADD_ROUTE_REQUEST(accessToken, middleOfMonthAddRequest);
+
+            final String startDate = 동선_5월_첫날_날짜.toString();
+            final String endDate = 동선_5월_마지막날_날짜.toString();
+
+            final Route firstOfMonthDateRoute = 동선_날짜_입력_엔티티(member, 동선_5월_첫날_날짜);
+            final Route middleOfMonthDateRoute = 동선_날짜_입력_엔티티(member, 동선_5월_둘째주_마지막날_날짜);
+            final Route lastOfMonthDateRoute = 동선_날짜_입력_엔티티(member, 동선_5월_마지막날_날짜);
+
+            final RoutesResponse expected = RoutesResponse.from(
+                    List.of(firstOfMonthDateRoute, middleOfMonthDateRoute, lastOfMonthDateRoute)
+            );
+
+            // when
+            final ExtractableResponse<Response> response = FIND_ROUTE_BY_PERIOD_REQUEST(accessToken, startDate, endDate);
+            final RoutesResponse actual = response.as(RoutesResponse.class);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual).usingRecursiveComparison().ignoringFields("id", "routes.id").isEqualTo(expected);
+            });
+        }
+
+        @Test
+        @DisplayName("조회할 주의 첫 날짜와 마지막 날짜를 입력하여 주간 기간 조회에 성공한다.")
+        void success_weekly() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final RouteAddRequest firstOfWeekAddRequest = new RouteAddRequest(동선_5월_둘째주_첫날_날짜, 기본_동선_제목, Collections.emptyList(), 기본_동선_이동수단, Collections.emptyList());
+            final RouteAddRequest lastOfWeekAddRequest = new RouteAddRequest(동선_5월_둘째주_마지막날_날짜, 기본_동선_제목, Collections.emptyList(), 기본_동선_이동수단, Collections.emptyList());
+            final RouteAddRequest middleOfWeekAddRequest = new RouteAddRequest(동선_5월_둘째주_중간_날짜, 기본_동선_제목, Collections.emptyList(), 기본_동선_이동수단, Collections.emptyList());
+
+            ADD_ROUTE_REQUEST(accessToken, firstOfWeekAddRequest);
+            ADD_ROUTE_REQUEST(accessToken, lastOfWeekAddRequest);
+            ADD_ROUTE_REQUEST(accessToken, middleOfWeekAddRequest);
+
+            final String startDate = 동선_5월_둘째주_첫날_날짜.toString();
+            final String endDate = 동선_5월_둘째주_마지막날_날짜.toString();
+
+            final Route firstOfWeekDateRoute = 동선_날짜_입력_엔티티(member, 동선_5월_둘째주_첫날_날짜);
+            final Route middleOfWeekDateRoute = 동선_날짜_입력_엔티티(member, 동선_5월_둘째주_중간_날짜);
+            final Route lastOfWeekDateRoute = 동선_날짜_입력_엔티티(member, 동선_5월_둘째주_마지막날_날짜);
+
+            final RoutesResponse expected = RoutesResponse.from(
+                    List.of(firstOfWeekDateRoute, middleOfWeekDateRoute, lastOfWeekDateRoute)
+            );
+
+            // when
+            final ExtractableResponse<Response> response = FIND_ROUTE_BY_PERIOD_REQUEST(accessToken, startDate, endDate);
+            final RoutesResponse actual = response.as(RoutesResponse.class);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual).usingRecursiveComparison().ignoringFields("id", "routes.id").isEqualTo(expected);
+            });
+        }
+    }
+
     private static ExtractableResponse<Response> ADD_ROUTE_REQUEST(final String accessToken, final RouteAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
@@ -721,5 +801,14 @@ class RouteControllerTest extends E2ETest {
         final String location = addResponse.header("Location");
         final long targetRouteId = Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
         return targetRouteId;
+    }
+
+    private static ExtractableResponse<Response> FIND_ROUTE_BY_PERIOD_REQUEST(final String accessToken, final String startDate, final String endDate) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .get("/routes?start_date=" + startDate + "&end_date=" + endDate)
+                .then().log().all()
+                .extract();
     }
 }

@@ -31,4 +31,9 @@ public class RouteFixtures {
         }
         return route;
     }
+
+    public static Route 동선_날짜_입력_엔티티(final Member member, final LocalDate date) {
+        final Route route = new Route(member, date, 기본_동선_제목, 기본_동선_이동수단);
+        return route;
+    }
 }
