@@ -59,11 +59,11 @@ public class PlaceFixtures {
     public static final PlaceDetails 기본_장소1_세부_정보 = new PlaceDetails(기본_장소1_예약_가능_여부, 기본_장소1_포장_가능_여부, 기본_장소1_주차_가능_여부);
     public static final PlaceDetails 기본_장소2_세부_정보 = new PlaceDetails(기본_장소2_예약_가능_여부, 기본_장소2_포장_가능_여부, 기본_장소2_주차_가능_여부);
 
-    public static Place 기본_장소1_Entity() {
+    public static Place 기본_장소1_엔티티() {
         return new Place(기본_장소1_외부_공급자_ID, 기본_장소1_이름, 기본_장소1_카테고리, 기본_장소1_사진_참조, 기본_장소1_좌표, 기본_장소1_영업_시간, 기본_장소1_주소_이름, 기본_장소1_전화번호, 기본_장소1_웹사이트, 기본_장소1_구글_맵_URL, 기본_장소1_세부_정보);
     }
 
-    public static Place 기본_장소2_Entity() {
+    public static Place 기본_장소2_엔티티() {
         return new Place(기본_장소2_외부_공급자_ID, 기본_장소2_이름, 기본_장소2_카테고리, 기본_장소2_사진_참조, 기본_장소2_좌표, 기본_장소2_영업_시간, 기본_장소2_주소_이름, 기본_장소2_전화번호, 기본_장소2_웹사이트, 기본_장소2_구글_맵_URL, 기본_장소2_세부_정보);
     }
 }
