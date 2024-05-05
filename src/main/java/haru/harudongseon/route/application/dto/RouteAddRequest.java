@@ -19,7 +19,7 @@ public record RouteAddRequest(
         @Schema(description = "동선 제목", nullable = false, example = "하루동선1")
         String title,
 
-        @Schema(description = "동선 태그", nullable = false, example = "[스터디, 데이트]")
+        @Schema(description = "동선 태그", nullable = false, example = "[\"스터디\", \"데이트\"]")
         List<String> tag,
 
         @NotBlank(message = "동선 이동수단은 공백일 수 없습니다. 미선택인 경우 NONE을 입력하세요.")

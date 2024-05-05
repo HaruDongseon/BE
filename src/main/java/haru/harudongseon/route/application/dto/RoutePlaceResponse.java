@@ -26,7 +26,7 @@ public class RoutePlaceResponse {
     @Schema(description = "장소 카테고리", example = "커피숍/커피 전문점")
     private String category;
 
-    @Schema(description = "구글 장소 이미지 요청 Reference 리스트", example = "[AxxB, AVVx, AccB]")
+    @Schema(description = "구글 장소 이미지 요청 Reference 리스트", example = "[\"AxxB\", \"AVVx\", \"AccB\"]")
     private List<String> photoReferences;
 
     @Schema(description = "장소 위도(10진수 9자, 소수점 6자 이내)", example = "127.058970")

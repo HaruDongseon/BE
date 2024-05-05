@@ -26,7 +26,7 @@ public record LikePlaceAddRequest(
         @Schema(description = "보관 장소 카테고리", nullable = false, example = "커피숍/커피 전문점")
         String category,
 
-        @Schema(description = "구글 장소 이미지 요청 Reference 리스트", nullable = false, example = "[AxxB, AVVx, AccB]")
+        @Schema(description = "구글 장소 이미지 요청 Reference 리스트", nullable = false, example = "[\"AxxB\", \"AVVx\", \"AccB\"]")
         List<String> photoReferences,
 
         @NotNull(message = "위도는 공백일 수 없습니다. 올바른 형식 또는 값을 입력해주세요.")

@@ -24,7 +24,7 @@ public record RoutePlaceDto(
         @Schema(description = "장소 카테고리", nullable = false, example = "커피숍/커피 전문점")
         String category,
 
-        @Schema(description = "구글 장소 이미지 요청 Reference 리스트", nullable = false, example = "[AxxB, AVVx, AccB]")
+        @Schema(description = "구글 장소 이미지 요청 Reference 리스트", nullable = false, example = "[\"AxxB\", \"AVVx\", \"AccB\"]")
         List<String> photoReferences,
 
         @NotNull(message = "위도는 공백일 수 없습니다. 올바른 형식 또는 값을 입력해주세요.")
@@ -58,15 +58,15 @@ public record RoutePlaceDto(
         String googleMapsUri,
 
         @NotBlank(message = "예약 가능 여부는 공백일 수 없습니다. 정보가 없다면 NONE을 입력하세요.")
-        @Schema(description = "장소 예약 가능 여부", nullable = false, example = "false")
+        @Schema(description = "장소 예약 가능 여부", nullable = false, example = "FALSE")
         String reservable,
 
         @NotBlank(message = "포장 가능 여부는 공백일 수 없습니다. 정보가 없다면 NONE을 입력하세요.")
-        @Schema(description = "장소 포장 가능 여부", nullable = false, example = "true")
+        @Schema(description = "장소 포장 가능 여부", nullable = false, example = "TRUE")
         String takeoutAvailable,
 
         @NotBlank(message = "주차 가능 여부는 공백일 수 없습니다. 정보가 없다면 NONE을 입력하세요.")
-        @Schema(description = "장소 주차 예약 가능 여부", nullable = false, example = "false")
+        @Schema(description = "장소 주차 예약 가능 여부", nullable = false, example = "FALSE")
         String parkingAvailable
 ) {
 
