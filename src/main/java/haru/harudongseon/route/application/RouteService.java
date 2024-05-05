@@ -1,5 +1,6 @@
 package haru.harudongseon.route.application;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import haru.harudongseon.place.domain.PlaceRepository;
 import haru.harudongseon.route.application.dto.RouteAddRequest;
 import haru.harudongseon.route.application.dto.RoutePlaceDto;
 import haru.harudongseon.route.application.dto.RouteResponse;
+import haru.harudongseon.route.application.dto.RoutesResponse;
 import haru.harudongseon.route.domain.*;
 import haru.harudongseon.routetag.domain.RouteTag;
 import haru.harudongseon.routetag.domain.RouteTagRepository;
@@ -98,5 +100,12 @@ public class RouteService {
                 .orElseThrow(() -> new EntityNotFoundException("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다."));
 
         return RouteResponse.from(findRoute);
+    }
+
+    @Transactional(readOnly = true)
+    public RoutesResponse findRouteByPeriod(final Long memberId, final LocalDate startDate, final LocalDate endDate) {
+        final List<Route> findRoutes = routeRepository.findByMemberIdAndPeriod(memberId, startDate, endDate);
+
+        return RoutesResponse.from(findRoutes);
     }
 }

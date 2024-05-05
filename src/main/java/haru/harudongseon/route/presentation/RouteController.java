@@ -1,6 +1,7 @@
 package haru.harudongseon.route.presentation;
 
 import java.net.URI;
+import java.time.LocalDate;
 
 import haru.harudongseon.global.exception.ErrorResponse;
 import haru.harudongseon.global.mvc.AuthMemberDto;
@@ -8,6 +9,7 @@ import haru.harudongseon.global.mvc.AuthPrincipal;
 import haru.harudongseon.route.application.RouteService;
 import haru.harudongseon.route.application.dto.RouteAddRequest;
 import haru.harudongseon.route.application.dto.RouteResponse;
+import haru.harudongseon.route.application.dto.RoutesResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -52,6 +54,26 @@ public class RouteController {
     ) {
         final Long memberId = authMemberDto.memberId();
         final RouteResponse response = routeService.findRoute(memberId, routeId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "동선 기간 조회 API")
+    @ApiResponse(responseCode = "200", description = "동선 기간 조회 성공")
+    @GetMapping
+    public ResponseEntity<RoutesResponse> findRouteByPeriod(
+            @Parameter(hidden = true) @AuthPrincipal
+            AuthMemberDto authMemberDto,
+
+            @Parameter(name = "start_date", description = "조회 기간 첫 날짜", required = true)
+            @RequestParam("start_date")
+            LocalDate startDate,
+
+            @Parameter(name = "start_date", description = "조회 기간 첫 날짜", required = true)
+            @RequestParam("end_date")
+            LocalDate endDate
+            ) {
+        final Long memberId = authMemberDto.memberId();
+        final RoutesResponse response = routeService.findRouteByPeriod(memberId, startDate, endDate);
         return ResponseEntity.ok(response);
     }
 }

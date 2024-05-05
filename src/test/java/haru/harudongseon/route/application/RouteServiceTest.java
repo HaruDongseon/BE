@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import haru.harudongseon.place.domain.PlaceRepository;
 import haru.harudongseon.route.application.dto.RouteAddRequest;
 import haru.harudongseon.route.application.dto.RoutePlaceDto;
 import haru.harudongseon.route.application.dto.RouteResponse;
+import haru.harudongseon.route.application.dto.RoutesResponse;
 import haru.harudongseon.route.domain.Route;
 import haru.harudongseon.routetag.domain.RouteTag;
 import haru.harudongseon.routetag.domain.RouteTagRepository;
@@ -319,6 +321,55 @@ RouteServiceTest extends ServiceTest {
                         .isInstanceOf(EntityNotFoundException.class)
                         .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
             });
+        }
+    }
+
+    @Nested
+    @DisplayName("동선 기간 조회 시")
+    class FindRouteByPeriod{
+
+        @Test
+        @DisplayName("월별 날짜 오름차순 조회에 성공한다.")
+        void success_monthly_order_by_date_asc() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+
+            final Route firstOfMonthRoute = routeBuilder.defaultRoute(member).date(동선_5월_첫날_날짜).build();
+            final Route lastOfMonthRoute = routeBuilder.defaultRoute(member).date(동선_5월_마지막날_날짜).build();
+            final Route middleOfMonthRoute = routeBuilder.defaultRoute(member).build();
+
+            final LocalDate startDate = LocalDate.of(기본_동선_날짜.getYear(), 기본_동선_날짜.getMonth(), 1);
+            final LocalDate endDate = LocalDate.of(기본_동선_날짜.getYear(), 기본_동선_날짜.getMonth(), 31);
+
+            final RoutesResponse expected = RoutesResponse.from(List.of(firstOfMonthRoute, middleOfMonthRoute, lastOfMonthRoute));
+
+            // when
+            final RoutesResponse actual = routeService.findRouteByPeriod(member.getId(), startDate, endDate);
+
+            // then
+            assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("주간 날짜 오름차순 조회에 성공한다.")
+        void success_weekly_order_by_date_asc() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+
+            final Route lastOfWeekRoute = routeBuilder.defaultRoute(member).date(동선_5월_둘째주_마지막날_날짜).build();
+            final Route firstOfWeekRoute = routeBuilder.defaultRoute(member).date(동선_5월_둘째주_첫날_날짜).build();
+            final Route middleOfWeekRoute = routeBuilder.defaultRoute(member).date(동선_5월_둘째주_중간_날짜).build();
+
+            final LocalDate startDate = LocalDate.of(동선_5월_둘째주_첫날_날짜.getYear(), 동선_5월_둘째주_첫날_날짜.getMonth(), 동선_5월_둘째주_첫날_날짜.getDayOfMonth());
+            final LocalDate endDate = LocalDate.of(동선_5월_둘째주_마지막날_날짜.getYear(), 동선_5월_둘째주_마지막날_날짜.getMonth(), 동선_5월_둘째주_마지막날_날짜.getDayOfMonth());
+
+            final RoutesResponse expected = RoutesResponse.from(List.of(firstOfWeekRoute, middleOfWeekRoute, lastOfWeekRoute));
+
+            // when
+            final RoutesResponse actual = routeService.findRouteByPeriod(member.getId(), startDate, endDate);
+
+            // then
+            assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
         }
     }
 }
