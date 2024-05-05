@@ -1,6 +1,7 @@
 package haru.harudongseon.place.domain;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.place.domain.placedetails.PlaceDetails;
@@ -14,14 +15,16 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Place extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String providerPlaceId;
     private String name;
     private String category;
 
     @ElementCollection
-    private Set<String> photoReferences;
+    @Column(unique = true)
+    private List<String> photoReferences = new ArrayList<>();
 
     @Embedded
     private Coordinates coordinates;
@@ -36,7 +39,7 @@ public class Place extends BaseEntity {
     private PlaceDetails placeDetails;
 
     public Place(final String providerPlaceId, final String name,
-                 final String category, final Set<String> photoReferences,
+                 final String category, final List<String> photoReferences,
                  final Coordinates coordinates, final String openingHours,
                  final String addressName, final String phoneNumber,
                  final String website, final String googleMapsUri,

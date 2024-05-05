@@ -1,7 +1,7 @@
 package haru.harudongseon.common.builder;
 
+import static haru.harudongseon.common.fixtures.RouteTagFixtures.기본_태그2_이름;
 import static haru.harudongseon.common.fixtures.RouteTagFixtures.기본_태그_선택_횟수;
-import static haru.harudongseon.common.fixtures.RouteTagFixtures.기본_태그_이름;
 
 import haru.harudongseon.routetag.domain.RouteTag;
 import haru.harudongseon.routetag.domain.RouteTagRepository;
@@ -18,7 +18,7 @@ public class RouteTagBuilder {
     private Long selectCount;
 
     public RouteTagBuilder defaultRouteTag() {
-        this.name = 기본_태그_이름;
+        this.name = 기본_태그2_이름;
         this.selectCount = 기본_태그_선택_횟수;
 
         return this;

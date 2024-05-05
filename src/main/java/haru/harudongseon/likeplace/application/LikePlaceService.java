@@ -7,6 +7,7 @@ import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
 import haru.harudongseon.likeplace.application.dto.RecentLikePlacesResponse;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplace.domain.LikePlaceRepository;
+import haru.harudongseon.likeplace.domain.LikePlaceValidator;
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,11 +22,13 @@ public class LikePlaceService {
 
     private final MemberRepository memberRepository;
     private final LikePlaceRepository likePlaceRepository;
+    private final LikePlaceValidator likePlaceValidator;
 
     public Long addLikePlace(final Long memberId, final LikePlaceAddRequest request) {
         final Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버를 찾을 수 없습니다."));
         final LikePlace likePlace = request.toEntity(findMember);
+        likePlaceValidator.validatePhotoDuplicate(likePlace);
         final LikePlace savedLikePlace = likePlaceRepository.save(likePlace);
         return savedLikePlace.getId();
     }

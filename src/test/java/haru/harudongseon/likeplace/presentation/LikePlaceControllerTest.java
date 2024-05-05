@@ -63,6 +63,27 @@ class LikePlaceControllerTest extends E2ETest {
             });
         }
 
+        @Test
+        @DisplayName("보관 장소의 사진이 중복된다면, 추가에 실패한다.")
+        void fail_duplicate_photo() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final LikePlaceAddRequest duplicatePhotoAddRequest = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of(기본_보관_장소_사진_참조1, 기본_보관_장소_사진_참조1, 기본_보관_장소_사진_참조2))
+                    .buildAddRequest();
+
+
+            // when
+            final ExtractableResponse<Response> response = ADD_LIKE_PLACE_REQUEST(accessToken, duplicatePhotoAddRequest);
+
+            // then
+            assertSoftly(softly -> {
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("보관 장소에 중복되는 사진이 존재합니다.");
+            });
+        }
+
         @ParameterizedTest
         @ValueSource(strings = {"", " "})
         @DisplayName("보관 장소의 외부 공급자 장소 ID가 없다면, 추가에 실패한다.")
@@ -131,7 +152,7 @@ class LikePlaceControllerTest extends E2ETest {
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
             final LikePlaceAddRequest notExistNameRequest = likePlaceBuilder.defaultLikePlace(null)
-                    .photoReferences(Collections.emptySet()).buildAddRequest();
+                    .photoReferences(Collections.emptyList()).buildAddRequest();
 
             // when
             final ExtractableResponse<Response> response = ADD_LIKE_PLACE_REQUEST(accessToken, notExistNameRequest);
@@ -467,10 +488,14 @@ class LikePlaceControllerTest extends E2ETest {
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
 
-            final LikePlaceAddRequest addRequest1 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
-            final LikePlaceAddRequest addRequest2 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
-            final LikePlaceAddRequest addRequest3 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
-            final LikePlaceAddRequest addRequest4 = likePlaceBuilder.defaultLikePlace(member).buildAddRequest();
+            final LikePlaceAddRequest addRequest1 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference1")).buildAddRequest();
+            final LikePlaceAddRequest addRequest2 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference2")).buildAddRequest();
+            final LikePlaceAddRequest addRequest3 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference3")).buildAddRequest();
+            final LikePlaceAddRequest addRequest4 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference4")).buildAddRequest();
 
             final ExtractableResponse<Response> addResponse1 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest1);
             final ExtractableResponse<Response> addResponse2 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest2);

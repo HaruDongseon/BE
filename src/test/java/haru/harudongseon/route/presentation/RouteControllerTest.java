@@ -1,11 +1,14 @@
 package haru.harudongseon.route.presentation;
 
+import static haru.harudongseon.common.fixtures.PlaceFixtures.*;
 import static haru.harudongseon.common.fixtures.RouteFixtures.*;
+import static haru.harudongseon.common.fixtures.RouteTagFixtures.기본_동선_태그1_엔티티;
+import static haru.harudongseon.common.fixtures.RouteTagFixtures.기본_동선_태그2_엔티티;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.builder.MemberBuilder;
@@ -16,6 +19,8 @@ import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.place.domain.Place;
 import haru.harudongseon.route.application.dto.RouteAddRequest;
 import haru.harudongseon.route.application.dto.RoutePlaceDto;
+import haru.harudongseon.route.application.dto.RouteResponse;
+import haru.harudongseon.route.domain.Route;
 import haru.harudongseon.routetag.domain.RouteTag;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -58,16 +63,18 @@ class RouteControllerTest extends E2ETest {
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -86,19 +93,20 @@ class RouteControllerTest extends E2ETest {
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
 
             final RouteTagBuilder defaultRouteTagBuilder = routeTagBuilder.defaultRouteTag();
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -117,15 +125,16 @@ class RouteControllerTest extends E2ETest {
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -148,16 +157,18 @@ class RouteControllerTest extends E2ETest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -180,16 +191,16 @@ class RouteControllerTest extends E2ETest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Collections.EMPTY_SET, 기본_동선_이동수단, routePlaceDtos);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Collections.emptyList(), 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -212,16 +223,18 @@ class RouteControllerTest extends E2ETest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), "NONE", routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, "NONE", routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -244,15 +257,17 @@ class RouteControllerTest extends E2ETest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Collections.EMPTY_SET, 기본_동선_이동수단, Collections.EMPTY_SET);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, Collections.emptyList());
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
@@ -265,6 +280,69 @@ class RouteControllerTest extends E2ETest {
         }
 
         @Test
+        @DisplayName("동선에 중복된 태그가 존재하면 실패한다.")
+        void fail_duplicate_tag() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+
+            final List<String> duplicateTag = List.of(기본_동선_태그1, 기본_동선_태그1);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, duplicateTag, 기본_동선_이동수단, routePlaceDtos);
+
+            // when
+            final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("동선에 중복된 태그가 존재합니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("동선에 포함된 장소 각각에 중복된 사진이 존재하면 실패한다.")
+        void fail_duplicate_route_place_photo_references() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final List<String> duplicateRoutePlace1PhotoReferences = List.of(기본_장소1_사진_참조1, 기본_장소1_사진_참조1, 기본_장소1_사진_참조2);
+            final List<String> duplicateRoutePlace2PhotoReferences = List.of(기본_장소2_사진_참조1, 기본_장소2_사진_참조1, 기본_장소2_사진_참조2);
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder
+                    .photoReferences(duplicateRoutePlace1PhotoReferences)
+                    .buildRoutePlaceDto();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder
+                    .photoReferences(duplicateRoutePlace2PhotoReferences)
+                    .buildRoutePlaceDto();
+
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> duplicateRoutePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, duplicateRoutePlaceDtos);
+
+            // when
+            final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("동선 장소에 중복된 사진이 존재합니다.");
+            });
+        }
+
+        @Test
         @DisplayName("멤버 ID에 해당하는 멤버가 존재하지 않으면 실패한다.")
         void fail_not_exist_member() {
             // given
@@ -272,15 +350,18 @@ class RouteControllerTest extends E2ETest {
             final Long notExistMemberId = -1L;
             final String notExistMemberAccessToken = jwtService.createAccessToken(notExistMemberId);
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(기본_동선_태그1, 기본_동선_태그2), 기본_동선_이동수단, routePlaceDtos);
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(notExistMemberAccessToken, routeAddRequest);
@@ -303,16 +384,18 @@ class RouteControllerTest extends E2ETest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest nullDateRequest = new RouteAddRequest(null, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest nullDateRequest = new RouteAddRequest(null, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, nullDateRequest);
@@ -335,13 +418,13 @@ class RouteControllerTest extends E2ETest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
             String invalidDate = "\"date\": \"2023:05:24\",";
 
@@ -366,16 +449,18 @@ class RouteControllerTest extends E2ETest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest notExistTitleRequest = new RouteAddRequest(기본_동선_날짜, notExistTitle, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest notExistTitleRequest = new RouteAddRequest(기본_동선_날짜, notExistTitle, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, notExistTitleRequest);
@@ -399,16 +484,18 @@ class RouteControllerTest extends E2ETest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest notExistTitleRequest = new RouteAddRequest(기본_동선_날짜, overLengthTitle, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest notExistTitleRequest = new RouteAddRequest(기본_동선_날짜, overLengthTitle, tag, 기본_동선_이동수단, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, notExistTitleRequest);
@@ -432,16 +519,18 @@ class RouteControllerTest extends E2ETest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> routePlaceDtos = Set.of(routePlaceDto1, routePlaceDto2);
-            final RouteAddRequest notExistMoveWaysRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), notExistMoveWays, routePlaceDtos);
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest notExistMoveWaysRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, notExistMoveWays, routePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, notExistMoveWaysRequest);
@@ -464,21 +553,22 @@ class RouteControllerTest extends E2ETest {
             final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
             final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
 
-            final PlaceBuilder defalutPlaceBuilder = placeBuilder.defaultPlace();
-            final RoutePlaceDto routePlaceDto1 = defalutPlaceBuilder.buildRoutePlaceDto();
-            final Place place1 = defalutPlaceBuilder.build();
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
 
-            final PlaceBuilder newPlaceBuilder = placeBuilder.defaultPlace().providerPlaceId("new ProviderPlaceId");
-            final RoutePlaceDto routePlaceDto2 = newPlaceBuilder.buildRoutePlaceDto();
-            final Place place2 = newPlaceBuilder.build();
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
 
-            final Set<RoutePlaceDto> overCountRoutePlaceDtos = new HashSet<>();
+            final List<String> tag = List.of(routeTag1.getName(), routeTag2.getName());
+            final List<RoutePlaceDto> overCountRoutePlaceDtos = new ArrayList<>();
             final int maxCount = 30;
             for (int i = 0; i < maxCount + 1; i++) {
-                overCountRoutePlaceDtos.add(defalutPlaceBuilder.name("place" + i).buildRoutePlaceDto());
+                overCountRoutePlaceDtos.add(defaultPlace1Builder.name("place" + i).buildRoutePlaceDto());
             }
 
-            final RouteAddRequest nullDateRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Set.of(routeTag1.getName(), routeTag2.getName()), 기본_동선_이동수단, overCountRoutePlaceDtos);
+            final RouteAddRequest nullDateRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, overCountRoutePlaceDtos);
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTE_REQUEST(accessToken, nullDateRequest);
@@ -487,6 +577,88 @@ class RouteControllerTest extends E2ETest {
             assertSoftly(softly -> {
                 softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("동선 장소는 30개 이하여야합니다.");
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("동선 조회 시")
+    class FindRoute {
+
+        @Test
+        @DisplayName("동선 조회에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
+
+            final ExtractableResponse<Response> addResponse = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
+            final long targetRouteId = getLocationId(addResponse);
+
+            final Route route = 기본_동선_엔티티(member, List.of(기본_동선_태그1_엔티티(), 기본_동선_태그2_엔티티()), List.of(기본_장소1_엔티티(), 기본_장소2_엔티티()));
+            final RouteResponse expected = RouteResponse.from(route);
+
+            // when
+            final ExtractableResponse<Response> response = FIND_ROUTE_REQUEST(accessToken, targetRouteId);
+            final RouteResponse actual = response.as(RouteResponse.class);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(response.jsonPath().getLong("id")).isEqualTo(targetRouteId);
+                softly.assertThat(actual).usingRecursiveComparison().ignoringFields("id", "routePlaces.id").isEqualTo(expected);
+            });
+        }
+
+        @Test
+        @DisplayName("멤버와 동선 ID에 해당하는 동선이 존재하지 않으면 실패한다.")
+        void fail_not_exist_member_and_route_id() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
+
+            final ExtractableResponse<Response> addResponse = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
+            final long targetRouteId = getLocationId(addResponse);
+
+            final Long notExistMemberId = -1L;
+            final String notExistMemberAccessToken = jwtService.createAccessToken(notExistMemberId);
+            final Long notExistRouteId = -1L;
+
+            // when
+            final ExtractableResponse<Response> response1 = FIND_ROUTE_REQUEST(notExistMemberAccessToken, targetRouteId);
+            final ExtractableResponse<Response> response2 = FIND_ROUTE_REQUEST(accessToken, notExistRouteId);
+            final ExtractableResponse<Response> response3 = FIND_ROUTE_REQUEST(notExistMemberAccessToken, notExistRouteId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response1.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response1.jsonPath().getString("errorMessage")).isEqualTo("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+                softly.assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response2.jsonPath().getString("errorMessage")).isEqualTo("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+                softly.assertThat(response3.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response3.jsonPath().getString("errorMessage")).isEqualTo("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
             });
         }
     }
@@ -534,5 +706,20 @@ class RouteControllerTest extends E2ETest {
                 .post("/routes")
                 .then().log().all()
                 .extract();
+    }
+
+    private static ExtractableResponse<Response> FIND_ROUTE_REQUEST(final String accessToken, final Long routeId) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .get("/routes/{route-id}", routeId)
+                .then().log().all()
+                .extract();
+    }
+
+    private long getLocationId(final ExtractableResponse<Response> addResponse) {
+        final String location = addResponse.header("Location");
+        final long targetRouteId = Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
+        return targetRouteId;
     }
 }

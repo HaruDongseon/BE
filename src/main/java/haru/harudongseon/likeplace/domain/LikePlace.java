@@ -1,6 +1,7 @@
 package haru.harudongseon.likeplace.domain;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.likeplace.domain.placedetails.PlaceDetails;
@@ -28,7 +29,8 @@ public class LikePlace extends BaseEntity {
     private String category;
 
     @ElementCollection
-    private Set<String> photoReferences;
+    @Column(unique = true)
+    private List<String> photoReferences = new ArrayList<>();
 
     @Embedded
     private Coordinates coordinates;
@@ -44,7 +46,7 @@ public class LikePlace extends BaseEntity {
 
     public LikePlace(final Member member, final String providerPlaceId,
                      final String name, final String category,
-                     final Set<String> photoReferences, final Coordinates coordinates,
+                     final List<String> photoReferences, final Coordinates coordinates,
                      final String openingHours, final String addressName,
                      final String phoneNumber, final String website,
                      final String googleMapsUri, final PlaceDetails placeDetails) {

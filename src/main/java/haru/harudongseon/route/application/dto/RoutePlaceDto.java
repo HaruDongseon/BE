@@ -1,7 +1,7 @@
 package haru.harudongseon.route.application.dto;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 import haru.harudongseon.place.domain.Coordinates;
 import haru.harudongseon.place.domain.Place;
@@ -25,7 +25,7 @@ public record RoutePlaceDto(
         String category,
 
         @Schema(description = "구글 장소 이미지 요청 Reference 리스트", nullable = false, example = "[AxxB, AVVx, AccB]")
-        Set<String> photoReferences,
+        List<String> photoReferences,
 
         @NotNull(message = "위도는 공백일 수 없습니다. 올바른 형식 또는 값을 입력해주세요.")
         @Digits(message = "위도는 10진수 9자, 소수점 6자 이내 여야합니다.", integer = 9, fraction = 6)
