@@ -68,7 +68,7 @@ public class RouteController {
             @RequestParam("start_date")
             LocalDate startDate,
 
-            @Parameter(name = "start_date", description = "조회 기간 첫 날짜", required = true)
+            @Parameter(name = "end_date", description = "조회 기간 마지막 날짜", required = true)
             @RequestParam("end_date")
             LocalDate endDate
             ) {
