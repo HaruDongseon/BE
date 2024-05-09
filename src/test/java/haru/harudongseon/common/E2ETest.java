@@ -25,7 +25,6 @@ public abstract class E2ETest {
     @BeforeEach
     void setUp() {
         RestAssured.port = this.port;
-        h2TruncateUtils.truncateAll();
     }
 
     @AfterEach
