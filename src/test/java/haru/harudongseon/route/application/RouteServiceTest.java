@@ -17,13 +17,14 @@ import haru.harudongseon.common.builder.RouteTagBuilder;
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.place.domain.Place;
 import haru.harudongseon.place.domain.PlaceRepository;
-import haru.harudongseon.route.application.dto.RouteAddRequest;
-import haru.harudongseon.route.application.dto.RoutePlaceDto;
-import haru.harudongseon.route.application.dto.RouteResponse;
-import haru.harudongseon.route.application.dto.RoutesResponse;
+import haru.harudongseon.route.application.dto.*;
 import haru.harudongseon.route.domain.Route;
+import haru.harudongseon.route.domain.RoutePlace;
+import haru.harudongseon.route.domain.RouteRepository;
+import haru.harudongseon.route.domain.SelectedTag;
 import haru.harudongseon.routetag.domain.RouteTag;
 import haru.harudongseon.routetag.domain.RouteTagRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,6 +54,12 @@ RouteServiceTest extends ServiceTest {
 
     @Autowired
     private PlaceRepository placeRepository;
+
+    @Autowired
+    private EntityManager em;
+
+    @Autowired
+    private RouteRepository routeRepository;
 
     @Nested
     @DisplayName("동선 추가 시")
@@ -326,7 +333,7 @@ RouteServiceTest extends ServiceTest {
 
     @Nested
     @DisplayName("동선 기간 조회 시")
-    class FindRouteByPeriod{
+    class FindRouteByPeriod {
 
         @Test
         @DisplayName("월별 날짜 오름차순 조회에 성공한다.")
@@ -370,6 +377,171 @@ RouteServiceTest extends ServiceTest {
 
             // then
             assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    @DisplayName("동선 편집 시")
+    class EditRoute {
+
+        @Test
+        @DisplayName("동선 편집 성공 시 모든 정보가 대체되고, unselected된 태그는 선택 횟수가 1 감소한다.")
+        void success_all_replace_and_unselected_tag_decrease_select_count() {
+            // given
+            /**
+             * 기본 Route 생성
+             */
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route = routeBuilder.defaultRoute(member).build();
+
+            final RouteTagBuilder defaultRouteTagBuilder = routeTagBuilder.defaultRouteTag();
+            final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
+            final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
+
+            route.addTag(routeTag1);
+            route.addTag(routeTag2);
+            route.addPlace(place1);
+            route.addPlace(place2);
+            // 변경감지(update)를 위한 find
+            final Route beforeRoute = routeRepository.findById(route.getId()).get();
+
+            /**
+             * EditRequest 생성
+             */
+            final List<Long> beforeSelectCounts = beforeRoute.getTags().stream()
+                    .map(SelectedTag::getRouteTag)
+                    .map(RouteTag::getSelectCount)
+                    .toList();
+
+            final LocalDate newDate = beforeRoute.getDate().plusDays(1);
+            final String newTitle = "NEW " + beforeRoute.getTitle();
+            final List<String> newTagNames = beforeRoute.getTags().stream()
+                    .map(SelectedTag::getRouteTag)
+                    .map(RouteTag::getName)
+                    .map(name -> "NEW " + name)
+                    .toList();
+            final String newMoveWays = "자전거/" + beforeRoute.getMoveWays();
+            final List<RoutePlaceDto> reverseRoutePlaces = List.of(routePlaceDto2, routePlaceDto1);
+
+
+            final List<Place> places = reverseRoutePlaces.stream()
+                    .map(RoutePlaceDto::toEntity)
+                    .toList();
+
+
+            final RouteEditRequest request =
+                    new RouteEditRequest(newDate, newTitle, newTagNames, newMoveWays, reverseRoutePlaces);
+
+            // when
+            routeService.editRoute(member.getId(), route.getId(), request);
+
+            final Route updatedRoute = routeRepository.findById(route.getId()).get();
+            final List<String> updatedTagNames = updatedRoute.getTags().stream()
+                    .map(SelectedTag::getRouteTag)
+                    .map(RouteTag::getName)
+                    .toList();
+            final List<Place> updatedPlaces = updatedRoute.getRoutePlaces().stream()
+                    .map(RoutePlace::getPlace)
+                    .toList();
+
+            final RouteTag afterRouteTag1 = routeTagRepository.findById(routeTag1.getId()).get();
+            final RouteTag afterRouteTag2 = routeTagRepository.findById(routeTag2.getId()).get();
+            final List<Long> afterSelectCountsWithPlusOne = List.of(afterRouteTag1, afterRouteTag2).stream()
+                    .map(routeTag -> routeTag.getSelectCount() + 1)
+                    .toList();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(updatedRoute.getDate()).isEqualTo(newDate);
+                softly.assertThat(updatedRoute.getTitle()).isEqualTo(newTitle);
+                softly.assertThat(updatedTagNames).isEqualTo(newTagNames);
+                softly.assertThat(updatedRoute.getMoveWays()).isEqualTo(newMoveWays);
+                softly.assertThat(updatedPlaces)
+                        .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id", "createdAt", "updatedAt").isEqualTo(places);
+                softly.assertThat(afterSelectCountsWithPlusOne).usingRecursiveFieldByFieldElementComparator()
+                        .isEqualTo(beforeSelectCounts);
+            });
+        }
+
+        @Test
+        @DisplayName("동선 ID와 멤버 ID에 해당하는 동선이 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_route() {
+            // given
+            /**
+             * 기본 Route 생성
+             */
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route = routeBuilder.defaultRoute(member).build();
+
+            final RouteTagBuilder defaultRouteTagBuilder = routeTagBuilder.defaultRouteTag();
+            final RouteTag routeTag1 = defaultRouteTagBuilder.defaultRouteTag().name("tag1").build();
+            final RouteTag routeTag2 = defaultRouteTagBuilder.defaultRouteTag().name("tag2").build();
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
+
+            route.addTag(routeTag1);
+            route.addTag(routeTag2);
+            route.addPlace(place1);
+            route.addPlace(place2);
+            // 변경감지(update)를 위한 find
+            final Route beforeRoute = routeRepository.findById(route.getId()).get();
+
+            /**
+             * EditRequest 생성
+             */
+            final List<Long> beforeSelectCounts = beforeRoute.getTags().stream()
+                    .map(SelectedTag::getRouteTag)
+                    .map(RouteTag::getSelectCount)
+                    .toList();
+
+            final LocalDate newDate = beforeRoute.getDate().plusDays(1);
+            final String newTitle = "NEW " + beforeRoute.getTitle();
+            final List<String> newTagNames = beforeRoute.getTags().stream()
+                    .map(SelectedTag::getRouteTag)
+                    .map(RouteTag::getName)
+                    .map(name -> "NEW " + name)
+                    .toList();
+            final String newMoveWays = "자전거/" + beforeRoute.getMoveWays();
+            final List<RoutePlaceDto> reverseRoutePlaces = List.of(routePlaceDto2, routePlaceDto1);
+
+
+            final List<Place> places = reverseRoutePlaces.stream()
+                    .map(RoutePlaceDto::toEntity)
+                    .toList();
+
+
+            final RouteEditRequest request =
+                    new RouteEditRequest(newDate, newTitle, newTagNames, newMoveWays, reverseRoutePlaces);
+
+            final Long notExistMemberId = -1L;
+            final Long notExistRouteId = -1L;
+
+            // when & then
+            assertSoftly(softly -> {
+                softly.assertThatThrownBy(() -> routeService.editRoute(notExistMemberId, notExistRouteId, request))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+                softly.assertThatThrownBy(() -> routeService.editRoute(notExistMemberId, route.getId(), request))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+                softly.assertThatThrownBy(() -> routeService.editRoute(member.getId(), notExistRouteId, request))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+            });
         }
     }
 }

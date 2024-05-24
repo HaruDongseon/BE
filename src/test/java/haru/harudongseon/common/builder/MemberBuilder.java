@@ -66,5 +66,4 @@ public class MemberBuilder {
         final Member member = new Member(email, nickname, profileImageUrl, oauthId, deviceId, loginType);
         return memberRepository.save(member);
     }
-
 }
