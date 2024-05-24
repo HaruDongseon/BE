@@ -118,4 +118,12 @@ public class RouteService {
 
         findRoute.changeInfo(request.toEditEntity());
     }
+
+    public void deleteRoute(final Long memberId, final Long routeId) {
+        if (!routeRepository.existsByIdAndMemberId(routeId, memberId)) {
+            throw new EntityNotFoundException("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+        }
+
+        routeRepository.deleteById(routeId);
+    }
 }

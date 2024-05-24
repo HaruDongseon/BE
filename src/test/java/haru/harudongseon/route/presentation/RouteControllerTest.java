@@ -743,6 +743,86 @@ class RouteControllerTest extends E2ETest {
         }
     }
 
+    @Nested
+    @DisplayName("동선 삭제 시")
+    class DeleteRoute {
+
+        @Test
+        @DisplayName("동선 삭제에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
+
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
+            final ExtractableResponse<Response> addResponse = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
+            final long routeId = getLocationId(addResponse);
+
+            // when
+            final ExtractableResponse<Response> response = DELETE_ROUTE_REQUEST(accessToken, routeId);
+            final ExtractableResponse<Response> findResponse = FIND_ROUTE_REQUEST(accessToken, routeId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+            });
+        }
+
+        @Test
+        @DisplayName("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않으면 실패한다.")
+        void fail_not_exist_route() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+            final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final Place place1 = defaultPlace1Builder.build();
+
+            final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+            final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Place place2 = defaultPlace2Builder.build();
+
+            final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+            final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
+            final ExtractableResponse<Response> addResponse = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
+            final long routeId = getLocationId(addResponse);
+
+            final Long notExistMemberId = -1L;
+            final String notExistMemberAccessToken = jwtService.createAccessToken(notExistMemberId);
+            final Long notExistRouteId = -1L;
+
+            // when
+            final ExtractableResponse<Response> response1 = DELETE_ROUTE_REQUEST(notExistMemberAccessToken, notExistRouteId);
+            final ExtractableResponse<Response> response2 = DELETE_ROUTE_REQUEST(accessToken, notExistRouteId);
+            final ExtractableResponse<Response> response3 = DELETE_ROUTE_REQUEST(notExistMemberAccessToken, routeId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response1.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response1.jsonPath().getString("errorMessage")).isEqualTo("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+                softly.assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response2.jsonPath().getString("errorMessage")).isEqualTo("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+                softly.assertThat(response3.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response3.jsonPath().getString("errorMessage")).isEqualTo("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+            });
+        }
+    }
+
     private static ExtractableResponse<Response> ADD_ROUTE_REQUEST(final String accessToken, final RouteAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
@@ -808,6 +888,15 @@ class RouteControllerTest extends E2ETest {
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .when().log().all()
                 .get("/routes?start_date=" + startDate + "&end_date=" + endDate)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> DELETE_ROUTE_REQUEST(final String accessToken, final Long routeId) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .delete("/routes/{route-id}", routeId)
                 .then().log().all()
                 .extract();
     }
