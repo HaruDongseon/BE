@@ -544,4 +544,51 @@ RouteServiceTest extends ServiceTest {
             });
         }
     }
+
+    @Nested
+    @DisplayName("동선 삭제 시")
+    class deleteRoute {
+
+        @Test
+        @DisplayName("동선 삭제에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route = routeBuilder.defaultRoute(member).build();
+            final Long memberId = member.getId();
+            final Long routeId = route.getId();
+
+            // when
+            routeService.deleteRoute(memberId, routeId);
+
+            // then
+            assertThat(routeRepository.existsByIdAndMemberId(memberId, memberId)).isFalse();
+        }
+
+        @Test
+        @DisplayName("멤버 ID, 동선 ID에 해당하는 동선이 없으면 예외가 발생한다.")
+        void throws_not_exist_route() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route = routeBuilder.defaultRoute(member).build();
+            final Long memberId = member.getId();
+            final Long routeId = route.getId();
+
+            final Long notExistMemberId = -1L;
+            final Long notExistRouteId = -1L;
+
+            // when & then
+            assertSoftly(softly -> {
+                softly.assertThatThrownBy(() -> routeService.deleteRoute(notExistMemberId, notExistRouteId))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+                softly.assertThatThrownBy(() -> routeService.deleteRoute(memberId, notExistRouteId))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+                softly.assertThatThrownBy(() -> routeService.deleteRoute(notExistMemberId, routeId))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
+            });
+        }
+    }
 }

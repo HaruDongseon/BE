@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface RouteRepository extends JpaRepository<Route, Long> {
 
     Optional<Route> findByIdAndMemberId(final Long id, final Long memberId);
+    boolean existsByIdAndMemberId(final Long id, final Long memberId);
 
     @Query(
             "select r from Route r " +
