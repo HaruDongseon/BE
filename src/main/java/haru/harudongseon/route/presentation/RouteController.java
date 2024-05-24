@@ -48,10 +48,10 @@ public class RouteController {
     @Operation(summary = "동선 조회 API")
     @ApiResponse(responseCode = "200", description = "동선 조회 성공")
     @ApiResponse(responseCode = "404", description = "동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    @GetMapping("/{routeId}")
+    @GetMapping("/{route-id}")
     public ResponseEntity<RouteResponse> findRoute(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
-            @PathVariable("routeId") Long routeId
+            @PathVariable("route-id") Long routeId
     ) {
         final Long memberId = authMemberDto.memberId();
         final RouteResponse response = routeService.findRoute(memberId, routeId);
@@ -89,6 +89,19 @@ public class RouteController {
     ) {
         final Long memberId = authMemberDto.memberId();
         routeService.editRoute(memberId, routeId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "동선 삭제 API")
+    @ApiResponse(responseCode = "200", description = "동선 삭제 성공")
+    @ApiResponse(responseCode = "404", description = "동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @DeleteMapping("/{route-id}")
+    public ResponseEntity<Void> deleteRoute(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
+            @PathVariable("route-id") Long routeId
+    ) {
+        final Long memberId = authMemberDto.memberId();
+        routeService.deleteRoute(memberId, routeId);
         return ResponseEntity.ok().build();
     }
 }
