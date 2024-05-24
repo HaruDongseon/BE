@@ -8,6 +8,7 @@ import haru.harudongseon.global.mvc.AuthMemberDto;
 import haru.harudongseon.global.mvc.AuthPrincipal;
 import haru.harudongseon.route.application.RouteService;
 import haru.harudongseon.route.application.dto.RouteAddRequest;
+import haru.harudongseon.route.application.dto.RouteEditRequest;
 import haru.harudongseon.route.application.dto.RouteResponse;
 import haru.harudongseon.route.application.dto.RoutesResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,10 +48,10 @@ public class RouteController {
     @Operation(summary = "동선 조회 API")
     @ApiResponse(responseCode = "200", description = "동선 조회 성공")
     @ApiResponse(responseCode = "404", description = "동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    @GetMapping("/{route-id}")
+    @GetMapping("/{routeId}")
     public ResponseEntity<RouteResponse> findRoute(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
-            @PathVariable("route-id") Long routeId
+            @PathVariable("routeId") Long routeId
     ) {
         final Long memberId = authMemberDto.memberId();
         final RouteResponse response = routeService.findRoute(memberId, routeId);
@@ -75,5 +76,19 @@ public class RouteController {
         final Long memberId = authMemberDto.memberId();
         final RoutesResponse response = routeService.findRouteByPeriod(memberId, startDate, endDate);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "동선 편집 API")
+    @ApiResponse(responseCode = "200", description = "동선 편집 성공")
+    @ApiResponse(responseCode = "404", description = "동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @PutMapping("/{route-id}")
+    public ResponseEntity<Void> editRoute(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
+            @PathVariable("route-id") Long routeId,
+            @Valid @RequestBody RouteEditRequest request
+    ) {
+        final Long memberId = authMemberDto.memberId();
+        routeService.editRoute(memberId, routeId, request);
+        return ResponseEntity.ok().build();
     }
 }

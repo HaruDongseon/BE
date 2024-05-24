@@ -28,4 +28,8 @@ public class SelectedTag extends BaseEntity {
         this.routeTag = routeTag;
         route.getTags().add(this);
     }
+
+    public void unselected() {
+        routeTag.unselected();
+    }
 }

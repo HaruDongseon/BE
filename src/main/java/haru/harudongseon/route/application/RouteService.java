@@ -8,10 +8,7 @@ import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
 import haru.harudongseon.place.domain.Place;
 import haru.harudongseon.place.domain.PlaceRepository;
-import haru.harudongseon.route.application.dto.RouteAddRequest;
-import haru.harudongseon.route.application.dto.RoutePlaceDto;
-import haru.harudongseon.route.application.dto.RouteResponse;
-import haru.harudongseon.route.application.dto.RoutesResponse;
+import haru.harudongseon.route.application.dto.*;
 import haru.harudongseon.route.domain.*;
 import haru.harudongseon.routetag.domain.RouteTag;
 import haru.harudongseon.routetag.domain.RouteTagRepository;
@@ -63,7 +60,7 @@ public class RouteService {
             final Optional<RouteTag> optionalRouteTag = routeTagRepository.findByName(tagName);
             if (optionalRouteTag.isPresent()) {
                 final RouteTag findRouteTag = optionalRouteTag.get();
-                findRouteTag.select();
+                findRouteTag.selected();
                 final SelectedTag selectedTag = savedRoute.addTag(findRouteTag);
                 selectedTagRepository.save(selectedTag);
             }
@@ -107,5 +104,18 @@ public class RouteService {
         final List<Route> findRoutes = routeRepository.findByMemberIdAndPeriod(memberId, startDate, endDate);
 
         return RoutesResponse.from(findRoutes);
+    }
+
+    public void editRoute(final Long memberId, final Long routeId, final RouteEditRequest request) {
+        final Route findRoute = routeRepository.findByIdAndMemberId(routeId, memberId)
+                .orElseThrow(() -> new EntityNotFoundException("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다."));
+
+        findRoute.deleteTagAll();
+        addTag(request.tag(), findRoute);
+
+        findRoute.deleteRoutePlaceAll();
+        addPlace(request.routePlaces(), findRoute);
+
+        findRoute.changeInfo(request.toEditEntity());
     }
 }
