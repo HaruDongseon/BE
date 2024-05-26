@@ -12,4 +12,4 @@ ARG JAR_FILE_NAME=haru-dongseon.jar
 COPY ${JAR_FILE_PATH} /haru-dongseon/${JAR_FILE_NAME}
 
 # 어플리케이션 실행 명령어를 지정합니다.
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "haru-dongseon.jar"]
+ENTRYPOINT ["java", "-jar", "haru-dongseon.jar"]
