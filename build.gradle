@@ -51,3 +51,11 @@ tasks.named('test') {
 jar {
     enabled = false
 }
+
+task copyPrivate(type: Copy) {
+    copy {
+        from './BE-submodule' // ex) ./BE/submodule
+        include "*.yml"
+        into 'src/main/resources'
+    }
+}

@@ -8,8 +8,11 @@ WORKDIR /haru-dongseon
 ARG JAR_FILE_PATH=./build/libs/*.jar
 ARG JAR_FILE_NAME=haru-dongseon.jar
 
+# 프로필 환경 변수 설정
+ARG PROFILE
+
 # 빌드한 JAR 파일 원하는 경로에 복사
 COPY ${JAR_FILE_PATH} /haru-dongseon/${JAR_FILE_NAME}
 
 # 어플리케이션 실행 명령어를 지정합니다.
-ENTRYPOINT ["java", "-jar", "haru-dongseon.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=${PROFILE}", "haru-dongseon.jar"]
