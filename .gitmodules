@@ -1,0 +1,3 @@
+[submodule "BE-submodule"]
+	path = BE-submodule
+	url = https://github.com/HaruDongseon/BE-submodule
