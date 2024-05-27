@@ -38,3 +38,9 @@ aws:
     bucket: aaaa
     image-directory: aaaa
     domain: https://aaa.com/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"
