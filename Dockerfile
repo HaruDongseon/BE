@@ -7,9 +7,10 @@ WORKDIR /haru-dongseon
 # 변수 설정
 ARG JAR_FILE_PATH=./build/libs/*.jar
 ARG JAR_FILE_NAME=haru-dongseon.jar
-
-# 프로필 환경 변수 설정
 ARG PROFILE
+
+# 환경 변수로 설정
+ENV PROFILE=${PROFILE}
 
 # 빌드한 JAR 파일 원하는 경로에 복사
 COPY ${JAR_FILE_PATH} /haru-dongseon/${JAR_FILE_NAME}
