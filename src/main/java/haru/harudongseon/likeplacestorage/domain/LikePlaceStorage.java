@@ -19,7 +19,7 @@ public class LikePlaceStorage {
 
     private String name;
 
-    @OneToMany(mappedBy = "likePlaceStorage")
+    @OneToMany
     private List<LikePlace> likePlaces = new ArrayList<>();
 
     public LikePlaceStorage(final String name, final List<LikePlace> likePlaces) {
