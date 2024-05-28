@@ -53,4 +53,10 @@ public class LikePlaceService {
         final List<LikePlace> likePlaces = likePlaceRepository.findAllByMemberId(memberId);
         return LikePlacesResponse.from(likePlaces);
     }
+
+    @Transactional(readOnly = true)
+    public LikePlacesResponse searchByKeyword(final String keyword, final Long memberId) {
+        final List<LikePlace> likePlaces = likePlaceRepository.searchByKeywordAndMemberId(keyword, memberId);
+        return LikePlacesResponse.from(likePlaces);
+    }
 }

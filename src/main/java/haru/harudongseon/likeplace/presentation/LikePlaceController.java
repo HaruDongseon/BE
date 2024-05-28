@@ -74,4 +74,15 @@ public class LikePlaceController {
         final LikePlacesResponse response = likePlaceService.findAllLikePlace(authMemberDto.memberId());
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "보관 장소 검색 API")
+    @ApiResponse(responseCode = "200", description = "보관 장소 검색 성공")
+    @GetMapping("/search")
+    public ResponseEntity<LikePlacesResponse> findAllLikePlace(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
+            @Parameter(description = "검색할 키워드", example = "성수") @RequestParam("keyword") final String keyword
+    ) {
+        final LikePlacesResponse response = likePlaceService.searchByKeyword(keyword, authMemberDto.memberId());
+        return ResponseEntity.ok(response);
+    }
 }

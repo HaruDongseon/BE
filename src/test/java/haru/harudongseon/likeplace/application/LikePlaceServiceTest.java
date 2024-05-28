@@ -172,4 +172,30 @@ class LikePlaceServiceTest extends ServiceTest {
             assertThat(likePlaces).isEmpty();
         }
     }
+
+    @Nested
+    @DisplayName("보관 장소 검색 시")
+    class SearchByKeyword{
+
+        @Test
+        @DisplayName("Member Id와 키워드에 해당하는 보관 장소를 정확도 순(키워드 일치 -> 키워드로 시작 -> 키워드로 끝)으로 조회한다.")
+        void success_with_correct_order() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String keyword = "성수";
+
+            final LikePlace thirdLikePlace = likePlaceBuilder.defaultLikePlace(member).name("베이커리 " + keyword).build();
+            final LikePlace secondLikePlace = likePlaceBuilder.defaultLikePlace(member).name(keyword + "지점").build();
+            final LikePlace firstLikePlace = likePlaceBuilder.defaultLikePlace(member).name(keyword).build();
+            final LikePlace fourthLikePlace = likePlaceBuilder.defaultLikePlace(member).name("스타벅스 " + keyword + "점").build();
+
+            final LikePlacesResponse expected = LikePlacesResponse.from(List.of(firstLikePlace, secondLikePlace, thirdLikePlace, fourthLikePlace));
+
+            // when
+            final LikePlacesResponse actual = likePlaceService.searchByKeyword(keyword, member.getId());
+
+            // then
+            assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        }
+    }
 }

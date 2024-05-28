@@ -571,11 +571,6 @@ class LikePlaceControllerTest extends E2ETest {
             final ExtractableResponse<Response> addResponse3 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest3);
             final ExtractableResponse<Response> addResponse4 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest4);
 
-            final Long likePlace1Id = getLikePlaceId(addResponse1);
-            final Long likePlace2Id = getLikePlaceId(addResponse2);
-            final Long likePlace3Id = getLikePlaceId(addResponse3);
-            final Long likePlace4Id = getLikePlaceId(addResponse4);
-
             final LikePlace likePlace1 = addRequest1.toEntity(member);
             final LikePlace likePlace2 = addRequest2.toEntity(member);
             final LikePlace likePlace3 = addRequest3.toEntity(member);
@@ -609,6 +604,47 @@ class LikePlaceControllerTest extends E2ETest {
             assertSoftly(softly -> {
                 softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 softly.assertThat(actual).isEmpty();
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("보관 장소 검색 시")
+    class SearchByKeyword{
+
+        @Test
+        @DisplayName("정확도 순(키워드 일치 -> 키워드로 시작 -> 키워드로 끝)으로 보관 장소가 조회된다.")
+        void success_with_correct_order() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final String keyword = "성수";
+
+            final LikePlaceAddRequest addRequest1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("photoReference1")).name("베이커리 " + keyword).buildAddRequest();
+            final LikePlaceAddRequest addRequest2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("photoReference2")).name(keyword + "지점").buildAddRequest();
+            final LikePlaceAddRequest addRequest3 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("photoReference3")).name(keyword).buildAddRequest();
+            final LikePlaceAddRequest addRequest4 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("photoReference4")).name("스타벅스 " + keyword + "점").buildAddRequest();
+
+            ADD_LIKE_PLACE_REQUEST(accessToken, addRequest1);
+            ADD_LIKE_PLACE_REQUEST(accessToken, addRequest2);
+            ADD_LIKE_PLACE_REQUEST(accessToken, addRequest3);
+            ADD_LIKE_PLACE_REQUEST(accessToken, addRequest4);
+
+            final LikePlace thirdLikePlace = addRequest1.toEntity(member);
+            final LikePlace secondLikePlace = addRequest2.toEntity(member);
+            final LikePlace firstLikePlace = addRequest3.toEntity(member);
+            final LikePlace fourthLikePlace = addRequest4.toEntity(member);
+
+            final LikePlacesResponse expected = LikePlacesResponse.from(List.of(firstLikePlace, secondLikePlace, thirdLikePlace, fourthLikePlace));
+
+            // when
+            final ExtractableResponse<Response> response = SEARCH_LIKE_PLACE_REQUEST(accessToken, keyword);
+            final LikePlacesResponse actual = response.as(LikePlacesResponse.class);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual).usingRecursiveComparison().ignoringFields("likePlaces.id").isEqualTo(expected);
             });
         }
     }
@@ -702,6 +738,15 @@ class LikePlaceControllerTest extends E2ETest {
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .when().log().all()
                 .get("/like-places")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> SEARCH_LIKE_PLACE_REQUEST(final String accessToken, final String keyword) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .get("/like-places/search?keyword=" + keyword)
                 .then().log().all()
                 .extract();
     }

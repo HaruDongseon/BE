@@ -42,4 +42,8 @@ public class LikePlaceFixtures {
     public static LikePlace 기본_보관_장소_엔티티(final Member member) {
         return new LikePlace(member, 기본_외부_공급자_ID, 기본_보관_장소_이름, 기본_보관_장소_카테고리, 기본_보관_장소_사진_참조, 기본_보관_장소_좌표, 기본_보관_장소_영업_시간, 기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_구글_맵_URL, 기본_보관_장소_세부_정보);
     }
+
+    public static LikePlace 기본_보관_장소_엔티티_이름_파라미터(final Member member, final String name) {
+        return new LikePlace(member, 기본_외부_공급자_ID, name, 기본_보관_장소_카테고리, 기본_보관_장소_사진_참조, 기본_보관_장소_좌표, 기본_보관_장소_영업_시간, 기본_보관_장소_주소_이름, 기본_보관_장소_전화번호, 기본_보관_장소_웹사이트, 기본_보관_장소_구글_맵_URL, 기본_보관_장소_세부_정보);
+    }
 }
