@@ -13,6 +13,7 @@ import haru.harudongseon.common.builder.LikePlaceBuilder;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
+import haru.harudongseon.likeplace.application.dto.LikePlacesResponse;
 import haru.harudongseon.likeplace.application.dto.RecentLikePlacesResponse;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplace.domain.LikePlaceRepository;
@@ -543,10 +544,72 @@ class LikePlaceControllerTest extends E2ETest {
                 softly.assertThat(actual).isEmpty();
             });
         }
+    }
 
-        private Long getLikePlaceId(final ExtractableResponse<Response> addResponse1) {
-            final String location = addResponse1.header("Location");
-            return Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
+    @Nested
+    @DisplayName("보관 장소 전체 조회 시")
+    class FindAllLikePlace {
+
+        @Test
+        @DisplayName("전체 조회에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final LikePlaceAddRequest addRequest1 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference1")).buildAddRequest();
+            final LikePlaceAddRequest addRequest2 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference2")).buildAddRequest();
+            final LikePlaceAddRequest addRequest3 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference3")).buildAddRequest();
+            final LikePlaceAddRequest addRequest4 = likePlaceBuilder.defaultLikePlace(member)
+                    .photoReferences(List.of("photoReference4")).buildAddRequest();
+
+            final ExtractableResponse<Response> addResponse1 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest1);
+            final ExtractableResponse<Response> addResponse2 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest2);
+            final ExtractableResponse<Response> addResponse3 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest3);
+            final ExtractableResponse<Response> addResponse4 = ADD_LIKE_PLACE_REQUEST(accessToken, addRequest4);
+
+            final Long likePlace1Id = getLikePlaceId(addResponse1);
+            final Long likePlace2Id = getLikePlaceId(addResponse2);
+            final Long likePlace3Id = getLikePlaceId(addResponse3);
+            final Long likePlace4Id = getLikePlaceId(addResponse4);
+
+            final LikePlace likePlace1 = addRequest1.toEntity(member);
+            final LikePlace likePlace2 = addRequest2.toEntity(member);
+            final LikePlace likePlace3 = addRequest3.toEntity(member);
+            final LikePlace likePlace4 = addRequest4.toEntity(member);
+
+            final LikePlacesResponse expected = LikePlacesResponse.from(List.of(likePlace4, likePlace3, likePlace2, likePlace1));
+
+            // when
+            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_REQUEST(accessToken);
+            final LikePlacesResponse actual = response.as(LikePlacesResponse.class);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual).usingRecursiveComparison().ignoringFields("likePlaces.id").isEqualTo(expected);
+            });
+        }
+
+        @Test
+        @DisplayName("추가한 보관 장소가 없다면 빈 리스트가 조회된다.")
+        void success_not_exist_like_place_empty_list() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            // when
+            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_REQUEST(accessToken);
+            final List<LikePlaceResponse> actual = response.as(LikePlacesResponse.class).getLikePlaces();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual).isEmpty();
+            });
         }
     }
 
@@ -625,6 +688,20 @@ class LikePlaceControllerTest extends E2ETest {
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .when().log().all()
                 .get("/like-places/recent")
+                .then().log().all()
+                .extract();
+    }
+
+    private static Long getLikePlaceId(final ExtractableResponse<Response> addResponse1) {
+        final String location = addResponse1.header("Location");
+        return Long.parseLong(location.substring(location.lastIndexOf("/") + 1));
+    }
+
+    private static ExtractableResponse<Response> FIND_ALL_LIKE_PLACE_REQUEST(final String accessToken) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .get("/like-places")
                 .then().log().all()
                 .extract();
     }
