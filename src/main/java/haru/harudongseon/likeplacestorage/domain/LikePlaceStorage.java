@@ -28,4 +28,11 @@ public class LikePlaceStorage {
         this.name = name;
         this.memberId = memberId;
     }
+
+    public LikePlaceStorage(final String name, final Long memberId,
+                            final List<LikePlace> likePlaces) {
+        this.name = name;
+        this.memberId = memberId;
+        this.likePlaces = likePlaces;
+    }
 }
