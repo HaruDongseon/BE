@@ -3,6 +3,7 @@ package haru.harudongseon.global.exception;
 import java.util.Random;
 
 import haru.harudongseon.likeplace.exception.LikePlaceException;
+import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
 import haru.harudongseon.member.exception.MemberException;
 import haru.harudongseon.route.exception.RouteException;
 import jakarta.persistence.EntityNotFoundException;
@@ -63,7 +64,8 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             LikePlaceException.PhotoDuplicateException.class,
             RouteException.DuplicateTagException.class,
-            RouteException.DuplicateRoutePlacePhotoException.class
+            RouteException.DuplicateRoutePlacePhotoException.class,
+            LikePlaceStorageException.DuplicateException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequestException(final RuntimeException exception) {
         final String errorMessage = exception.getMessage();

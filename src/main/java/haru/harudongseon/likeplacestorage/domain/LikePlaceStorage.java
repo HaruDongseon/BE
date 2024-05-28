@@ -19,11 +19,20 @@ public class LikePlaceStorage {
 
     private String name;
 
+    private Long memberId;
+
     @OneToMany
     private List<LikePlace> likePlaces = new ArrayList<>();
 
-    public LikePlaceStorage(final String name, final List<LikePlace> likePlaces) {
+    public LikePlaceStorage(final String name, final Long memberId) {
         this.name = name;
+        this.memberId = memberId;
+    }
+
+    public LikePlaceStorage(final String name, final Long memberId,
+                            final List<LikePlace> likePlaces) {
+        this.name = name;
+        this.memberId = memberId;
         this.likePlaces = likePlaces;
     }
 }
