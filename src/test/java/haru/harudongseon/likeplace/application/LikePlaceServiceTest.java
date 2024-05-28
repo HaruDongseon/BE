@@ -10,6 +10,7 @@ import haru.harudongseon.common.builder.LikePlaceBuilder;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
+import haru.harudongseon.likeplace.application.dto.LikePlacesResponse;
 import haru.harudongseon.likeplace.application.dto.RecentLikePlacesResponse;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.member.domain.Member;
@@ -134,5 +135,41 @@ class LikePlaceServiceTest extends ServiceTest {
             assertThat(likePlaces).isEmpty();
         }
 
+    }
+
+    @Nested
+    @DisplayName("전체 보관 장소 조회 시")
+    class FindAllLikePlace {
+
+        @Test
+        @DisplayName("전체 조회에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).name("place1").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).name("place2").build();
+            final LikePlace likePlace3 = likePlaceBuilder.defaultLikePlace(member).name("place3").build();
+            final LikePlacesResponse expected = LikePlacesResponse.from(List.of(likePlace3, likePlace2, likePlace1));
+
+            // when
+            final LikePlacesResponse actual = likePlaceService.findAllLikePlace(member.getId());
+
+            // then
+            assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("저장한 보관 장소가 없다면, 빈 리스트로 조회된다.")
+        void success_not_exist_like_place_empty_list() {
+            // given
+            final Member savedMember = memberBuilder.defaultMember().build();
+
+            // when
+            final LikePlacesResponse response = likePlaceService.findAllLikePlace(savedMember.getId());
+            final List<LikePlaceResponse> likePlaces = response.getLikePlaces();
+
+            // then
+            assertThat(likePlaces).isEmpty();
+        }
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
+import haru.harudongseon.likeplace.application.dto.LikePlacesResponse;
 import haru.harudongseon.likeplace.application.dto.RecentLikePlacesResponse;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplace.domain.LikePlaceRepository;
@@ -33,6 +34,7 @@ public class LikePlaceService {
         return savedLikePlace.getId();
     }
 
+    @Transactional(readOnly = true)
     public LikePlaceResponse findLikePlace(final Long likePlaceId) {
         final LikePlace findLikePlace = likePlaceRepository.findById(likePlaceId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 보관 장소를 찾을 수 없습니다."));
@@ -40,8 +42,15 @@ public class LikePlaceService {
         return LikePlaceResponse.from(findLikePlace);
     }
 
+    @Transactional(readOnly = true)
     public RecentLikePlacesResponse findRecentLikePlace(final Long memberId) {
         final List<LikePlace> likePlaces = likePlaceRepository.findRecentThreeByMemberId(memberId);
         return RecentLikePlacesResponse.from(likePlaces);
+    }
+
+    @Transactional(readOnly = true)
+    public LikePlacesResponse findAllLikePlace(final Long memberId) {
+        final List<LikePlace> likePlaces = likePlaceRepository.findAllByMemberId(memberId);
+        return LikePlacesResponse.from(likePlaces);
     }
 }
