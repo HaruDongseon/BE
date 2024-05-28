@@ -39,4 +39,23 @@ class LikePlaceRepositoryTest extends RepositoryTest {
         // then
         assertThat(actual).usingRecursiveFieldByFieldElementComparator().isEqualTo(expected);
     }
+
+    @Test
+    @DisplayName("Member Id에 해당하는 모든 보관 장소를 생성일 기준 내림차순 정렬로 조회한다.")
+    void final_all_by_member_id() {
+        // given
+        final Member member = memberRepository.save(기본_회원_엔티티());
+        final LikePlace likePlace1 = likePlaceRepository.save(기본_보관_장소_엔티티(member));
+        final LikePlace likePlace2 = likePlaceRepository.save(기본_보관_장소_엔티티(member));
+        final LikePlace likePlace3 = likePlaceRepository.save(기본_보관_장소_엔티티(member));
+        final LikePlace likePlace4 = likePlaceRepository.save(기본_보관_장소_엔티티(member));
+
+        final List<LikePlace> expected = List.of(likePlace4, likePlace3, likePlace2, likePlace1);
+
+        // when
+        final List<LikePlace> actual = likePlaceRepository.findAllByMemberId(member.getId());
+
+        // then
+        assertThat(actual).usingRecursiveFieldByFieldElementComparator().isEqualTo(expected);
+    }
 }

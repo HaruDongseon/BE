@@ -14,4 +14,11 @@ public interface LikePlaceRepository extends JpaRepository<LikePlace, Long> {
             "limit 3"
     )
     List<LikePlace> findRecentThreeByMemberId(final Long memberId);
+
+    @Query(
+            "select lp from LikePlace lp " +
+                    "where lp.member.id = :memberId " +
+                    "order by lp.createdAt desc"
+    )
+    List<LikePlace> findAllByMemberId(final Long memberId);
 }

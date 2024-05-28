@@ -8,6 +8,7 @@ import haru.harudongseon.global.mvc.AuthPrincipal;
 import haru.harudongseon.likeplace.application.LikePlaceService;
 import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
+import haru.harudongseon.likeplace.application.dto.LikePlacesResponse;
 import haru.harudongseon.likeplace.application.dto.RecentLikePlacesResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -61,6 +62,16 @@ public class LikePlaceController {
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto
     ) {
         final RecentLikePlacesResponse response = likePlaceService.findRecentLikePlace(authMemberDto.memberId());
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "보관 장소 전체 조회 API")
+    @ApiResponse(responseCode = "200", description = "보관 장소 전체 조회 성공")
+    @GetMapping
+    public ResponseEntity<LikePlacesResponse> findAllLikePlace(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto
+    ) {
+        final LikePlacesResponse response = likePlaceService.findAllLikePlace(authMemberDto.memberId());
         return ResponseEntity.ok(response);
     }
 }
