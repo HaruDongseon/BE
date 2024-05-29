@@ -76,7 +76,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = {
-            EntityNotFoundException.class
+            EntityNotFoundException.class,
+            LikePlaceStorageException.NotExistLikePlaceException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFoundException(final RuntimeException exception) {
         final String errorMessage = exception.getMessage();
