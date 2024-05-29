@@ -100,8 +100,9 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final Member member = memberBuilder.defaultMember().build();
             final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("베이커리 성수").build();
             final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
-            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).build(List.of(likePlace1, likePlace2));
-            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(likePlaceStorage.getId(), likePlace1.getId());
+            final LikePlace likePlace3 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference3")).name("성수건설").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).build(List.of(likePlace1, likePlace2, likePlace3));
+            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(likePlaceStorage.getId(), List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when
             likePlaceStorageService.deleteLikePlace(request);
@@ -110,7 +111,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(likePlaceStorageAfterDelete.getLikePlaces().size()).isEqualTo(1);
-                softly.assertThat(likePlaceStorageAfterDelete.getLikePlaces().get(0).getId()).isEqualTo(likePlace2.getId());
+                softly.assertThat(likePlaceStorageAfterDelete.getLikePlaces().get(0).getId()).isEqualTo(likePlace3.getId());
             });
         }
 
@@ -122,7 +123,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final LikePlace likePlace = likePlaceBuilder.defaultLikePlace(member).build();
 
             final Long notExistLikePlaceStorageId = -1L;
-            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(notExistLikePlaceStorageId, likePlace.getId());
+            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(notExistLikePlaceStorageId, List.of(likePlace.getId()));
 
             // when & then
             assertThatThrownBy(() -> likePlaceStorageService.deleteLikePlace(request))

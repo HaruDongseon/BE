@@ -1,5 +1,7 @@
 package haru.harudongseon.likeplacestorage.application;
 
+import java.util.List;
+
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
@@ -39,11 +41,11 @@ public class LikePlaceStorageService {
 
     public void deleteLikePlace(final LikePlaceDeleteRequest request) {
         final Long likePlaceStorageId = request.likePlaceStorageId();
-        final Long likePlaceId = request.likePlaceId();
+        final List<Long> likePlaceIds = request.likePlaceIds();
 
         final LikePlaceStorage likePlaceStorage = likePlaceStorageRepository.findById(likePlaceStorageId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 장소 보관함을 찾을 수 없습니다."));
 
-        likePlaceStorage.removeLikePlace(likePlaceId);
+        likePlaceIds.forEach(likePlaceStorage::removeLikePlace);
     }
 }
