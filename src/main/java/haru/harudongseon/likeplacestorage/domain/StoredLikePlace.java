@@ -1,0 +1,31 @@
+package haru.harudongseon.likeplacestorage.domain;
+
+import haru.harudongseon.likeplace.domain.LikePlace;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class StoredLikePlace {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private LikePlace likePlace;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private LikePlaceStorage likePlaceStorage;
+
+    public void associate(final LikePlace likePlace, final LikePlaceStorage likePlaceStorage) {
+        this.likePlace = likePlace;
+        this.likePlaceStorage = likePlaceStorage;
+        likePlaceStorage.getLikePlaces().add(this);
+    }
+}

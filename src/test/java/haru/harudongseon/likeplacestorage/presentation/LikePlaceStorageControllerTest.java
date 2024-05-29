@@ -58,7 +58,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             // given
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
-            final LikePlaceStorage existLikePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member.getId()).build();
+            final LikePlaceStorage existLikePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).build();
             final LikePlaceStorageAddRequest duplicateRequest = new LikePlaceStorageAddRequest(existLikePlaceStorage.getName());
 
             // when

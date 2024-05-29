@@ -5,6 +5,8 @@ import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddReq
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorageRepository;
 import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
+import haru.harudongseon.member.domain.Member;
+import haru.harudongseon.member.domain.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,13 +17,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LikePlaceStorageService {
 
+    private final MemberRepository memberRepository;
     private final LikePlaceStorageRepository likePlaceStorageRepository;
 
     public Long addLikePlaceStorage(final Long memberId, final LikePlaceStorageAddRequest request) {
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버가 존재하지 않습니다."));
+
         final String name = request.name();
         checkDuplicateLikePlaceStorage(memberId, name);
 
-        final LikePlaceStorage savedLikePlaceStorage = likePlaceStorageRepository.save(new LikePlaceStorage(name, memberId));
+        final LikePlaceStorage savedLikePlaceStorage = likePlaceStorageRepository.save(new LikePlaceStorage(name, member));
         return savedLikePlaceStorage.getId();
     }
 

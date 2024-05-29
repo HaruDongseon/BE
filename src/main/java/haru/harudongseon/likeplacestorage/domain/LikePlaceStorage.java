@@ -2,10 +2,9 @@ package haru.harudongseon.likeplacestorage.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import haru.harudongseon.likeplace.domain.LikePlace;
-import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
+import haru.harudongseon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,33 +20,28 @@ public class LikePlaceStorage {
 
     private String name;
 
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Member member;
 
-    @OneToMany
-    private List<LikePlace> likePlaces = new ArrayList<>();
+    @OneToMany(mappedBy = "likePlaceStorage")
+    private List<StoredLikePlace> likePlaces = new ArrayList<>();
 
-    public LikePlaceStorage(final String name, final Long memberId) {
+    public LikePlaceStorage(final String name, final Member member) {
         this.name = name;
-        this.memberId = memberId;
+        this.member = member;
     }
 
-    public LikePlaceStorage(final String name, final Long memberId,
-                            final List<LikePlace> likePlaces) {
+    public LikePlaceStorage(final String name, final Member member,
+                            final List<StoredLikePlace> likePlaces) {
         this.name = name;
-        this.memberId = memberId;
+        this.member = member;
         this.likePlaces = likePlaces;
     }
 
-    public void removeLikePlace(final Long likePlaceId) {
-        final Optional<LikePlace> optionalLikePlace = likePlaces.stream()
-                .filter(likePlace -> likePlace.getId().equals(likePlaceId))
-                .findFirst();
-
-        if (optionalLikePlace.isEmpty()) {
-            throw new LikePlaceStorageException.NotExistLikePlaceException();
-        }
-
-        final LikePlace likePlace = optionalLikePlace.get();
-        likePlaces.remove(likePlace);
+    public StoredLikePlace addLikePlace(final LikePlace likePlace) {
+        final StoredLikePlace storedLikePlace = new StoredLikePlace();
+        storedLikePlace.associate(likePlace, this);
+        return storedLikePlace;
     }
 }
