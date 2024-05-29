@@ -2,12 +2,11 @@ package haru.harudongseon.likeplacestorage.domain;
 
 import haru.harudongseon.likeplace.domain.LikePlace;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 public class StoredLikePlace {
 

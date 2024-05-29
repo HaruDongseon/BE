@@ -18,4 +18,8 @@ public class MemberFixtures {
     public static Member 기본_회원_엔티티() {
         return new Member(기본_이메일, 기본_닉네임, 기본_프로필_이미지_URL, 기본_OAUTH_ID, 기본_DEVICE_ID, 기본_LOGIN_TYPE);
     }
+
+    public static Member 기본_회원_도메인(final Long id) {
+        return new Member(id, 기본_이메일, 기본_닉네임, 기본_프로필_이미지_URL, 기본_OAUTH_ID, 기본_DEVICE_ID, 기본_LOGIN_TYPE);
+    }
 }

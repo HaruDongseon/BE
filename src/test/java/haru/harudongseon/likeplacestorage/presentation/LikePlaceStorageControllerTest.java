@@ -3,6 +3,8 @@ package haru.harudongseon.likeplacestorage.presentation;
 import static haru.harudongseon.common.fixtures.LikePlaceStorageFixtures.기본_장소_보관함_이름;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.util.Collections;
+
 import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.builder.LikePlaceStorageBuilder;
 import haru.harudongseon.common.builder.MemberBuilder;
@@ -58,7 +60,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             // given
             final Member member = memberBuilder.defaultMember().build();
             final String accessToken = jwtService.createAccessToken(member.getId());
-            final LikePlaceStorage existLikePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).build();
+            final LikePlaceStorage existLikePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).build(Collections.emptyList());
             final LikePlaceStorageAddRequest duplicateRequest = new LikePlaceStorageAddRequest(existLikePlaceStorage.getName());
 
             // when

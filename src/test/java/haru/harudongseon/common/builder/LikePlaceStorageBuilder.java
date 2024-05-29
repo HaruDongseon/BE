@@ -5,9 +5,11 @@ import static haru.harudongseon.common.fixtures.LikePlaceStorageFixtures.기본_
 import java.util.ArrayList;
 import java.util.List;
 
+import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorageRepository;
 import haru.harudongseon.likeplacestorage.domain.StoredLikePlace;
+import haru.harudongseon.likeplacestorage.domain.StoredLikePlaceRepository;
 import haru.harudongseon.member.domain.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,9 @@ public class LikePlaceStorageBuilder {
 
     @Autowired
     private LikePlaceStorageRepository likePlaceStorageRepository;
+
+    @Autowired
+    private StoredLikePlaceRepository storedLikePlaceRepository;
 
     private String name;
     private Member member;
@@ -47,8 +52,11 @@ public class LikePlaceStorageBuilder {
         return this;
     }
 
-    public LikePlaceStorage build() {
-        final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(name, member, likePlaces);
+    public LikePlaceStorage build(final List<LikePlace> likePlaces) {
+        final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(name, member);
+        for (LikePlace likePlace : likePlaces) {
+            likePlaceStorage.addLikePlace(likePlace);
+        }
         return likePlaceStorageRepository.save(likePlaceStorage);
     }
 }
