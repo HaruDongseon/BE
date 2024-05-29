@@ -63,4 +63,26 @@ public class LikePlace extends BaseEntity {
         this.googleMapsUri = googleMapsUri;
         this.placeDetails = placeDetails;
     }
+
+    public LikePlace(final Long id, final Member member,
+                     final String providerPlaceId, final String name,
+                     final String category, final List<String> photoReferences,
+                     final Coordinates coordinates, final String openingHours,
+                     final String addressName, final String phoneNumber,
+                     final String website, final String googleMapsUri,
+                     final PlaceDetails placeDetails) {
+        this.id = id;
+        this.member = member;
+        this.providerPlaceId = providerPlaceId;
+        this.name = name;
+        this.category = category;
+        this.photoReferences = photoReferences;
+        this.coordinates = coordinates;
+        this.openingHours = openingHours;
+        this.addressName = addressName;
+        this.phoneNumber = phoneNumber;
+        this.website = website;
+        this.googleMapsUri = googleMapsUri;
+        this.placeDetails = placeDetails;
+    }
 }

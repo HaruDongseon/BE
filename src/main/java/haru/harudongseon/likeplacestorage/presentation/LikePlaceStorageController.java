@@ -6,6 +6,7 @@ import haru.harudongseon.global.exception.ErrorResponse;
 import haru.harudongseon.global.mvc.AuthMemberDto;
 import haru.harudongseon.global.mvc.AuthPrincipal;
 import haru.harudongseon.likeplacestorage.application.LikePlaceStorageService;
+import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,10 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "LIKE PLACE STORAGE API", description = "장소 보관함 관련 API")
 @RestController
@@ -41,5 +39,17 @@ public class LikePlaceStorageController {
         final Long memberId = authMemberDto.memberId();
         final Long likePlaceStorageId = likePlaceStorageService.addLikePlaceStorage(memberId, request);
         return ResponseEntity.created(URI.create("/like-place-storage/" + likePlaceStorageId)).build();
+    }
+
+    @Operation(summary = "장소 보관함 보관 장소 삭제 API")
+    @ApiResponse(responseCode = "200", description = "장소 보관함 보관 장소 삭제 성공")
+    @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "멤버/보관 장소 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @DeleteMapping("/like-places")
+    public ResponseEntity<Void> deleteLikePlace(
+            @Valid @RequestBody LikePlaceDeleteRequest request
+    ) {
+        likePlaceStorageService.deleteLikePlace(request);
+        return ResponseEntity.ok().build();
     }
 }

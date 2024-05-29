@@ -8,6 +8,9 @@ import java.util.List;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorageRepository;
+import haru.harudongseon.likeplacestorage.domain.StoredLikePlace;
+import haru.harudongseon.likeplacestorage.domain.StoredLikePlaceRepository;
+import haru.harudongseon.member.domain.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,13 +20,16 @@ public class LikePlaceStorageBuilder {
     @Autowired
     private LikePlaceStorageRepository likePlaceStorageRepository;
 
-    private String name;
-    private Long memberId;
-    private List<LikePlace> likePlaces = new ArrayList<>();
+    @Autowired
+    private StoredLikePlaceRepository storedLikePlaceRepository;
 
-    public LikePlaceStorageBuilder defaultLikePlaceStorage(final Long memberId) {
+    private String name;
+    private Member member;
+    private List<StoredLikePlace> likePlaces = new ArrayList<>();
+
+    public LikePlaceStorageBuilder defaultLikePlaceStorage(final Member member) {
         this.name = 기본_장소_보관함_이름;
-        this.memberId = memberId;
+        this.member = member;
 
         return this;
     }
@@ -34,20 +40,23 @@ public class LikePlaceStorageBuilder {
         return this;
     }
 
-    public LikePlaceStorageBuilder memberId(final Long memberId) {
-        this.memberId = memberId;
+    public LikePlaceStorageBuilder member(final Member member) {
+        this.member = member;
 
         return this;
     }
 
-    public LikePlaceStorageBuilder likePlaces(final List<LikePlace> likePlaces) {
+    public LikePlaceStorageBuilder likePlaces(final List<StoredLikePlace> likePlaces) {
         this.likePlaces = likePlaces;
 
         return this;
     }
 
-    public LikePlaceStorage build() {
-        final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(name, memberId, likePlaces);
+    public LikePlaceStorage build(final List<LikePlace> likePlaces) {
+        final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(name, member);
+        for (LikePlace likePlace : likePlaces) {
+            likePlaceStorage.addLikePlace(likePlace);
+        }
         return likePlaceStorageRepository.save(likePlaceStorage);
     }
 }
