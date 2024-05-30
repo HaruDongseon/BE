@@ -1,5 +1,6 @@
 package haru.harudongseon.likeplacestorage.domain;
 
+import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
-public class StoredLikePlace {
+public class StoredLikePlace extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

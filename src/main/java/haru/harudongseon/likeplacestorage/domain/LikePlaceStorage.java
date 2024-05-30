@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
 import haru.harudongseon.member.domain.Member;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class LikePlaceStorage {
+public class LikePlaceStorage extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
