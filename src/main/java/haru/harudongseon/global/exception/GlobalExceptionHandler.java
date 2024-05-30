@@ -6,6 +6,7 @@ import haru.harudongseon.likeplace.exception.LikePlaceException;
 import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
 import haru.harudongseon.member.exception.MemberException;
 import haru.harudongseon.route.exception.RouteException;
+import haru.harudongseon.routestorage.exception.RouteStorageException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -65,7 +66,8 @@ public class GlobalExceptionHandler {
             LikePlaceException.PhotoDuplicateException.class,
             RouteException.DuplicateTagException.class,
             RouteException.DuplicateRoutePlacePhotoException.class,
-            LikePlaceStorageException.DuplicateException.class
+            LikePlaceStorageException.DuplicateException.class,
+            RouteStorageException.DuplicateException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequestException(final RuntimeException exception) {
         final String errorMessage = exception.getMessage();

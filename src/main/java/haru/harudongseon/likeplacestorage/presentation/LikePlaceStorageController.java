@@ -31,6 +31,7 @@ public class LikePlaceStorageController {
     @Operation(summary = "장소 보관함 추가 API")
     @ApiResponse(responseCode = "201", description = "장소 보관함 추가 성공", headers = @Header(name = "Location", description = "생성된 장소 보관함 페이지(ID로 이동)"))
     @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PostMapping
     public ResponseEntity<Void> addLikePlaceStorage(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,

@@ -22,4 +22,10 @@ public class StoredRoute extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private RouteStorage routeStorage;
+
+    public void associate(final Route route, final RouteStorage routeStorage) {
+        this.route = route;
+        this.routeStorage = routeStorage;
+        routeStorage.getRoutes().add(this);
+    }
 }

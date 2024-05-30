@@ -5,6 +5,7 @@ import java.util.List;
 
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.member.domain.Member;
+import haru.harudongseon.route.domain.Route;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,5 +32,11 @@ public class RouteStorage extends BaseEntity {
     public RouteStorage(final Member member, final String name) {
         this.member = member;
         this.name = name;
+    }
+
+    public StoredRoute addRoute(final Route route) {
+        final StoredRoute storedRoute = new StoredRoute();
+        storedRoute.associate(route, this);
+        return storedRoute;
     }
 }
