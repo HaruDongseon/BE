@@ -3,6 +3,7 @@ package haru.harudongseon.routestorage.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class RouteStorage {
+public class RouteStorage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
