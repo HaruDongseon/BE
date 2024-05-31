@@ -142,7 +142,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final ExtractableResponse<Response> response = DELETE_LIKE_PLACE_REQUEST(accessToken, request);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
         @Test

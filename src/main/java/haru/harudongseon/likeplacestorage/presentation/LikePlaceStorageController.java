@@ -43,7 +43,7 @@ public class LikePlaceStorageController {
     }
 
     @Operation(summary = "장소 보관함 보관 장소 삭제 API")
-    @ApiResponse(responseCode = "200", description = "장소 보관함 보관 장소 삭제 성공")
+    @ApiResponse(responseCode = "204", description = "장소 보관함 보관 장소 삭제 성공")
     @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "멤버/보관 장소 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @DeleteMapping("/like-places")
@@ -51,6 +51,6 @@ public class LikePlaceStorageController {
             @Valid @RequestBody LikePlaceDeleteRequest request
     ) {
         likePlaceStorageService.deleteLikePlace(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
