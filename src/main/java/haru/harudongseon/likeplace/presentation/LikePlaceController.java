@@ -33,6 +33,7 @@ public class LikePlaceController {
     @Operation(summary = "보관 장소 추가 API")
     @ApiResponse(responseCode = "201", description = "보관 장소 추가 성공", headers = @Header(name = "Location", description = "생성된 보관 장소 상세 페이지(ID로 이동)"))
     @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PostMapping
     public ResponseEntity<Void> addSearchedPlace(
@@ -46,6 +47,7 @@ public class LikePlaceController {
 
     @Operation(summary = "보관 장소 조회 API")
     @ApiResponse(responseCode = "200", description = "보관 장소 조회 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "보관 장소 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @GetMapping("/{like-place-id}")
     public ResponseEntity<LikePlaceResponse> findLikePlace(
@@ -57,6 +59,7 @@ public class LikePlaceController {
 
     @Operation(summary = "최근 보관 장소 조회 API")
     @ApiResponse(responseCode = "200", description = "최근 보관 장소 조회 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @GetMapping("/recent")
     public ResponseEntity<RecentLikePlacesResponse> findRecentLikePlace(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto
@@ -67,6 +70,7 @@ public class LikePlaceController {
 
     @Operation(summary = "보관 장소 전체 조회 API")
     @ApiResponse(responseCode = "200", description = "보관 장소 전체 조회 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @GetMapping
     public ResponseEntity<LikePlacesResponse> findAllLikePlace(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto
@@ -77,6 +81,7 @@ public class LikePlaceController {
 
     @Operation(summary = "보관 장소 검색 API")
     @ApiResponse(responseCode = "200", description = "보관 장소 검색 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @GetMapping("/search")
     public ResponseEntity<LikePlacesResponse> findAllLikePlace(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,

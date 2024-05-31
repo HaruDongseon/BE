@@ -34,6 +34,7 @@ public class RouteController {
     @Operation(summary = "동선 추가 API")
     @ApiResponse(responseCode = "201", description = "동선 추가 성공", headers = @Header(name = "Location", description = "생성된 동선 페이지(ID로 이동)"))
     @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PostMapping
     public ResponseEntity<Void> addRoute(
@@ -47,6 +48,7 @@ public class RouteController {
 
     @Operation(summary = "동선 조회 API")
     @ApiResponse(responseCode = "200", description = "동선 조회 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @GetMapping("/{route-id}")
     public ResponseEntity<RouteResponse> findRoute(
@@ -60,6 +62,7 @@ public class RouteController {
 
     @Operation(summary = "동선 기간 조회 API")
     @ApiResponse(responseCode = "200", description = "동선 기간 조회 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @GetMapping
     public ResponseEntity<RoutesResponse> findRouteByPeriod(
             @Parameter(hidden = true) @AuthPrincipal
@@ -80,6 +83,7 @@ public class RouteController {
 
     @Operation(summary = "동선 편집 API")
     @ApiResponse(responseCode = "200", description = "동선 편집 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PutMapping("/{route-id}")
     public ResponseEntity<Void> editRoute(
@@ -94,6 +98,7 @@ public class RouteController {
 
     @Operation(summary = "동선 삭제 API")
     @ApiResponse(responseCode = "200", description = "동선 삭제 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @DeleteMapping("/{route-id}")
     public ResponseEntity<Void> deleteRoute(

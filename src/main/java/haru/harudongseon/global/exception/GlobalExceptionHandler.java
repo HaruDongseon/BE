@@ -2,6 +2,7 @@ package haru.harudongseon.global.exception;
 
 import java.util.Random;
 
+import haru.harudongseon.global.mvc.AuthException;
 import haru.harudongseon.likeplace.exception.LikePlaceException;
 import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
 import haru.harudongseon.member.exception.MemberException;
@@ -88,6 +89,17 @@ public class GlobalExceptionHandler {
         log.warn(errorMessage);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(errorMessage));
+    }
+
+    @ExceptionHandler(value = {
+            AuthException.UnauthorizedException.class
+    })
+    public ResponseEntity<ErrorResponse> handleUnAuthorizedException(final AuthException.UnauthorizedException exception) {
+        final String errorMessage = "인증에 실패했습니다. 정확한 에러는 서버 로그를 확인해주세요.";
+        log.warn(exception.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse(errorMessage));
     }
 }

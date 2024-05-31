@@ -28,6 +28,7 @@ public class SearchedPlaceController {
     @Operation(summary = "검색한 장소 추가 API")
     @ApiResponse(responseCode = "200", description = "검색한 장소 추가 성공")
     @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PostMapping
     public ResponseEntity<Void> addSearchedPlace(
@@ -41,6 +42,7 @@ public class SearchedPlaceController {
 
     @Operation(summary = "최근 검색 장소 조회 API")
     @ApiResponse(responseCode = "200", description = "최근 검색 장소 조회 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @GetMapping("/recent")
     public ResponseEntity<RecentSearchedPlacesResponse> addSearchedPlace(
@@ -53,6 +55,7 @@ public class SearchedPlaceController {
 
     @Operation(summary = "검색 장소 삭제 API")
     @ApiResponse(responseCode = "204", description = "검색 장소 삭제 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "검색 장소 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @DeleteMapping("/{searched-place-id}")
     public ResponseEntity<Void> delete(
@@ -66,6 +69,7 @@ public class SearchedPlaceController {
 
     @Operation(summary = "검색 장소 전체 삭제 API")
     @ApiResponse(responseCode = "204", description = "검색 장소 전체 삭제 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @DeleteMapping
     public ResponseEntity<Void> deleteAll() {
         searchedPlaceService.deleteAll();

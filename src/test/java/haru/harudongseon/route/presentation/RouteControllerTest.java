@@ -369,8 +369,8 @@ class RouteControllerTest extends E2ETest {
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-                softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("해당하는 멤버를 찾을 수 없습니다.");
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("인증에 실패했습니다. 정확한 에러는 서버 로그를 확인해주세요.");
             });
         }
 
@@ -643,14 +643,14 @@ class RouteControllerTest extends E2ETest {
             final ExtractableResponse<Response> addResponse = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
             final long targetRouteId = getLocationId(addResponse);
 
-            final Long notExistMemberId = -1L;
-            final String notExistMemberAccessToken = jwtService.createAccessToken(notExistMemberId);
+            final Member notExistRouteMember = memberBuilder.defaultMember().build();
+            final String notExistRouteMemberAccessToken = jwtService.createAccessToken(notExistRouteMember.getId());
             final Long notExistRouteId = -1L;
 
             // when
-            final ExtractableResponse<Response> response1 = FIND_ROUTE_REQUEST(notExistMemberAccessToken, targetRouteId);
+            final ExtractableResponse<Response> response1 = FIND_ROUTE_REQUEST(notExistRouteMemberAccessToken, targetRouteId);
             final ExtractableResponse<Response> response2 = FIND_ROUTE_REQUEST(accessToken, notExistRouteId);
-            final ExtractableResponse<Response> response3 = FIND_ROUTE_REQUEST(notExistMemberAccessToken, notExistRouteId);
+            final ExtractableResponse<Response> response3 = FIND_ROUTE_REQUEST(notExistRouteMemberAccessToken, notExistRouteId);
 
             // then
             assertSoftly(softly -> {
@@ -802,14 +802,14 @@ class RouteControllerTest extends E2ETest {
             final ExtractableResponse<Response> addResponse = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
             final long routeId = getLocationId(addResponse);
 
-            final Long notExistMemberId = -1L;
-            final String notExistMemberAccessToken = jwtService.createAccessToken(notExistMemberId);
+            final Member notExistRouteMember = memberBuilder.defaultMember().build();
+            final String notExistRouteMemberAccessToken = jwtService.createAccessToken(notExistRouteMember.getId());
             final Long notExistRouteId = -1L;
 
             // when
-            final ExtractableResponse<Response> response1 = DELETE_ROUTE_REQUEST(notExistMemberAccessToken, notExistRouteId);
+            final ExtractableResponse<Response> response1 = DELETE_ROUTE_REQUEST(notExistRouteMemberAccessToken, notExistRouteId);
             final ExtractableResponse<Response> response2 = DELETE_ROUTE_REQUEST(accessToken, notExistRouteId);
-            final ExtractableResponse<Response> response3 = DELETE_ROUTE_REQUEST(notExistMemberAccessToken, routeId);
+            final ExtractableResponse<Response> response3 = DELETE_ROUTE_REQUEST(notExistRouteMemberAccessToken, routeId);
 
             // then
             assertSoftly(softly -> {
