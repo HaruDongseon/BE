@@ -67,7 +67,8 @@ public class GlobalExceptionHandler {
             RouteException.DuplicateTagException.class,
             RouteException.DuplicateRoutePlacePhotoException.class,
             LikePlaceStorageException.DuplicateException.class,
-            RouteStorageException.DuplicateException.class
+            RouteStorageException.DuplicateException.class,
+            RouteStorageException.NotOwnerException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequestException(final RuntimeException exception) {
         final String errorMessage = exception.getMessage();
@@ -79,7 +80,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = {
             EntityNotFoundException.class,
-            LikePlaceStorageException.NotExistLikePlaceException.class
+            LikePlaceStorageException.NotExistLikePlaceException.class,
+            RouteStorageException.NotExistRouteException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFoundException(final RuntimeException exception) {
         final String errorMessage = exception.getMessage();
