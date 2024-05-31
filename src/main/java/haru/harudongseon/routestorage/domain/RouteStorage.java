@@ -6,6 +6,7 @@ import java.util.List;
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.route.domain.Route;
+import haru.harudongseon.routestorage.exception.RouteStorageException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -38,5 +39,25 @@ public class RouteStorage extends BaseEntity {
         final StoredRoute storedRoute = new StoredRoute();
         storedRoute.associate(route, this);
         return storedRoute;
+    }
+
+    public void removeRoutes(final Long memberId, final List<Long> routeIds) {
+        validateOwner(memberId);
+        routeIds.forEach(this::removeRoute);
+    }
+
+    private void validateOwner(final Long memberId) {
+        if (!member.getId().equals(memberId)) {
+            throw new RouteStorageException.NotOwnerException();
+        }
+    }
+
+    private void removeRoute(final Long routeId) {
+        final StoredRoute routeToRemove = routes.stream()
+                .filter(storedRoute -> storedRoute.getRoute().getId().equals(routeId))
+                .findFirst()
+                .orElseThrow(RouteStorageException.NotExistRouteException::new);
+
+        routes.remove(routeToRemove);
     }
 }

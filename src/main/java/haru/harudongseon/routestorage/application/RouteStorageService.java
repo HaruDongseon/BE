@@ -1,7 +1,10 @@
 package haru.harudongseon.routestorage.application;
 
+import java.util.List;
+
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
+import haru.harudongseon.routestorage.application.dto.RouteDeleteRequest;
 import haru.harudongseon.routestorage.application.dto.RouteStorageAddRequest;
 import haru.harudongseon.routestorage.domain.RouteStorage;
 import haru.harudongseon.routestorage.domain.RouteStorageRepository;
@@ -35,5 +38,15 @@ public class RouteStorageService {
         if (routeStorageRepository.existsByMemberIdAndName(memberId, name)) {
             throw new RouteStorageException.DuplicateException();
         }
+    }
+
+    public void deleteRouteStorage(final Long memberId, final RouteDeleteRequest request) {
+        final Long routeStorageId = request.routeStorageId();
+        final List<Long> routeIds = request.routeIds();
+
+        final RouteStorage routeStorage = routeStorageRepository.findById(routeStorageId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 동선 보관함이 존재하지 않습니다."));
+
+        routeStorage.removeRoutes(memberId, routeIds);
     }
 }

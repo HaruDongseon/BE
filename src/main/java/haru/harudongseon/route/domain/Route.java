@@ -36,6 +36,16 @@ public class Route extends BaseEntity {
     @OneToMany(mappedBy = "route", orphanRemoval = true)
     private List<RoutePlace> routePlaces = new ArrayList<>();
 
+    public Route(final Long id, final Member member,
+                 final LocalDate date, final String title,
+                 final String moveWays) {
+        this.id = id;
+        this.member = member;
+        this.date = date;
+        this.title = title;
+        this.moveWays = moveWays;
+    }
+
     public Route(final Member member, final LocalDate date,
                  final String title, final String moveWays) {
         this.member = member;
