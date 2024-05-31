@@ -31,6 +31,7 @@ public class RouteStorageController {
     @Operation(summary = "동선 보관함 추가 API")
     @ApiResponse(responseCode = "201", description = "동선 보관함 추가 성공", headers = @Header(name = "Location", description = "생성된 동선 보관함 페이지(ID로 이동)"))
     @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PostMapping
     public ResponseEntity<Void> addLikePlaceStorage(
@@ -45,6 +46,7 @@ public class RouteStorageController {
     @Operation(summary = "동선 보관함 동선 삭제 API")
     @ApiResponse(responseCode = "204", description = "장소 보관함 보관 장소 삭제 성공")
     @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "멤버/동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @DeleteMapping("/routes")
     public ResponseEntity<Void> deleteRoutes(

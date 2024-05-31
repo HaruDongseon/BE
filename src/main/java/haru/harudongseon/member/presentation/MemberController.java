@@ -32,6 +32,7 @@ public class MemberController {
     @Operation(summary = "내 정보 조회 API")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @GetMapping("/me")
     public ResponseEntity<MyProfileResponse> getMyProfile(
@@ -42,6 +43,7 @@ public class MemberController {
 
     @Operation(summary = "내 정보 수정 API")
     @ApiResponse(responseCode = "200", description = "수정 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PatchMapping("/me")
     public ResponseEntity<Void> editMyProfile(@Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
@@ -52,6 +54,7 @@ public class MemberController {
 
     @Operation(summary = "멤버 이미지 저장 API")
     @ApiResponse(responseCode = "200", description = "이미지 저장 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "500", description = "파일 업로드 예외(관리자 문의)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MemberImageSaveResponse> saveMemberImage(
