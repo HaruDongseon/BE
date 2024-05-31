@@ -37,7 +37,7 @@ class LikePlaceStorageTest {
             likePlaceStorage.addLikePlace(likePlace2);
 
             // when
-            likePlaceStorage.removeLikePlace(likePlace1Id);
+            likePlaceStorage.removeLikePlaces(List.of(likePlace1Id));
             final List<StoredLikePlace> likePlaces = likePlaceStorage.getLikePlaces();
 
             // then
@@ -64,7 +64,7 @@ class LikePlaceStorageTest {
             final Long notExistLikePlaceId = -1L;
 
             // when & then
-            assertThatThrownBy(() -> likePlaceStorage.removeLikePlace(notExistLikePlaceId))
+            assertThatThrownBy(() -> likePlaceStorage.removeLikePlaces(List.of(notExistLikePlaceId)))
                     .isInstanceOf(LikePlaceStorageException.NotExistLikePlaceException.class)
                     .hasMessage("장소 보관함에 해당하는 장소가 존재하지 않습니다.");
         }
