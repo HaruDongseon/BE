@@ -27,15 +27,20 @@ public class AuthInterceptor implements HandlerInterceptor {
         validateToken(accessToken);
         final Long memberId = jwtService.extractMemberId(accessToken);
         validateMemberExist(memberId);
-
         return true;
     }
 
     private String extractAccessToken(final HttpServletRequest request) {
         final String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
+        if (accessToken == null) {
+            final String logMessage = "인증 실패(액세스 토큰 헤더 존재 X)";
+            throw new AuthException.UnauthorizedException(logMessage);
+        }
+
         if (StringUtils.hasText(accessToken) && accessToken.startsWith(PREFIX_BEARER)) {
             return accessToken.substring(PREFIX_BEARER.length());
         }
+
         final String logMessage = "인증 실패(액세스 토큰 추출 실패) - 토큰 : " + accessToken;
         throw new AuthException.UnauthorizedException(logMessage);
     }
