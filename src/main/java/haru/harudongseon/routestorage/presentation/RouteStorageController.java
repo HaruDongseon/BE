@@ -6,6 +6,7 @@ import haru.harudongseon.global.exception.ErrorResponse;
 import haru.harudongseon.global.mvc.AuthMemberDto;
 import haru.harudongseon.global.mvc.AuthPrincipal;
 import haru.harudongseon.routestorage.application.RouteStorageService;
+import haru.harudongseon.routestorage.application.dto.RouteDeleteRequest;
 import haru.harudongseon.routestorage.application.dto.RouteStorageAddRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,14 +18,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "ROUTE STORAGE API", description = "동선 보관함 관련 API")
 @RestController
-@RequestMapping("/route-storage")
+@RequestMapping("/route-storages")
 @RequiredArgsConstructor
 public class RouteStorageController {
 
@@ -41,6 +39,20 @@ public class RouteStorageController {
     ) {
         final Long memberId = authMemberDto.memberId();
         final Long routeStorageId = routeStorageService.addRouteStorage(memberId, request);
-        return ResponseEntity.created(URI.create("/route-storage/" + routeStorageId)).build();
+        return ResponseEntity.created(URI.create("/route-storages/" + routeStorageId)).build();
+    }
+
+    @Operation(summary = "장소 보관함 보관 장소 삭제 API")
+    @ApiResponse(responseCode = "204", description = "장소 보관함 보관 장소 삭제 성공")
+    @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "멤버/동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @DeleteMapping("/routes")
+    public ResponseEntity<Void> deleteRoutes(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
+            @Valid @RequestBody RouteDeleteRequest request
+    ) {
+        final Long memberId = authMemberDto.memberId();
+        routeStorageService.deleteRouteStorage(memberId, request);
+        return ResponseEntity.noContent().build();
     }
 }

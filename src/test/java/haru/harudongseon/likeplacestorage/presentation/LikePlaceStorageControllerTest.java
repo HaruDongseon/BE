@@ -142,7 +142,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final ExtractableResponse<Response> response = DELETE_LIKE_PLACE_REQUEST(accessToken, request);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
         @Test
@@ -253,7 +253,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .when().log().all()
-                .post("/like-place-storage")
+                .post("/like-place-storages")
                 .then().log().all()
                 .extract();
     }
@@ -264,7 +264,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .when().log().all()
-                .delete("/like-place-storage/like-places")
+                .delete("/like-place-storages/like-places")
                 .then().log().all()
                 .extract();
     }

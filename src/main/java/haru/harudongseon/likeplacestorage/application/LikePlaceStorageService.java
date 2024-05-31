@@ -46,6 +46,6 @@ public class LikePlaceStorageService {
         final LikePlaceStorage likePlaceStorage = likePlaceStorageRepository.findById(likePlaceStorageId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 장소 보관함을 찾을 수 없습니다."));
 
-        likePlaceIds.forEach(likePlaceStorage::removeLikePlace);
+        likePlaceStorage.removeLikePlaces(likePlaceIds);
     }
 }

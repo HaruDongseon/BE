@@ -20,6 +20,12 @@ public class RouteTag extends BaseEntity {
 
     private Long selectCount;
 
+    public RouteTag(final Long id, final String name) {
+        this.id = id;
+        this.name = name;
+        this.selectCount = 1L;
+    }
+
     public RouteTag(final String name) {
         this.name = name;
         this.selectCount = 1L;
