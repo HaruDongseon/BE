@@ -76,8 +76,8 @@ class RouteStorageControllerTest extends E2ETest {
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("해당하는 멤버가 존재하지 않습니다.");
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("인증에 실패했습니다. 정확한 에러는 서버 로그를 확인해주세요.");
             });
         }
 
