@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "LIKE PLACE STORAGE API", description = "장소 보관함 관련 API")
 @RestController
-@RequestMapping("/like-place-storage")
+@RequestMapping("/like-place-storages")
 @RequiredArgsConstructor
 public class LikePlaceStorageController {
 

@@ -43,7 +43,7 @@ class RouteStorageControllerTest extends E2ETest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-                softly.assertThat(response.header("Location")).contains("/route-storage/");
+                softly.assertThat(response.header("Location")).contains("/route-storages/");
             });
         }
 
