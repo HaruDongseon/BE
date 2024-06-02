@@ -14,6 +14,7 @@ import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
+import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStoragesResponse;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
 import haru.harudongseon.member.domain.Member;
 import io.restassured.RestAssured;
@@ -247,6 +248,70 @@ class LikePlaceStorageControllerTest extends E2ETest {
         }
     }
 
+    @Nested
+    @DisplayName("장소 보관함 조회 시")
+    class FindAllLikePlaceStorage {
+
+        @Test
+        @DisplayName("조회에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("베이커리 성수").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final LikePlaceStorage likePlaceStorage1 = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("베이커리").build(List.of(likePlace1));
+            final LikePlaceStorage likePlaceStorage2 = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(List.of(likePlace2));
+            final LikePlaceStoragesResponse expected = LikePlaceStoragesResponse.from(List.of(likePlaceStorage1, likePlaceStorage2));
+
+            // when
+            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_STORAGE_REQUEST(accessToken);
+            final LikePlaceStoragesResponse actual = response.as(LikePlaceStoragesResponse.class);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+            });
+        }
+
+        @Test
+        @DisplayName("장소 보관함이 없으면 빈 리스트가 조회된다.")
+        void success_empty_list() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+
+            // when
+            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_STORAGE_REQUEST(accessToken);
+            final LikePlaceStoragesResponse actual = response.as(LikePlaceStoragesResponse.class);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual.getLikePlaceStorages()).isEmpty();
+            });
+        }
+
+        @Test
+        @DisplayName("멤버 ID에 해당하는 멤버가 존재하지 않으면 인증에 실패한다.")
+        void fail_not_exist_member_fail_authentication() {
+            // given
+            final Long notExistMemberId = -1L;
+            final String notExistMemberAccessToken = jwtService.createAccessToken(notExistMemberId);
+
+            // when
+            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_STORAGE_REQUEST(notExistMemberAccessToken);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("인증에 실패했습니다. 정확한 에러는 서버 로그를 확인해주세요.");
+            });
+        }
+    }
+
     private static ExtractableResponse<Response> ADD_LIKE_PLACE_STORAGE_REQUEST(final String accessToken, final LikePlaceStorageAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
@@ -265,6 +330,15 @@ class LikePlaceStorageControllerTest extends E2ETest {
                 .body(request)
                 .when().log().all()
                 .delete("/like-place-storages/like-places")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> FIND_ALL_LIKE_PLACE_STORAGE_REQUEST(final String accessToken) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .get("/like-place-storages")
                 .then().log().all()
                 .extract();
     }
