@@ -267,7 +267,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final LikePlaceStoragesResponse expected = LikePlaceStoragesResponse.from(List.of(likePlaceStorage1, likePlaceStorage2));
 
             // when
-            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_STORAGE_REQUEST(accessToken);
+            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_STORAGE_NAME_REQUEST(accessToken);
             final LikePlaceStoragesResponse actual = response.as(LikePlaceStoragesResponse.class);
 
             // then
@@ -285,7 +285,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final String accessToken = jwtService.createAccessToken(member.getId());
 
             // when
-            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_STORAGE_REQUEST(accessToken);
+            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_STORAGE_NAME_REQUEST(accessToken);
             final LikePlaceStoragesResponse actual = response.as(LikePlaceStoragesResponse.class);
 
             // then
@@ -303,7 +303,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final String notExistMemberAccessToken = jwtService.createAccessToken(notExistMemberId);
 
             // when
-            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_STORAGE_REQUEST(notExistMemberAccessToken);
+            final ExtractableResponse<Response> response = FIND_ALL_LIKE_PLACE_STORAGE_NAME_REQUEST(notExistMemberAccessToken);
 
             // then
             assertSoftly(softly -> {
@@ -409,11 +409,11 @@ class LikePlaceStorageControllerTest extends E2ETest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> FIND_ALL_LIKE_PLACE_STORAGE_REQUEST(final String accessToken) {
+    private static ExtractableResponse<Response> FIND_ALL_LIKE_PLACE_STORAGE_NAME_REQUEST(final String accessToken) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .when().log().all()
-                .get("/like-place-storages")
+                .get("/like-place-storages/names")
                 .then().log().all()
                 .extract();
     }
@@ -422,7 +422,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .when().log().all()
-                .get("/like-place-storages/{like-place-storage-id}", likePlaceStorageId)
+                .get("/like-place-storages/{like-place-storage-id}/like-places", likePlaceStorageId)
                 .then().log().all()
                 .extract();
     }

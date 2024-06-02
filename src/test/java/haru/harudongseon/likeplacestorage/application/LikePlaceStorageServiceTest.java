@@ -151,7 +151,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final LikePlaceStoragesResponse expected = LikePlaceStoragesResponse.from(List.of(likePlaceStorage1, likePlaceStorage2));
 
             // when
-            final LikePlaceStoragesResponse actual = likePlaceStorageService.findLikePlaceStorages(member.getId());
+            final LikePlaceStoragesResponse actual = likePlaceStorageService.findLikePlaceStorageNames(member.getId());
 
             // then
             assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
@@ -164,7 +164,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final Member member = memberBuilder.defaultMember().build();
 
             // when
-            final LikePlaceStoragesResponse actual = likePlaceStorageService.findLikePlaceStorages(member.getId());
+            final LikePlaceStoragesResponse actual = likePlaceStorageService.findLikePlaceStorageNames(member.getId());
 
             // then
             assertThat(actual.getLikePlaceStorages()).isEmpty();
@@ -177,7 +177,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final Long notExistMemberId = -1L;
 
             // when & then
-            assertThatThrownBy(() -> likePlaceStorageService.findLikePlaceStorages(notExistMemberId))
+            assertThatThrownBy(() -> likePlaceStorageService.findLikePlaceStorageNames(notExistMemberId))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 멤버가 존재하지 않습니다.");
         }
