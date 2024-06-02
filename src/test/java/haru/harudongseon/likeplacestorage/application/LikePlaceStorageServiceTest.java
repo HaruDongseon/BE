@@ -16,6 +16,7 @@ import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStoragesResponse;
+import haru.harudongseon.likeplacestorage.application.dto.StoredLikePlacesResponse;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorageRepository;
 import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
@@ -179,6 +180,69 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             assertThatThrownBy(() -> likePlaceStorageService.findLikePlaceStorages(notExistMemberId))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 멤버가 존재하지 않습니다.");
+        }
+    }
+
+    @Nested
+    @DisplayName("장소 보관함 장소 조회 시")
+    class FindLikePlaces {
+
+        @Test
+        @DisplayName("장소 조회에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(List.of(likePlace1, likePlace2));
+
+            final StoredLikePlacesResponse expected = StoredLikePlacesResponse.from(likePlaceStorage.getLikePlaces());
+
+            // when
+            final StoredLikePlacesResponse actual = likePlaceStorageService.findLikePlaces(likePlaceStorage.getId(), member.getId());
+
+            // then
+            assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("장소 보관함에 저장된 장소가 없을 경우 빈 리스트가 조회된다.")
+        void success_empty_list() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).build(Collections.emptyList());
+
+            // when
+            final StoredLikePlacesResponse response = likePlaceStorageService.findLikePlaces(likePlaceStorage.getId(), member.getId());
+
+            // then
+            assertThat(response.getStoredLikePlaces()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("멤버 ID와 장소 보관함 ID에 해당하는 장소 보관함이 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_like_place_storage() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(List.of(likePlace1, likePlace2));
+
+            final Long notExistMemberId = -1L;
+            final Long notExistLikePlaceStorageId = -1L;
+
+            // when & then
+            assertSoftly(softly -> {
+                softly.assertThatThrownBy(() -> likePlaceStorageService.findLikePlaces(likePlaceStorage.getId(), notExistMemberId))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("장소 보관함 ID와 멤버 ID에 해당하는 장소 보관함이 존재하지 않습니다.");
+                softly.assertThatThrownBy(() -> likePlaceStorageService.findLikePlaces(notExistLikePlaceStorageId, member.getId()))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("장소 보관함 ID와 멤버 ID에 해당하는 장소 보관함이 존재하지 않습니다.");
+                softly.assertThatThrownBy(() -> likePlaceStorageService.findLikePlaces(notExistLikePlaceStorageId, notExistMemberId))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("장소 보관함 ID와 멤버 ID에 해당하는 장소 보관함이 존재하지 않습니다.");
+            });
         }
     }
 }
