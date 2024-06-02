@@ -58,15 +58,15 @@ public class LikePlaceStorageController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "장소 보관함 조회 API")
-    @ApiResponse(responseCode = "200", description = "장소 보관함 조회 성공")
+    @Operation(summary = "장소 보관함 이름 조회 API")
+    @ApiResponse(responseCode = "200", description = "장소 보관함 이름 조회 성공")
     @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    @GetMapping
-    public ResponseEntity<LikePlaceStoragesResponse> findAllLikePlaceStorage(
+    @GetMapping("/names")
+    public ResponseEntity<LikePlaceStoragesResponse> findAllLikePlaceStorageName(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto
     ) {
-        final LikePlaceStoragesResponse response = likePlaceStorageService.findLikePlaceStorages(authMemberDto.memberId());
+        final LikePlaceStoragesResponse response = likePlaceStorageService.findLikePlaceStorageNames(authMemberDto.memberId());
         return ResponseEntity.ok(response);
     }
 
@@ -74,7 +74,7 @@ public class LikePlaceStorageController {
     @ApiResponse(responseCode = "200", description = "장소 보관함 장소 조회 성공")
     @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "장소 보관함 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    @GetMapping("/{like-place-storage-id}")
+    @GetMapping("/{like-place-storage-id}/like-places")
     public ResponseEntity<StoredLikePlacesResponse> findAllLikePlaces(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
             @PathVariable("like-place-storage-id") Long likePlaceStorageId

@@ -52,7 +52,7 @@ public class LikePlaceStorageService {
     }
 
     @Transactional(readOnly = true)
-    public LikePlaceStoragesResponse findLikePlaceStorages(final Long memberId) {
+    public LikePlaceStoragesResponse findLikePlaceStorageNames(final Long memberId) {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버가 존재하지 않습니다."));
 
