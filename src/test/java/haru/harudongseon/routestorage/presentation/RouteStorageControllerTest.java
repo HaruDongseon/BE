@@ -16,6 +16,7 @@ import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.route.domain.Route;
 import haru.harudongseon.routestorage.application.dto.RouteDeleteRequest;
 import haru.harudongseon.routestorage.application.dto.RouteStorageAddRequest;
+import haru.harudongseon.routestorage.application.dto.RouteStoragesResponse;
 import haru.harudongseon.routestorage.domain.RouteStorage;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -282,6 +283,51 @@ class RouteStorageControllerTest extends E2ETest {
         }
     }
 
+    @Nested
+    @DisplayName("동선 보관함 이름 조회 시")
+    class FindAllRouteStorageNames {
+
+        @Test
+        @DisplayName("조회에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage1 = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(List.of(route1)));
+            final RouteStorage routeStorage2 = routeStorageBuilder.defaultRouteStorage(member).name("보드게임 동아리").build(new ArrayList<>(List.of(route2)));
+
+            final RouteStoragesResponse expected = RouteStoragesResponse.from(List.of(routeStorage1, routeStorage2));
+
+            // when
+            final ExtractableResponse<Response> response = FIND_ALL_ROUTE_STORAGE_NAME_REQUEST(accessToken);
+            final RouteStoragesResponse actual = response.as(RouteStoragesResponse.class);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+            });
+        }
+
+        @Test
+        @DisplayName("멤버 ID에 해당하는 멤버가 존재하지 않으면 실패한다.")
+        void fail_not_exist_member() {
+            // given
+            final String notExistMemberAccessToken = jwtService.createAccessToken(-1L);
+
+            // when
+            final ExtractableResponse<Response> response = FIND_ALL_ROUTE_STORAGE_NAME_REQUEST(notExistMemberAccessToken);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("인증에 실패했습니다. 정확한 에러는 서버 로그를 확인해주세요.");
+            });
+        }
+    }
+
     private static ExtractableResponse<Response> ADD_ROUTE_STORAGE_REQUEST(final String accessToken, final RouteStorageAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
@@ -300,6 +346,15 @@ class RouteStorageControllerTest extends E2ETest {
                 .body(request)
                 .when().log().all()
                 .delete("/route-storages/routes")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> FIND_ALL_ROUTE_STORAGE_NAME_REQUEST(final String accessToken) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .get("/route-storages/names")
                 .then().log().all()
                 .extract();
     }
