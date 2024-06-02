@@ -17,6 +17,7 @@ import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.route.domain.Route;
 import haru.harudongseon.routestorage.application.dto.RouteDeleteRequest;
 import haru.harudongseon.routestorage.application.dto.RouteStorageAddRequest;
+import haru.harudongseon.routestorage.application.dto.RouteStoragesResponse;
 import haru.harudongseon.routestorage.domain.RouteStorage;
 import haru.harudongseon.routestorage.exception.RouteStorageException;
 import jakarta.persistence.EntityNotFoundException;
@@ -122,6 +123,42 @@ class RouteStorageServiceTest extends ServiceTest {
             assertThatThrownBy(() -> routeStorageService.deleteRouteStorage(member.getId(), request))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 동선 보관함이 존재하지 않습니다.");
+        }
+    }
+
+    @Nested
+    @DisplayName("동선 보관함 이름 조회 시")
+    class FindRouteStorageNames{
+
+        @Test
+        @DisplayName("조회에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage1 = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(List.of(route1)));
+            final RouteStorage routeStorage2 = routeStorageBuilder.defaultRouteStorage(member).name("보드게임 동아리").build(new ArrayList<>(List.of(route2)));
+
+            final RouteStoragesResponse expected = RouteStoragesResponse.from(List.of(routeStorage1, routeStorage2));
+
+            // when
+            final RouteStoragesResponse actual = routeStorageService.findRouteStorageNames(member.getId());
+
+            // then
+            assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("멤버 ID에 해당하는 멤버가 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_member() {
+            // given
+            final Long notExistMemberId = -1L;
+
+            // when & then
+            assertThatThrownBy(() -> routeStorageService.findRouteStorageNames(notExistMemberId))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 멤버가 존재하지 않습니다.");
         }
     }
 }

@@ -6,6 +6,7 @@ import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
 import haru.harudongseon.routestorage.application.dto.RouteDeleteRequest;
 import haru.harudongseon.routestorage.application.dto.RouteStorageAddRequest;
+import haru.harudongseon.routestorage.application.dto.RouteStoragesResponse;
 import haru.harudongseon.routestorage.domain.RouteStorage;
 import haru.harudongseon.routestorage.domain.RouteStorageRepository;
 import haru.harudongseon.routestorage.exception.RouteStorageException;
@@ -48,5 +49,14 @@ public class RouteStorageService {
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 동선 보관함이 존재하지 않습니다."));
 
         routeStorage.removeRoutes(memberId, routeIds);
+    }
+
+    @Transactional(readOnly = true)
+    public RouteStoragesResponse findRouteStorageNames(final Long memberId) {
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버가 존재하지 않습니다."));
+
+        final List<RouteStorage> routeStorages = routeStorageRepository.findAllByMemberId(memberId);
+        return RouteStoragesResponse.from(routeStorages);
     }
 }
