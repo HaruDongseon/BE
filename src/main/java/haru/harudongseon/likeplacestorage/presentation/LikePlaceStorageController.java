@@ -8,6 +8,7 @@ import haru.harudongseon.global.mvc.AuthPrincipal;
 import haru.harudongseon.likeplacestorage.application.LikePlaceStorageService;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
+import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStoragesResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -54,5 +55,17 @@ public class LikePlaceStorageController {
     ) {
         likePlaceStorageService.deleteLikePlace(request);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "장소 보관함 조회 API")
+    @ApiResponse(responseCode = "200", description = "장소 보관함 조회 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "멤버 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @GetMapping
+    public ResponseEntity<LikePlaceStoragesResponse> findAllLikePlaceStorage(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto
+    ) {
+        final LikePlaceStoragesResponse response = likePlaceStorageService.findLikePlaceStorages(authMemberDto.memberId());
+        return ResponseEntity.ok(response);
     }
 }
