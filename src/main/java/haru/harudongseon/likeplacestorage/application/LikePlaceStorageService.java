@@ -5,6 +5,7 @@ import java.util.List;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStoragesResponse;
+import haru.harudongseon.likeplacestorage.application.dto.StoredLikePlacesResponse;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorageRepository;
 import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
@@ -57,5 +58,13 @@ public class LikePlaceStorageService {
 
         final List<LikePlaceStorage> likePlaceStorages = likePlaceStorageRepository.findAllByMemberId(member.getId());
         return LikePlaceStoragesResponse.from(likePlaceStorages);
+    }
+
+    @Transactional(readOnly = true)
+    public StoredLikePlacesResponse findLikePlaces(final Long likePlaceStorageId, final Long memberId) {
+        final LikePlaceStorage likePlaceStorage = likePlaceStorageRepository.findByIdAndMemberId(likePlaceStorageId, memberId)
+                .orElseThrow(() -> new EntityNotFoundException("장소 보관함 ID와 멤버 ID에 해당하는 장소 보관함이 존재하지 않습니다."));
+
+        return StoredLikePlacesResponse.from(likePlaceStorage.getLikePlaces());
     }
 }

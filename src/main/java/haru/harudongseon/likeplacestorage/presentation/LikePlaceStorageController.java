@@ -9,6 +9,7 @@ import haru.harudongseon.likeplacestorage.application.LikePlaceStorageService;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
 import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStoragesResponse;
+import haru.harudongseon.likeplacestorage.application.dto.StoredLikePlacesResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -66,6 +67,21 @@ public class LikePlaceStorageController {
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto
     ) {
         final LikePlaceStoragesResponse response = likePlaceStorageService.findLikePlaceStorages(authMemberDto.memberId());
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "장소 보관함 장소 조회 API")
+    @ApiResponse(responseCode = "200", description = "장소 보관함 장소 조회 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "장소 보관함 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @GetMapping("/{like-place-storage-id}")
+    public ResponseEntity<StoredLikePlacesResponse> findAllLikePlaces(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
+            @PathVariable("like-place-storage-id") Long likePlaceStorageId
+
+    ) {
+        final Long memberId = authMemberDto.memberId();
+        final StoredLikePlacesResponse response = likePlaceStorageService.findLikePlaces(likePlaceStorageId, memberId);
         return ResponseEntity.ok(response);
     }
 }
