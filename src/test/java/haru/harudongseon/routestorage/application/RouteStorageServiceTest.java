@@ -173,8 +173,8 @@ class RouteStorageServiceTest extends ServiceTest {
         void success() {
             // given
             final Member member = memberBuilder.defaultMember().build();
-            final Route route1 = routeBuilder.defaultRoute(member).title("5월 5일 데이트").build();
-            final Route route2 = routeBuilder.defaultRoute(member).title("5월 7일 데이트").build();
+            final Route route1 = routeBuilder.defaultRoute(member).title("5월 카페 데이트").build();
+            final Route route2 = routeBuilder.defaultRoute(member).title("5월 놀이공원 데이트").build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(List.of(route1, route2)));
 
             final StoredRoutesResponse expected = StoredRoutesResponse.from(routeStorage.getRoutes());
@@ -191,8 +191,8 @@ class RouteStorageServiceTest extends ServiceTest {
         void throws_not_exist_route_storage() {
             // given
             final Member member = memberBuilder.defaultMember().build();
-            final Route route1 = routeBuilder.defaultRoute(member).title("5월 5일 데이트").build();
-            final Route route2 = routeBuilder.defaultRoute(member).title("5월 7일 데이트").build();
+            final Route route1 = routeBuilder.defaultRoute(member).title("5월 카페 데이트").build();
+            final Route route2 = routeBuilder.defaultRoute(member).title("5월 놀이공원 데이트").build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(List.of(route1, route2)));
 
             final Long notExistRouteStorageId = -1L;
