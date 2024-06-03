@@ -9,6 +9,7 @@ import haru.harudongseon.routestorage.application.RouteStorageService;
 import haru.harudongseon.routestorage.application.dto.RouteDeleteRequest;
 import haru.harudongseon.routestorage.application.dto.RouteStorageAddRequest;
 import haru.harudongseon.routestorage.application.dto.RouteStoragesResponse;
+import haru.harudongseon.routestorage.application.dto.StoredRoutesResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -69,6 +70,21 @@ public class RouteStorageController {
     ) {
         final Long memberId = authMemberDto.memberId();
         final RouteStoragesResponse response = routeStorageService.findRouteStorageNames(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "동선 보관함 동선 조회 API")
+    @ApiResponse(responseCode = "200", description = "동선 보관함 동선 조회 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "동선 보관함 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @GetMapping("/{route-storage-id}/routes")
+    public ResponseEntity<StoredRoutesResponse> findAllRoutes(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
+            @PathVariable("route-storage-id") Long routeStorageId
+
+    ) {
+        final Long memberId = authMemberDto.memberId();
+        final StoredRoutesResponse response = routeStorageService.findRoutes(routeStorageId, memberId);
         return ResponseEntity.ok(response);
     }
 }
