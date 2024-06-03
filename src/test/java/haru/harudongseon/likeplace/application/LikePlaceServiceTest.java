@@ -2,6 +2,7 @@ package haru.harudongseon.likeplace.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
 import haru.harudongseon.likeplace.application.dto.LikePlacesResponse;
 import haru.harudongseon.likeplace.application.dto.RecentLikePlacesResponse;
+import haru.harudongseon.likeplace.application.event.LikePlaceDeleteEvent;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.member.domain.Member;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +21,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.transaction.TestTransaction;
 
 class LikePlaceServiceTest extends ServiceTest {
 
@@ -30,6 +34,9 @@ class LikePlaceServiceTest extends ServiceTest {
 
     @Autowired
     private LikePlaceService likePlaceService;
+
+    @Autowired
+    private ApplicationEvents applicationEvents;
 
     @Nested
     @DisplayName("보관 장소 추가 시")
@@ -196,6 +203,38 @@ class LikePlaceServiceTest extends ServiceTest {
 
             // then
             assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    @DisplayName("보관 장소 삭제 시")
+    class DeleteLikePlace{
+
+        @Test
+        @DisplayName("삭제에 성공하고, 삭제 이벤트를 발행한다.")
+        void success_and_publish_delete_event() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace = likePlaceBuilder.defaultLikePlace(member).build();
+
+            // when & then
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+
+            assertDoesNotThrow(() -> likePlaceService.deleteLikePlace(likePlace.getId()));
+            assertThat(applicationEvents.stream(LikePlaceDeleteEvent.class).count()).isEqualTo(1L);
+        }
+
+        @Test
+        @DisplayName("보관 장소 ID에 해당하는 보관 장소가 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_like_place() {
+            // given
+            final Long notExistLikePlaceId = -1L;
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceService.deleteLikePlace(notExistLikePlaceId))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 보관 장소가 없습니다.");
         }
     }
 }
