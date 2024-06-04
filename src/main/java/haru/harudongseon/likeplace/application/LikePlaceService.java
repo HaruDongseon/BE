@@ -65,7 +65,7 @@ public class LikePlaceService {
 
     public void deleteLikePlace(final Long likePlaceId) {
         if (!likePlaceRepository.existsById(likePlaceId)) {
-            throw new EntityNotFoundException("해당하는 보관 장소가 없습니다.");
+            throw new EntityNotFoundException("해당하는 보관 장소를 찾을 수 없습니다.");
         }
 
         applicationEventPublisher.publishEvent(new LikePlaceDeleteEvent(likePlaceId));

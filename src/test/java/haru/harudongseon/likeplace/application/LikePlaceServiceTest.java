@@ -230,7 +230,7 @@ class LikePlaceServiceTest extends ServiceTest {
             // when & then
             assertThatThrownBy(() -> likePlaceService.deleteLikePlace(notExistLikePlaceId))
                     .isInstanceOf(EntityNotFoundException.class)
-                    .hasMessage("해당하는 보관 장소가 없습니다.");
+                    .hasMessage("해당하는 보관 장소를 찾을 수 없습니다.");
         }
     }
 }

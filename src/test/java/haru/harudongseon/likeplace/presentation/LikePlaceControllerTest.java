@@ -610,7 +610,7 @@ class LikePlaceControllerTest extends E2ETest {
 
     @Nested
     @DisplayName("보관 장소 검색 시")
-    class SearchByKeyword{
+    class SearchByKeyword {
 
         @Test
         @DisplayName("정확도 순(키워드 일치 -> 키워드로 시작 -> 키워드로 끝)으로 보관 장소가 조회된다.")
@@ -645,6 +645,44 @@ class LikePlaceControllerTest extends E2ETest {
             assertSoftly(softly -> {
                 softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 softly.assertThat(actual).usingRecursiveComparison().ignoringFields("likePlaces.id").isEqualTo(expected);
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("보관 장소 삭제 시")
+    class DeleteLikePlace {
+
+        @Test
+        @DisplayName("보관 장소 삭제에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final LikePlace likePlace = likePlaceBuilder.defaultLikePlace(member).build();
+
+            // when
+            final ExtractableResponse<Response> response = DELETE_LIKE_PLACE_REQUEST(accessToken, likePlace.getId());
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
+
+        @Test
+        @DisplayName("보관 장소 ID에 해당하는 보관 장소가 존재하지 않으면 실패한다.")
+        void fail_not_exist_like_place() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final Long notExistLikePlaceId = -1L;
+
+            // when
+            final ExtractableResponse<Response> response = DELETE_LIKE_PLACE_REQUEST(accessToken, notExistLikePlaceId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("해당하는 보관 장소를 찾을 수 없습니다.");
             });
         }
     }
@@ -747,6 +785,15 @@ class LikePlaceControllerTest extends E2ETest {
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .when().log().all()
                 .get("/like-places/search?keyword=" + keyword)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> DELETE_LIKE_PLACE_REQUEST(final String accessToken, final Long likePlaceId) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .when().log().all()
+                .delete("/like-places/{like-place-id}", likePlaceId)
                 .then().log().all()
                 .extract();
     }
