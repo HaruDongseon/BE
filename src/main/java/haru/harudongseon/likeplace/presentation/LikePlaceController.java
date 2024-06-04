@@ -90,4 +90,16 @@ public class LikePlaceController {
         final LikePlacesResponse response = likePlaceService.searchByKeyword(keyword, authMemberDto.memberId());
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "보관 장소 삭제 API")
+    @ApiResponse(responseCode = "204", description = "보관 장소 삭제 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "보관 장소 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @DeleteMapping("/{like-place-id}")
+    public ResponseEntity<Void> deleteLikePlace(
+            @PathVariable("like-place-id") Long likePlaceId
+    ) {
+        likePlaceService.deleteLikePlace(likePlaceId);
+        return ResponseEntity.noContent().build();
+    }
 }

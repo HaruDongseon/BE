@@ -26,7 +26,7 @@ public class LikePlaceStorage extends BaseEntity {
     @JoinColumn
     private Member member;
 
-    @OneToMany(mappedBy = "likePlaceStorage", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "likePlaceStorage", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<StoredLikePlace> likePlaces = new ArrayList<>();
 
     public LikePlaceStorage(final String name, final Member member) {

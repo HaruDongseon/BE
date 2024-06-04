@@ -6,6 +6,7 @@ import haru.harudongseon.likeplace.application.dto.LikePlaceAddRequest;
 import haru.harudongseon.likeplace.application.dto.LikePlaceResponse;
 import haru.harudongseon.likeplace.application.dto.LikePlacesResponse;
 import haru.harudongseon.likeplace.application.dto.RecentLikePlacesResponse;
+import haru.harudongseon.likeplace.application.event.LikePlaceDeleteEvent;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplace.domain.LikePlaceRepository;
 import haru.harudongseon.likeplace.domain.LikePlaceValidator;
@@ -13,6 +14,7 @@ import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ public class LikePlaceService {
     private final MemberRepository memberRepository;
     private final LikePlaceRepository likePlaceRepository;
     private final LikePlaceValidator likePlaceValidator;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public Long addLikePlace(final Long memberId, final LikePlaceAddRequest request) {
         final Member findMember = memberRepository.findById(memberId)
@@ -58,5 +61,14 @@ public class LikePlaceService {
     public LikePlacesResponse searchByKeyword(final String keyword, final Long memberId) {
         final List<LikePlace> likePlaces = likePlaceRepository.searchByKeywordAndMemberId(keyword, memberId);
         return LikePlacesResponse.from(likePlaces);
+    }
+
+    public void deleteLikePlace(final Long likePlaceId) {
+        if (!likePlaceRepository.existsById(likePlaceId)) {
+            throw new EntityNotFoundException("해당하는 보관 장소를 찾을 수 없습니다.");
+        }
+
+        applicationEventPublisher.publishEvent(new LikePlaceDeleteEvent(likePlaceId));
+        likePlaceRepository.deleteById(likePlaceId);
     }
 }

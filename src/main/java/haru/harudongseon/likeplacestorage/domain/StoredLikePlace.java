@@ -1,5 +1,7 @@
 package haru.harudongseon.likeplacestorage.domain;
 
+import java.util.List;
+
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.likeplace.domain.LikePlace;
 import jakarta.persistence.*;
@@ -27,5 +29,10 @@ public class StoredLikePlace extends BaseEntity {
         this.likePlace = likePlace;
         this.likePlaceStorage = likePlaceStorage;
         likePlaceStorage.getLikePlaces().add(this);
+    }
+
+    public void unstored() {
+        final List<StoredLikePlace> likePlaces = likePlaceStorage.getLikePlaces();
+        likePlaces.remove(this);
     }
 }
