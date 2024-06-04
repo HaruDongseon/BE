@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.event.ApplicationEvents;
-import org.springframework.test.context.transaction.TestTransaction;
 
 class LikePlaceServiceTest extends ServiceTest {
 
@@ -218,9 +217,6 @@ class LikePlaceServiceTest extends ServiceTest {
             final LikePlace likePlace = likePlaceBuilder.defaultLikePlace(member).build();
 
             // when & then
-            TestTransaction.flagForCommit();
-            TestTransaction.end();
-
             assertDoesNotThrow(() -> likePlaceService.deleteLikePlace(likePlace.getId()));
             assertThat(applicationEvents.stream(LikePlaceDeleteEvent.class).count()).isEqualTo(1L);
         }

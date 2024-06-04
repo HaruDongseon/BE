@@ -67,8 +67,8 @@ public class LikePlaceService {
         if (!likePlaceRepository.existsById(likePlaceId)) {
             throw new EntityNotFoundException("해당하는 보관 장소가 없습니다.");
         }
-        likePlaceRepository.deleteById(likePlaceId);
 
         applicationEventPublisher.publishEvent(new LikePlaceDeleteEvent(likePlaceId));
+        likePlaceRepository.deleteById(likePlaceId);
     }
 }
