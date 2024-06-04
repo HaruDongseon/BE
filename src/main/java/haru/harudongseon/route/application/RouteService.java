@@ -9,11 +9,13 @@ import haru.harudongseon.member.domain.MemberRepository;
 import haru.harudongseon.place.domain.Place;
 import haru.harudongseon.place.domain.PlaceRepository;
 import haru.harudongseon.route.application.dto.*;
+import haru.harudongseon.route.application.event.RouteDeleteEvent;
 import haru.harudongseon.route.domain.*;
 import haru.harudongseon.routetag.domain.RouteTag;
 import haru.harudongseon.routetag.domain.RouteTagRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class RouteService {
     private final SelectedTagRepository selectedTagRepository;
     private final PlaceRepository placeRepository;
     private final RoutePlaceRepository routePlaceRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     private final RouteValidator routeValidator;
 
@@ -124,6 +127,7 @@ public class RouteService {
             throw new EntityNotFoundException("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
         }
 
+        applicationEventPublisher.publishEvent(new RouteDeleteEvent(routeId));
         routeRepository.deleteById(routeId);
     }
 }

@@ -1,5 +1,7 @@
 package haru.harudongseon.routestorage.domain;
 
+import java.util.List;
+
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.route.domain.Route;
 import jakarta.persistence.*;
@@ -27,5 +29,10 @@ public class StoredRoute extends BaseEntity {
         this.route = route;
         this.routeStorage = routeStorage;
         routeStorage.getRoutes().add(this);
+    }
+
+    public void unstored() {
+        final List<StoredRoute> routes = routeStorage.getRoutes();
+        routes.remove(this);
     }
 }
