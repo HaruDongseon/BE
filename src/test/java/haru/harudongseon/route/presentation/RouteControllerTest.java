@@ -13,7 +13,6 @@ import java.util.List;
 import haru.harudongseon.common.E2ETest;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.common.builder.PlaceBuilder;
-import haru.harudongseon.common.builder.RouteBuilder;
 import haru.harudongseon.common.builder.RouteTagBuilder;
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.place.domain.Place;
@@ -26,12 +25,14 @@ import haru.harudongseon.routetag.domain.RouteTag;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,13 +43,18 @@ class RouteControllerTest extends E2ETest {
     private MemberBuilder memberBuilder;
 
     @Autowired
-    private RouteBuilder routeBuilder;
-
-    @Autowired
     private RouteTagBuilder routeTagBuilder;
 
     @Autowired
     private PlaceBuilder placeBuilder;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @BeforeEach
+    void setUp() {
+        redisTemplate.getConnectionFactory().getConnection().flushAll();
+    }
 
     /**
      * 기본 상황 : Place 1, 2 DB 존재 / Tag 1, 2 DB 존재
