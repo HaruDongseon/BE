@@ -25,14 +25,12 @@ import haru.harudongseon.routetag.domain.RouteTag;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,14 +45,6 @@ class RouteControllerTest extends E2ETest {
 
     @Autowired
     private PlaceBuilder placeBuilder;
-
-    @Autowired
-    private RedisTemplate redisTemplate;
-
-    @BeforeEach
-    void setUp() {
-        redisTemplate.getConnectionFactory().getConnection().flushAll();
-    }
 
     /**
      * 기본 상황 : Place 1, 2 DB 존재 / Tag 1, 2 DB 존재
@@ -584,6 +574,25 @@ class RouteControllerTest extends E2ETest {
             assertSoftly(softly -> {
                 softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 softly.assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("동선 장소는 30개 이하여야합니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("생성할 동선 날짜에 이미 멤버의 동선이 존재하면 실패한다. (동선 하루에 1개 제한)")
+        void fail_already_exist_date_route() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Collections.emptyList(), 기본_동선_이동수단, Collections.emptyList());
+            ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
+
+            // when
+            final ExtractableResponse<Response> alreadyExistRouteResponse = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(alreadyExistRouteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(alreadyExistRouteResponse.jsonPath().getString("errorMessage")).isEqualTo("회원의 동선이 해당 날짜에 이미 존재합니다.");
             });
         }
     }
