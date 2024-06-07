@@ -18,4 +18,6 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
             "order by r.date asc"
     )
     List<Route> findByMemberIdAndPeriod(final Long memberId, final LocalDate startDate, final LocalDate endDate);
+
+    boolean existsByDateAndMemberId(final LocalDate date, final Long memberId);
 }

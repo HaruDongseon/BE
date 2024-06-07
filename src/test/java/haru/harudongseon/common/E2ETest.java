@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class E2ETest {
@@ -22,9 +23,13 @@ public abstract class E2ETest {
     @LocalServerPort
     private int port;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = this.port;
+        redisTemplate.getConnectionFactory().getConnection().flushAll();
     }
 
     @AfterEach

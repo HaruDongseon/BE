@@ -3,6 +3,7 @@ package haru.harudongseon.route.application;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
@@ -11,15 +12,19 @@ import haru.harudongseon.place.domain.PlaceRepository;
 import haru.harudongseon.route.application.dto.*;
 import haru.harudongseon.route.application.event.RouteDeleteEvent;
 import haru.harudongseon.route.domain.*;
+import haru.harudongseon.route.exception.RouteException;
 import haru.harudongseon.routetag.domain.RouteTag;
 import haru.harudongseon.routetag.domain.RouteTagRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class RouteService {
@@ -30,7 +35,10 @@ public class RouteService {
     private final SelectedTagRepository selectedTagRepository;
     private final PlaceRepository placeRepository;
     private final RoutePlaceRepository routePlaceRepository;
+
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    private final RedisTemplate redisTemplate;
 
     private final RouteValidator routeValidator;
 
@@ -38,8 +46,10 @@ public class RouteService {
         final Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버를 찾을 수 없습니다."));
 
+        final LocalDate date = request.date();
         final List<String> tagNames = request.tag();
         final List<RoutePlaceDto> routePlaces = request.routePlaces();
+        validateAlreadyExist(date, memberId);
         validateDuplicate(tagNames, routePlaces);
 
         final Route route = new Route(findMember, request.date(), request.title(), request.moveWay());
@@ -48,7 +58,20 @@ public class RouteService {
         addTag(tagNames, savedRoute);
         addPlace(routePlaces, savedRoute);
 
+        final String action = "addRoute:";
+        final String idempotentKey = action + date + ":" + memberId;
+
+        final Boolean isFirstRequest = redisTemplate.opsForValue().setIfAbsent(idempotentKey, "success", 10, TimeUnit.SECONDS);
+        if (!isFirstRequest) {
+            log.info("동선 생성 시 중복 요청 발생 - 멱등키 : {}", idempotentKey);
+            throw new RouteException.DuplicateSameDateException();
+        }
+
         return savedRoute.getId();
+    }
+
+    private void validateAlreadyExist(final LocalDate date, final Long memberId) {
+        routeValidator.validateAlreadyExistSameDate(date, memberId);
     }
 
     private void validateDuplicate(final List<String> tagNames, final List<RoutePlaceDto> routePlaces) {

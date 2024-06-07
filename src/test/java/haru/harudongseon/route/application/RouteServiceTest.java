@@ -6,8 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.*;
+import java.util.stream.IntStream;
 
 import haru.harudongseon.common.ServiceTest;
 import haru.harudongseon.common.builder.MemberBuilder;
@@ -24,15 +27,13 @@ import haru.harudongseon.route.domain.RouteRepository;
 import haru.harudongseon.route.domain.SelectedTag;
 import haru.harudongseon.routetag.domain.RouteTag;
 import haru.harudongseon.routetag.domain.RouteTagRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class
-RouteServiceTest extends ServiceTest {
+class RouteServiceTest extends ServiceTest {
 
     @Autowired
     private RouteService routeService;
@@ -54,9 +55,6 @@ RouteServiceTest extends ServiceTest {
 
     @Autowired
     private PlaceRepository placeRepository;
-
-    @Autowired
-    private EntityManager em;
 
     @Autowired
     private RouteRepository routeRepository;
@@ -266,7 +264,75 @@ RouteServiceTest extends ServiceTest {
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 멤버를 찾을 수 없습니다.");
         }
+
+        @Test
+        @DisplayName("1명의 사용자가 동선 생성 요청을 여러번 보내는 경우 1번만 성공하고 예외가 발생한다.")
+        void throws_multiple_request() throws InterruptedException, ExecutionException {
+            // given
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, Collections.emptyList(), 기본_동선_이동수단, Collections.emptyList());
+            final ExecutorService executorService = Executors.newFixedThreadPool(30);
+            final int requestCount = 10;
+            final CountDownLatch countDownLatch = new CountDownLatch(requestCount);
+
+            final Member savedMember = executorService.submit(() -> {
+                return memberBuilder.defaultMember().build();
+            }).get();
+
+            // when
+            List<Future<Long>> results = IntStream.range(0, requestCount)
+                    .mapToObj(i -> executorService.submit(() -> {
+                        try {
+                            return routeService.addRoute(savedMember.getId(), routeAddRequest);
+                        } finally {
+                            countDownLatch.countDown();
+                        }
+                    }))
+                    .toList();
+
+            countDownLatch.await();
+
+            int successCount = 0;
+            int failCount = 0;
+            for (Future<Long> result : results) {
+                try {
+                    result.get();
+                    successCount++;
+                } catch (Exception e) {
+                    failCount++;
+                }
+            }
+
+            // then
+            assertThat(successCount).isEqualTo(1);
+            assertThat(failCount).isEqualTo(requestCount - 1);
+        }
     }
+
+    @Test
+    @DisplayName("멤버 ID에 해당하는 멤버가 존재하지 않으면 예외가 발생한다.")
+    void throws_not_exist_member() {
+        // given
+        final Member member = memberBuilder.defaultMember().build();
+
+        final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
+        final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+
+        final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
+        final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+
+        final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
+        final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+
+        final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
+
+        final Long notExistMemberId = -1L;
+
+        // when & then
+        assertThatThrownBy(() -> routeService.addRoute(notExistMemberId, routeAddRequest))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당하는 멤버를 찾을 수 없습니다.");
+    }
+
 
     @Nested
     @DisplayName("동선 조회 시")

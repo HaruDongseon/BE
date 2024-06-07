@@ -19,4 +19,11 @@ public class RouteException extends RuntimeException {
             super("동선 장소에 중복된 사진이 존재합니다.");
         }
     }
+
+    public static class DuplicateSameDateException extends RouteException {
+
+        public DuplicateSameDateException() {
+            super("회원의 동선이 해당 날짜에 이미 존재합니다.");
+        }
+    }
 }
