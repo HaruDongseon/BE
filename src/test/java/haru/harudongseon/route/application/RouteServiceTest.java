@@ -302,8 +302,6 @@ class RouteServiceTest extends ServiceTest {
                 }
             }
 
-            System.out.println("failCount = " + failCount);
-
             // then
             assertThat(successCount).isEqualTo(1);
             assertThat(failCount).isEqualTo(requestCount - 1);
