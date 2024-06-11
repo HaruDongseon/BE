@@ -6,10 +6,7 @@ import haru.harudongseon.global.exception.ErrorResponse;
 import haru.harudongseon.global.mvc.AuthMemberDto;
 import haru.harudongseon.global.mvc.AuthPrincipal;
 import haru.harudongseon.likeplacestorage.application.LikePlaceStorageService;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStoragesResponse;
-import haru.harudongseon.likeplacestorage.application.dto.StoredLikePlacesResponse;
+import haru.harudongseon.likeplacestorage.application.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -83,5 +80,19 @@ public class LikePlaceStorageController {
         final Long memberId = authMemberDto.memberId();
         final StoredLikePlacesResponse response = likePlaceStorageService.findLikePlaces(likePlaceStorageId, memberId);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "장소 보관함 장소 추가 API")
+    @ApiResponse(responseCode = "200", description = "장소 보관함 장소 추가 성공")
+    @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "장소 보관함/보관 장소 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @PostMapping("/{like-place-storage-id}/like-places")
+    public ResponseEntity<Void> addLikePlace(
+            @PathVariable("like-place-storage-id") Long likePlaceStorageId,
+            @Valid @RequestBody LikePlaceAddRequest request
+    ) {
+        likePlaceStorageService.addLikePlace(likePlaceStorageId, request);
+        return ResponseEntity.ok().build();
     }
 }

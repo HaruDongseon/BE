@@ -12,10 +12,7 @@ import haru.harudongseon.common.builder.LikePlaceBuilder;
 import haru.harudongseon.common.builder.LikePlaceStorageBuilder;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.likeplace.domain.LikePlace;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStoragesResponse;
-import haru.harudongseon.likeplacestorage.application.dto.StoredLikePlacesResponse;
+import haru.harudongseon.likeplacestorage.application.dto.*;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
 import haru.harudongseon.member.domain.Member;
 import io.restassured.RestAssured;
@@ -387,6 +384,99 @@ class LikePlaceStorageControllerTest extends E2ETest {
         }
     }
 
+    @Nested
+    @DisplayName("장소 보관함 장소 추가 시")
+    class AddLikePlace{
+
+        @Test
+        @DisplayName("장소 추가에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(Collections.emptyList());
+
+            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+
+            // when
+            final ExtractableResponse<Response> response = ADD_LIKE_PLACES_REQUEST(accessToken, likePlaceStorage.getId(), request);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        }
+
+        @Test
+        @DisplayName("장소 보관함 ID에 해당하는 장소 보관함이 없으면 실패한다.")
+        void fail_not_exist_like_place_storage() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+
+            final Long notExistLikePlaceStorageId = -1L;
+            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+
+            // when
+            final ExtractableResponse<Response> response = ADD_LIKE_PLACES_REQUEST(accessToken, notExistLikePlaceStorageId, request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("해당하는 장소 보관함을 찾을 수 없습니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("추가할 장소 중 장소 ID에 해당하는 장소가 하나라도 존재하지 않으면 실패한다.")
+        void fail_not_exist_like_place() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final LikePlace likePlace = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(Collections.emptyList());
+
+            final Long notExistLikePlaceId = -1L;
+
+            final LikePlaceAddRequest request1 = new LikePlaceAddRequest(List.of(notExistLikePlaceId, likePlace.getId()));
+            final LikePlaceAddRequest request2 = new LikePlaceAddRequest(List.of(notExistLikePlaceId));
+
+            // when
+            final ExtractableResponse<Response> response1 = ADD_LIKE_PLACES_REQUEST(accessToken, likePlaceStorage.getId(), request1);
+            final ExtractableResponse<Response> response2 = ADD_LIKE_PLACES_REQUEST(accessToken, likePlaceStorage.getId(), request2);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response1.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response1.jsonPath().getString("errorMessage")).contains("해당하는 보관 장소가 존재하지 않습니다.");
+                softly.assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response2.jsonPath().getString("errorMessage")).contains("해당하는 보관 장소가 존재하지 않습니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("요청한 보관 장소 ID 리스트가 비어있으면 실패한다.")
+        void fail_empty_like_place_ids() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(Collections.emptyList());
+
+            final LikePlaceAddRequest request = new LikePlaceAddRequest(Collections.emptyList());
+
+            // when
+            final ExtractableResponse<Response> response = ADD_LIKE_PLACES_REQUEST(accessToken, likePlaceStorage.getId(), request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("보관 장소 ID 리스트는 공백일 수 없습니다.");
+            });
+        }
+    }
+
     private static ExtractableResponse<Response> ADD_LIKE_PLACE_STORAGE_REQUEST(final String accessToken, final LikePlaceStorageAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
@@ -423,6 +513,17 @@ class LikePlaceStorageControllerTest extends E2ETest {
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .when().log().all()
                 .get("/like-place-storages/{like-place-storage-id}/like-places", likePlaceStorageId)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> ADD_LIKE_PLACES_REQUEST(final String accessToken, final Long likePlaceStorageId, final LikePlaceAddRequest request) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when().log().all()
+                .post("/like-place-storages/{like-place-storage-id}/like-places", likePlaceStorageId)
                 .then().log().all()
                 .extract();
     }

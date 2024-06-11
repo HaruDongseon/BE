@@ -2,10 +2,8 @@ package haru.harudongseon.likeplacestorage.application;
 
 import java.util.List;
 
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStoragesResponse;
-import haru.harudongseon.likeplacestorage.application.dto.StoredLikePlacesResponse;
+import haru.harudongseon.likeplace.domain.LikePlaceRepository;
+import haru.harudongseon.likeplacestorage.application.dto.*;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorageRepository;
 import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
@@ -23,6 +21,7 @@ public class LikePlaceStorageService {
 
     private final MemberRepository memberRepository;
     private final LikePlaceStorageRepository likePlaceStorageRepository;
+    private final LikePlaceRepository likePlaceRepository;
 
     public Long addLikePlaceStorage(final Long memberId, final LikePlaceStorageAddRequest request) {
         final Member member = memberRepository.findById(memberId)
@@ -66,5 +65,16 @@ public class LikePlaceStorageService {
                 .orElseThrow(() -> new EntityNotFoundException("장소 보관함 ID와 멤버 ID에 해당하는 장소 보관함이 존재하지 않습니다."));
 
         return StoredLikePlacesResponse.from(likePlaceStorage.getLikePlaces());
+    }
+
+    public void addLikePlace(final Long likePlaceStorageId, final LikePlaceAddRequest request) {
+        final LikePlaceStorage likePlaceStorage = likePlaceStorageRepository.findById(likePlaceStorageId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 장소 보관함을 찾을 수 없습니다."));
+
+        final List<Long> likePlaceIds = request.likePlaceIds();
+        likePlaceIds.stream()
+                .map(likePlaceId -> likePlaceRepository.findById(likePlaceId)
+                        .orElseThrow(() -> new EntityNotFoundException("해당하는 보관 장소가 존재하지 않습니다."))
+                ).forEach(likePlaceStorage::addLikePlace);
     }
 }
