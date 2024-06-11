@@ -16,11 +16,9 @@ import haru.harudongseon.common.builder.RouteBuilder;
 import haru.harudongseon.common.builder.RouteStorageBuilder;
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.route.domain.Route;
-import haru.harudongseon.routestorage.application.dto.RouteDeleteRequest;
-import haru.harudongseon.routestorage.application.dto.RouteStorageAddRequest;
-import haru.harudongseon.routestorage.application.dto.RouteStoragesResponse;
-import haru.harudongseon.routestorage.application.dto.StoredRoutesResponse;
+import haru.harudongseon.routestorage.application.dto.*;
 import haru.harudongseon.routestorage.domain.RouteStorage;
+import haru.harudongseon.routestorage.domain.RouteStorageRepository;
 import haru.harudongseon.routestorage.exception.RouteStorageException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -41,6 +39,9 @@ class RouteStorageServiceTest extends ServiceTest {
 
     @Autowired
     private RouteStorageService routeStorageService;
+
+    @Autowired
+    private RouteStorageRepository routeStorageRepository;
 
     @Nested
     @DisplayName("동선 보관함 추가 시")
@@ -210,6 +211,92 @@ class RouteStorageServiceTest extends ServiceTest {
                         .isInstanceOf(EntityNotFoundException.class)
                         .hasMessage("동선 보관함 ID와 멤버 ID에 해당하는 동선 보관함이 존재하지 않습니다.");
             });
+        }
+    }
+
+
+    @Nested
+    @DisplayName("동선 보관함 동선 추가 시")
+    class AddRoutes {
+
+        @Test
+        @DisplayName("추가에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route1 = routeBuilder.defaultRoute(member).title("5월 카페 데이트").build();
+            final Route route2 = routeBuilder.defaultRoute(member).title("5월 놀이공원 데이트").build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(Collections.emptyList()));
+
+            final RouteAddRequest request = new RouteAddRequest(List.of(route1.getId(), route2.getId()));
+
+            // when
+            routeStorageService.addRoutes(routeStorage.getId(), request);
+            final RouteStorage findRouteStorage = routeStorageRepository.findById(routeStorage.getId()).get();
+
+            // then
+            assertThat(findRouteStorage.getRoutes().get(0).getRoute()).isEqualTo(route1);
+            assertThat(findRouteStorage.getRoutes().get(1).getRoute()).isEqualTo(route2);
+
+        }
+
+        @Test
+        @DisplayName("동선 보관함 ID에 해당하는 동선 보관함이 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_route_storage_id() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route1 = routeBuilder.defaultRoute(member).title("5월 카페 데이트").build();
+            final Route route2 = routeBuilder.defaultRoute(member).title("5월 놀이공원 데이트").build();
+
+            final Long notExistRouteStorageId = -1L;
+
+            final RouteAddRequest request = new RouteAddRequest(List.of(route1.getId(), route2.getId()));
+
+            // when & then
+            assertThatThrownBy(() -> routeStorageService.addRoutes(notExistRouteStorageId, request))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 동선 보관함이 존재하지 않습니다.");
+        }
+
+        @Test
+        @DisplayName("추가할 동선 중 동선 ID에 해당하는 동선이 하나라도 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_route() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route1 = routeBuilder.defaultRoute(member).title("5월 카페 데이트").build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(Collections.emptyList()));
+
+            final Long notExistRouteId = -1L;
+
+            final RouteAddRequest request1 = new RouteAddRequest(List.of(notExistRouteId));
+            final RouteAddRequest request2 = new RouteAddRequest(List.of(notExistRouteId, route1.getId()));
+
+            // when & then
+            assertSoftly(softly -> {
+                softly.assertThatThrownBy(() -> routeStorageService.addRoutes(routeStorage.getId(), request1))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("해당하는 동선이 존재하지 않습니다.");
+                softly.assertThatThrownBy(() -> routeStorageService.addRoutes(routeStorage.getId(), request2))
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage("해당하는 동선이 존재하지 않습니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("추가할 동선 중 이미 보관함에 존재하는 동선이 존재하면 예외가 발생한다.")
+        void throws_already_exist_route() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route1 = routeBuilder.defaultRoute(member).title("5월 카페 데이트").build();
+            final Route route2 = routeBuilder.defaultRoute(member).title("5월 놀이공원 데이트").build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(List.of(route1)));
+
+            final RouteAddRequest request = new RouteAddRequest(List.of(route1.getId(), route2.getId()));
+
+            // when & then
+            assertThatThrownBy(() -> routeStorageService.addRoutes(routeStorage.getId(), request))
+                    .isInstanceOf(RouteStorageException.AlreadyExistRouteException.class)
+                    .hasMessage("동선 보관함에 이미 존재하는 동선입니다.");
         }
     }
 }

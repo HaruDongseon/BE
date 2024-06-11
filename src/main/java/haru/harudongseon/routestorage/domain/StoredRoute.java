@@ -35,4 +35,8 @@ public class StoredRoute extends BaseEntity {
         final List<StoredRoute> routes = routeStorage.getRoutes();
         routes.remove(this);
     }
+
+    public boolean isEqualToRouteId(final Long routeId) {
+        return route.getId().equals(routeId);
+    }
 }

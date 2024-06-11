@@ -4,10 +4,8 @@ import java.util.List;
 
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
-import haru.harudongseon.routestorage.application.dto.RouteDeleteRequest;
-import haru.harudongseon.routestorage.application.dto.RouteStorageAddRequest;
-import haru.harudongseon.routestorage.application.dto.RouteStoragesResponse;
-import haru.harudongseon.routestorage.application.dto.StoredRoutesResponse;
+import haru.harudongseon.route.domain.RouteRepository;
+import haru.harudongseon.routestorage.application.dto.*;
 import haru.harudongseon.routestorage.domain.RouteStorage;
 import haru.harudongseon.routestorage.domain.RouteStorageRepository;
 import haru.harudongseon.routestorage.domain.StoredRoute;
@@ -24,6 +22,7 @@ public class RouteStorageService {
 
     private final MemberRepository memberRepository;
     private final RouteStorageRepository routeStorageRepository;
+    private final RouteRepository routeRepository;
 
     public Long addRouteStorage(final Long memberId, final RouteStorageAddRequest request) {
         final Member member = memberRepository.findById(memberId)
@@ -69,5 +68,27 @@ public class RouteStorageService {
 
         final List<StoredRoute> storedRoutes = routeStorage.getRoutes();
         return StoredRoutesResponse.from(storedRoutes);
+    }
+
+    public void addRoutes(final Long routeStorageId, final RouteAddRequest request) {
+        final RouteStorage routeStorage = routeStorageRepository.findById(routeStorageId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 동선 보관함이 존재하지 않습니다."));
+
+        final List<Long> routeIds = request.routeIds();
+        validateAlreadyExist(routeIds, routeStorage);
+
+        routeIds.stream()
+                .map(routeId -> {
+                    return routeRepository.findById(routeId)
+                            .orElseThrow(() -> new EntityNotFoundException("해당하는 동선이 존재하지 않습니다."));
+                }).forEach(routeStorage::addRoute);
+    }
+
+    private void validateAlreadyExist(final List<Long> routeIds, final RouteStorage routeStorage) {
+        for (Long routeId : routeIds) {
+            if (routeStorage.isAlreadyExistRoute(routeId)) {
+                throw new RouteStorageException.AlreadyExistRouteException();
+            }
+        }
     }
 }

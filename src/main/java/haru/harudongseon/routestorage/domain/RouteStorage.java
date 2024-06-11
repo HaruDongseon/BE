@@ -2,6 +2,7 @@ package haru.harudongseon.routestorage.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.member.domain.Member;
@@ -59,5 +60,16 @@ public class RouteStorage extends BaseEntity {
                 .orElseThrow(RouteStorageException.NotExistRouteException::new);
 
         routes.remove(routeToRemove);
+    }
+
+    public boolean isAlreadyExistRoute(final Long routeId) {
+        final Optional<StoredRoute> optionalRoute = routes.stream()
+                .filter(route -> route.isEqualToRouteId(routeId))
+                .findFirst();
+
+        if (optionalRoute.isPresent()) {
+            return true;
+        }
+        return false;
     }
 }

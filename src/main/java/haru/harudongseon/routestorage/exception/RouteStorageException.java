@@ -26,4 +26,11 @@ public class RouteStorageException extends RuntimeException {
             super("동선 보관함에 해당하는 동선이 존재하지 않습니다.");
         }
     }
+
+    public static class AlreadyExistRouteException extends RouteStorageException {
+
+        public AlreadyExistRouteException() {
+            super("동선 보관함에 이미 존재하는 동선입니다.");
+        }
+    }
 }
