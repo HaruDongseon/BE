@@ -475,6 +475,28 @@ class LikePlaceStorageControllerTest extends E2ETest {
                 softly.assertThat(response.jsonPath().getString("errorMessage")).contains("보관 장소 ID 리스트는 공백일 수 없습니다.");
             });
         }
+
+        @Test
+        @DisplayName("추가할 장소 중 이미 보관함에 존재하는 장소면 실패한다.")
+        void fail_already_exist_like_place() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(List.of(likePlace1, likePlace2));
+
+            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+
+            // when
+            final ExtractableResponse<Response> response = ADD_LIKE_PLACES_REQUEST(accessToken, likePlaceStorage.getId(), request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("장소 보관함에 이미 존재하는 보관 장소입니다.");
+            });
+        }
     }
 
     private static ExtractableResponse<Response> ADD_LIKE_PLACE_STORAGE_REQUEST(final String accessToken, final LikePlaceStorageAddRequest request) {

@@ -35,4 +35,8 @@ public class StoredLikePlace extends BaseEntity {
         final List<StoredLikePlace> likePlaces = likePlaceStorage.getLikePlaces();
         likePlaces.remove(this);
     }
+
+    public boolean isEqualToLikePlaceId(final Long likePlaceId) {
+        return likePlace.getId().equals(likePlaceId);
+    }
 }

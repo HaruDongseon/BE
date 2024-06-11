@@ -69,8 +69,10 @@ public class GlobalExceptionHandler {
             RouteException.DuplicateRoutePlacePhotoException.class,
             RouteException.DuplicateSameDateException.class,
             LikePlaceStorageException.DuplicateException.class,
+            LikePlaceStorageException.AlreadyExistLikePlaceException.class,
             RouteStorageException.DuplicateException.class,
-            RouteStorageException.NotOwnerException.class
+            RouteStorageException.NotOwnerException.class,
+            RouteStorageException.AlreadyExistRouteException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequestException(final RuntimeException exception) {
         final String errorMessage = exception.getMessage();

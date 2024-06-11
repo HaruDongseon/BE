@@ -67,14 +67,24 @@ public class LikePlaceStorageService {
         return StoredLikePlacesResponse.from(likePlaceStorage.getLikePlaces());
     }
 
-    public void addLikePlace(final Long likePlaceStorageId, final LikePlaceAddRequest request) {
+    public void addLikePlaces(final Long likePlaceStorageId, final LikePlaceAddRequest request) {
         final LikePlaceStorage likePlaceStorage = likePlaceStorageRepository.findById(likePlaceStorageId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 장소 보관함을 찾을 수 없습니다."));
 
         final List<Long> likePlaceIds = request.likePlaceIds();
+        validateAlreadyExist(likePlaceIds, likePlaceStorage);
+
         likePlaceIds.stream()
                 .map(likePlaceId -> likePlaceRepository.findById(likePlaceId)
                         .orElseThrow(() -> new EntityNotFoundException("해당하는 보관 장소가 존재하지 않습니다."))
                 ).forEach(likePlaceStorage::addLikePlace);
+    }
+
+    private void validateAlreadyExist(final List<Long> likePlaceIds, final LikePlaceStorage likePlaceStorage) {
+        for (Long likePlaceId : likePlaceIds) {
+            if (likePlaceStorage.isAlreadyExistLikePlace(likePlaceId)) {
+                throw new LikePlaceStorageException.AlreadyExistLikePlaceException();
+            }
+        }
     }
 }
