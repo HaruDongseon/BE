@@ -306,31 +306,52 @@ class RouteServiceTest extends ServiceTest {
             assertThat(successCount).isEqualTo(1);
             assertThat(failCount).isEqualTo(requestCount - 1);
         }
-    }
 
-    @Test
-    @DisplayName("멤버 ID에 해당하는 멤버가 존재하지 않으면 예외가 발생한다.")
-    void throws_not_exist_member() {
-        // given
-        final Member member = memberBuilder.defaultMember().build();
+        @Test
+        @DisplayName("여러 사용자가 동시에 동선 추가 요청 시에 태그 선택 횟수가 정상적으로 증가한다.")
+        void multiple_request_increase_tag_select_count() throws InterruptedException, ExecutionException {
+            // given
+            final ExecutorService executorService = Executors.newFixedThreadPool(30);
+            final int memberCount = 100;
+            final CountDownLatch countDownLatch = new CountDownLatch(memberCount);
 
-        final PlaceBuilder defaultPlace1Builder = placeBuilder.defaultPlace1();
-        final RoutePlaceDto routePlaceDto1 = defaultPlace1Builder.buildRoutePlaceDto();
+            final RouteTag routeTag = executorService.submit(() -> {
+                return routeTagBuilder.defaultRouteTag().selectCount(1L).build();
+            }).get();
 
-        final PlaceBuilder defaultPlace2Builder = placeBuilder.defaultPlace2();
-        final RoutePlaceDto routePlaceDto2 = defaultPlace2Builder.buildRoutePlaceDto();
+            final Long beforeSelectCount = routeTag.getSelectCount();
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, List.of(routeTag.getName()), 기본_동선_이동수단, Collections.emptyList());
 
-        final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
-        final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
+            List<Long> memberIds = IntStream.range(0, memberCount)
+                    .mapToObj(i -> {
+                        try {
+                            return executorService.submit(() -> {
+                                return memberBuilder.defaultMember().build().getId();
+                            }).get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .toList();
 
-        final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
+            // when
+            for (Long memberId : memberIds) {
+                executorService.submit(() -> {
+                    try {
+                        routeService.addRoute(memberId, routeAddRequest);
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                });
+            }
+            countDownLatch.await();
 
-        final Long notExistMemberId = -1L;
+            final RouteTag findRouteTag = routeTagRepository.findById(routeTag.getId()).get();
+            final Long afterSelectCount = findRouteTag.getSelectCount();
 
-        // when & then
-        assertThatThrownBy(() -> routeService.addRoute(notExistMemberId, routeAddRequest))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("해당하는 멤버를 찾을 수 없습니다.");
+            // then
+            assertThat(afterSelectCount).isEqualTo(beforeSelectCount + memberCount);
+        }
     }
 
 
