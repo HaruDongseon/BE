@@ -153,7 +153,7 @@ class RouteStorageControllerTest extends E2ETest {
             final Route route3 = routeBuilder.defaultRoute(member).build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(new ArrayList<>(List.of(route1, route2, route3)));
 
-            final RouteDeleteRequest request = new RouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), route3.getId()));
+            final StoredRouteDeleteRequest request = new StoredRouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), route3.getId()));
 
             // when
             final ExtractableResponse<Response> response = DELETE_ROUTE_REQUEST(accessToken, request);
@@ -174,7 +174,7 @@ class RouteStorageControllerTest extends E2ETest {
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(new ArrayList<>(List.of(route1, route2, route3)));
 
             final Long nullRouteStorageId = null;
-            final RouteDeleteRequest nullRouteStorageRequest = new RouteDeleteRequest(nullRouteStorageId, List.of(route1.getId(), route3.getId()));
+            final StoredRouteDeleteRequest nullRouteStorageRequest = new StoredRouteDeleteRequest(nullRouteStorageId, List.of(route1.getId(), route3.getId()));
 
             // when
             final ExtractableResponse<Response> nullRouteStorageResponse = DELETE_ROUTE_REQUEST(accessToken, nullRouteStorageRequest);
@@ -197,7 +197,7 @@ class RouteStorageControllerTest extends E2ETest {
             final Route route3 = routeBuilder.defaultRoute(member).build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(new ArrayList<>(List.of(route1, route2, route3)));
 
-            final RouteDeleteRequest emptyRouteIdsRequest = new RouteDeleteRequest(routeStorage.getId(), Collections.EMPTY_LIST);
+            final StoredRouteDeleteRequest emptyRouteIdsRequest = new StoredRouteDeleteRequest(routeStorage.getId(), Collections.EMPTY_LIST);
 
             // when
             final ExtractableResponse<Response> emptyRouteIdsResponse = DELETE_ROUTE_REQUEST(accessToken, emptyRouteIdsRequest);
@@ -221,7 +221,7 @@ class RouteStorageControllerTest extends E2ETest {
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(new ArrayList<>(List.of(route1, route2, route3)));
 
             final Long notExistRouteStorageId = -1L;
-            final RouteDeleteRequest notExistRouteStorageRequest = new RouteDeleteRequest(notExistRouteStorageId, List.of(route1.getId(), route3.getId()));
+            final StoredRouteDeleteRequest notExistRouteStorageRequest = new StoredRouteDeleteRequest(notExistRouteStorageId, List.of(route1.getId(), route3.getId()));
 
             // when
             final ExtractableResponse<Response> notExistRouteStorageResponse = DELETE_ROUTE_REQUEST(accessToken, notExistRouteStorageRequest);
@@ -245,7 +245,7 @@ class RouteStorageControllerTest extends E2ETest {
             final Route route3 = routeBuilder.defaultRoute(member).build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(new ArrayList<>(List.of(route1, route2, route3)));
 
-            final RouteDeleteRequest notExistRouteStorageRequest = new RouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), route3.getId()));
+            final StoredRouteDeleteRequest notExistRouteStorageRequest = new StoredRouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), route3.getId()));
 
             // when
             final ExtractableResponse<Response> notOwnerMemberResponse = DELETE_ROUTE_REQUEST(notOwnerMemberAccessToken, notExistRouteStorageRequest);
@@ -268,7 +268,7 @@ class RouteStorageControllerTest extends E2ETest {
             final Route notContainRoute = routeBuilder.defaultRoute(member).build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(new ArrayList<>(List.of(route1, route2)));
 
-            final RouteDeleteRequest notExistRouteRequest = new RouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), notContainRoute.getId()));
+            final StoredRouteDeleteRequest notExistRouteRequest = new StoredRouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), notContainRoute.getId()));
 
             // when
             final ExtractableResponse<Response> notExistRouteResponse = DELETE_ROUTE_REQUEST(accessToken, notExistRouteRequest);
@@ -397,7 +397,7 @@ class RouteStorageControllerTest extends E2ETest {
             final Route route2 = routeBuilder.defaultRoute(member).title("5월 놀이공원 데이트").build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(Collections.emptyList()));
 
-            final RouteAddRequest request = new RouteAddRequest(List.of(route1.getId(), route2.getId()));
+            final StoredRouteAddRequest request = new StoredRouteAddRequest(List.of(route1.getId(), route2.getId()));
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTES_REQUEST(accessToken, routeStorage.getId(), request);
@@ -417,7 +417,7 @@ class RouteStorageControllerTest extends E2ETest {
 
             final Long notExistRouteStorageId = -1L;
 
-            final RouteAddRequest request = new RouteAddRequest(List.of(route1.getId(), route2.getId()));
+            final StoredRouteAddRequest request = new StoredRouteAddRequest(List.of(route1.getId(), route2.getId()));
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTES_REQUEST(accessToken, notExistRouteStorageId, request);
@@ -440,8 +440,8 @@ class RouteStorageControllerTest extends E2ETest {
 
             final Long notExistRouteId = -1L;
 
-            final RouteAddRequest request1 = new RouteAddRequest(List.of(notExistRouteId));
-            final RouteAddRequest request2 = new RouteAddRequest(List.of(notExistRouteId, route1.getId()));
+            final StoredRouteAddRequest request1 = new StoredRouteAddRequest(List.of(notExistRouteId));
+            final StoredRouteAddRequest request2 = new StoredRouteAddRequest(List.of(notExistRouteId, route1.getId()));
 
             // when
             final ExtractableResponse<Response> response1 = ADD_ROUTES_REQUEST(accessToken, routeStorage.getId(), request1);
@@ -466,7 +466,7 @@ class RouteStorageControllerTest extends E2ETest {
             final Route route2 = routeBuilder.defaultRoute(member).title("5월 놀이공원 데이트").build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(List.of(route1)));
 
-            final RouteAddRequest request = new RouteAddRequest(List.of(route1.getId(), route2.getId()));
+            final StoredRouteAddRequest request = new StoredRouteAddRequest(List.of(route1.getId(), route2.getId()));
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTES_REQUEST(accessToken, routeStorage.getId(), request);
@@ -486,7 +486,7 @@ class RouteStorageControllerTest extends E2ETest {
             final String accessToken = jwtService.createAccessToken(member.getId());
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(Collections.emptyList()));
 
-            final RouteAddRequest request = new RouteAddRequest(Collections.emptyList());
+            final StoredRouteAddRequest request = new StoredRouteAddRequest(Collections.emptyList());
 
             // when
             final ExtractableResponse<Response> response = ADD_ROUTES_REQUEST(accessToken, routeStorage.getId(), request);
@@ -510,7 +510,7 @@ class RouteStorageControllerTest extends E2ETest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> DELETE_ROUTE_REQUEST(final String accessToken, final RouteDeleteRequest request) {
+    private static ExtractableResponse<Response> DELETE_ROUTE_REQUEST(final String accessToken, final StoredRouteDeleteRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -539,7 +539,7 @@ class RouteStorageControllerTest extends E2ETest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> ADD_ROUTES_REQUEST(final String accessToken, final Long routeStorageId, final RouteAddRequest request) {
+    private static ExtractableResponse<Response> ADD_ROUTES_REQUEST(final String accessToken, final Long routeStorageId, final StoredRouteAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

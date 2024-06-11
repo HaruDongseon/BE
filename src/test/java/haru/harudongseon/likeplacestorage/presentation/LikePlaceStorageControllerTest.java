@@ -135,7 +135,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final LikePlace likePlace3 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference3")).name("성수건설").build();
             final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).build(List.of(likePlace1, likePlace2, likePlace3));
 
-            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(likePlaceStorage.getId(), List.of(likePlace1.getId(), likePlace2.getId()));
+            final StoredLikePlaceDeleteRequest request = new StoredLikePlaceDeleteRequest(likePlaceStorage.getId(), List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when
             final ExtractableResponse<Response> response = DELETE_LIKE_PLACE_REQUEST(accessToken, request);
@@ -157,7 +157,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).build(List.of(likePlace1, likePlace2, likePlace3));
 
             final Long blankLikePlaceStorageId = null;
-            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(blankLikePlaceStorageId, List.of(likePlace1.getId(), likePlace2.getId()));
+            final StoredLikePlaceDeleteRequest request = new StoredLikePlaceDeleteRequest(blankLikePlaceStorageId, List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when
             final ExtractableResponse<Response> response = DELETE_LIKE_PLACE_REQUEST(accessToken, request);
@@ -181,7 +181,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final LikePlace likePlace3 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference3")).name("성수건설").build();
             final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).build(List.of(likePlace1, likePlace2, likePlace3));
 
-            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(likePlaceStorage.getId(), Collections.emptyList());
+            final StoredLikePlaceDeleteRequest request = new StoredLikePlaceDeleteRequest(likePlaceStorage.getId(), Collections.emptyList());
 
             // when
             final ExtractableResponse<Response> response = DELETE_LIKE_PLACE_REQUEST(accessToken, request);
@@ -207,7 +207,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
 
             final Long notExistLikePlaceStorageId = -1L;
 
-            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(notExistLikePlaceStorageId, List.of(likePlace1.getId(), likePlace2.getId()));
+            final StoredLikePlaceDeleteRequest request = new StoredLikePlaceDeleteRequest(notExistLikePlaceStorageId, List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when
             final ExtractableResponse<Response> response = DELETE_LIKE_PLACE_REQUEST(accessToken, request);
@@ -233,7 +233,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
 
             final LikePlace notExistInStorageLikePlace = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference4")).name("스타벅스 부평점").build();
 
-            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(likePlaceStorage.getId(), List.of(likePlace1.getId(), notExistInStorageLikePlace.getId()));
+            final StoredLikePlaceDeleteRequest request = new StoredLikePlaceDeleteRequest(likePlaceStorage.getId(), List.of(likePlace1.getId(), notExistInStorageLikePlace.getId()));
 
             // when
             final ExtractableResponse<Response> response = DELETE_LIKE_PLACE_REQUEST(accessToken, request);
@@ -398,7 +398,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
             final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(Collections.emptyList());
 
-            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+            final StoredLikePlaceAddRequest request = new StoredLikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when
             final ExtractableResponse<Response> response = ADD_LIKE_PLACES_REQUEST(accessToken, likePlaceStorage.getId(), request);
@@ -417,7 +417,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
 
             final Long notExistLikePlaceStorageId = -1L;
-            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+            final StoredLikePlaceAddRequest request = new StoredLikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when
             final ExtractableResponse<Response> response = ADD_LIKE_PLACES_REQUEST(accessToken, notExistLikePlaceStorageId, request);
@@ -440,8 +440,8 @@ class LikePlaceStorageControllerTest extends E2ETest {
 
             final Long notExistLikePlaceId = -1L;
 
-            final LikePlaceAddRequest request1 = new LikePlaceAddRequest(List.of(notExistLikePlaceId, likePlace.getId()));
-            final LikePlaceAddRequest request2 = new LikePlaceAddRequest(List.of(notExistLikePlaceId));
+            final StoredLikePlaceAddRequest request1 = new StoredLikePlaceAddRequest(List.of(notExistLikePlaceId, likePlace.getId()));
+            final StoredLikePlaceAddRequest request2 = new StoredLikePlaceAddRequest(List.of(notExistLikePlaceId));
 
             // when
             final ExtractableResponse<Response> response1 = ADD_LIKE_PLACES_REQUEST(accessToken, likePlaceStorage.getId(), request1);
@@ -464,7 +464,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final String accessToken = jwtService.createAccessToken(member.getId());
             final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(Collections.emptyList());
 
-            final LikePlaceAddRequest request = new LikePlaceAddRequest(Collections.emptyList());
+            final StoredLikePlaceAddRequest request = new StoredLikePlaceAddRequest(Collections.emptyList());
 
             // when
             final ExtractableResponse<Response> response = ADD_LIKE_PLACES_REQUEST(accessToken, likePlaceStorage.getId(), request);
@@ -486,7 +486,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
             final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
             final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(List.of(likePlace1, likePlace2));
 
-            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+            final StoredLikePlaceAddRequest request = new StoredLikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when
             final ExtractableResponse<Response> response = ADD_LIKE_PLACES_REQUEST(accessToken, likePlaceStorage.getId(), request);
@@ -510,7 +510,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> DELETE_LIKE_PLACE_REQUEST(final String accessToken, final LikePlaceDeleteRequest request) {
+    private static ExtractableResponse<Response> DELETE_LIKE_PLACE_REQUEST(final String accessToken, final StoredLikePlaceDeleteRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -539,7 +539,7 @@ class LikePlaceStorageControllerTest extends E2ETest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> ADD_LIKE_PLACES_REQUEST(final String accessToken, final Long likePlaceStorageId, final LikePlaceAddRequest request) {
+    private static ExtractableResponse<Response> ADD_LIKE_PLACES_REQUEST(final String accessToken, final Long likePlaceStorageId, final StoredLikePlaceAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

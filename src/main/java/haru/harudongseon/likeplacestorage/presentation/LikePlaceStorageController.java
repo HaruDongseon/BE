@@ -49,7 +49,7 @@ public class LikePlaceStorageController {
     @ApiResponse(responseCode = "404", description = "멤버/보관 장소 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @DeleteMapping("/like-places")
     public ResponseEntity<Void> deleteLikePlace(
-            @Valid @RequestBody LikePlaceDeleteRequest request
+            @Valid @RequestBody StoredLikePlaceDeleteRequest request
     ) {
         likePlaceStorageService.deleteLikePlace(request);
         return ResponseEntity.noContent().build();
@@ -90,7 +90,7 @@ public class LikePlaceStorageController {
     @PostMapping("/{like-place-storage-id}/like-places")
     public ResponseEntity<Void> addLikePlaces(
             @PathVariable("like-place-storage-id") Long likePlaceStorageId,
-            @Valid @RequestBody LikePlaceAddRequest request
+            @Valid @RequestBody StoredLikePlaceAddRequest request
     ) {
         likePlaceStorageService.addLikePlaces(likePlaceStorageId, request);
         return ResponseEntity.ok().build();

@@ -42,7 +42,7 @@ public class RouteStorageService {
         }
     }
 
-    public void deleteRouteStorage(final Long memberId, final RouteDeleteRequest request) {
+    public void deleteRouteStorage(final Long memberId, final StoredRouteDeleteRequest request) {
         final Long routeStorageId = request.routeStorageId();
         final List<Long> routeIds = request.routeIds();
 
@@ -70,7 +70,7 @@ public class RouteStorageService {
         return StoredRoutesResponse.from(storedRoutes);
     }
 
-    public void addRoutes(final Long routeStorageId, final RouteAddRequest request) {
+    public void addRoutes(final Long routeStorageId, final StoredRouteAddRequest request) {
         final RouteStorage routeStorage = routeStorageRepository.findById(routeStorageId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 동선 보관함이 존재하지 않습니다."));
 

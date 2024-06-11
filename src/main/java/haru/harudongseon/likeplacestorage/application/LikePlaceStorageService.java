@@ -40,7 +40,7 @@ public class LikePlaceStorageService {
         }
     }
 
-    public void deleteLikePlace(final LikePlaceDeleteRequest request) {
+    public void deleteLikePlace(final StoredLikePlaceDeleteRequest request) {
         final Long likePlaceStorageId = request.likePlaceStorageId();
         final List<Long> likePlaceIds = request.likePlaceIds();
 
@@ -67,7 +67,7 @@ public class LikePlaceStorageService {
         return StoredLikePlacesResponse.from(likePlaceStorage.getLikePlaces());
     }
 
-    public void addLikePlaces(final Long likePlaceStorageId, final LikePlaceAddRequest request) {
+    public void addLikePlaces(final Long likePlaceStorageId, final StoredLikePlaceAddRequest request) {
         final LikePlaceStorage likePlaceStorage = likePlaceStorageRepository.findById(likePlaceStorageId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 장소 보관함을 찾을 수 없습니다."));
 

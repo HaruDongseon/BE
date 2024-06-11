@@ -5,7 +5,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 
-public record RouteAddRequest(
+public record StoredRouteAddRequest(
 
         @Size(min = 1, message = "동선 ID 리스트는 공백일 수 없습니다.")
         @Schema(description = "동선 ID 리스트", nullable = false, example = "[1, 2, 3]")
