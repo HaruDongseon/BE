@@ -13,12 +13,10 @@ import haru.harudongseon.common.builder.LikePlaceBuilder;
 import haru.harudongseon.common.builder.LikePlaceStorageBuilder;
 import haru.harudongseon.common.builder.MemberBuilder;
 import haru.harudongseon.likeplace.domain.LikePlace;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceDeleteRequest;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStorageAddRequest;
-import haru.harudongseon.likeplacestorage.application.dto.LikePlaceStoragesResponse;
-import haru.harudongseon.likeplacestorage.application.dto.StoredLikePlacesResponse;
+import haru.harudongseon.likeplacestorage.application.dto.*;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorageRepository;
+import haru.harudongseon.likeplacestorage.domain.StoredLikePlace;
 import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
 import haru.harudongseon.member.domain.Member;
 import jakarta.persistence.EntityNotFoundException;
@@ -243,6 +241,71 @@ class LikePlaceStorageServiceTest extends ServiceTest {
                         .isInstanceOf(EntityNotFoundException.class)
                         .hasMessage("장소 보관함 ID와 멤버 ID에 해당하는 장소 보관함이 존재하지 않습니다.");
             });
+        }
+    }
+
+    @Nested
+    @DisplayName("장소 보관함 장소 추가 시")
+    class AddLikePlace {
+
+        @Test
+        @DisplayName("추가에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(Collections.emptyList());
+
+            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+
+            // when
+            likePlaceStorageService.addLikePlace(likePlaceStorage.getId(), request);
+            final LikePlaceStorage findLikePlaceStorage = likePlaceStorageRepository.findById(likePlaceStorage.getId()).get();
+            final List<StoredLikePlace> likePlaces = findLikePlaceStorage.getLikePlaces();
+
+            // then
+            assertThat(likePlaces.get(0).getLikePlace()).isEqualTo(likePlace1);
+            assertThat(likePlaces.get(1).getLikePlace()).isEqualTo(likePlace2);
+        }
+
+        @Test
+        @DisplayName("장소 보관함 ID에 해당하는 장소 보관함이 없으면 예외가 발생한다.")
+        void throws_not_exist_like_place_storage() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+
+            final Long notExistLikePlaceStorageId = -1L;
+            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceStorageService.addLikePlace(notExistLikePlaceStorageId, request))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 장소 보관함을 찾을 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("추가할 장소 중 장소 ID에 해당하는 장소가 하나라도 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_like_place() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(Collections.emptyList());
+
+            final Long notExistLikePlaceId = -1L;
+
+            final LikePlaceAddRequest request1 = new LikePlaceAddRequest(List.of(notExistLikePlaceId, likePlace.getId()));
+            final LikePlaceAddRequest request2 = new LikePlaceAddRequest(List.of(notExistLikePlaceId));
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceStorageService.addLikePlace(likePlaceStorage.getId(), request1))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 보관 장소가 존재하지 않습니다.");
+            assertThatThrownBy(() -> likePlaceStorageService.addLikePlace(likePlaceStorage.getId(), request2))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 보관 장소가 존재하지 않습니다.");
         }
     }
 }
