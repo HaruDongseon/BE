@@ -67,7 +67,7 @@ public class LikePlaceStorageService {
         return StoredLikePlacesResponse.from(likePlaceStorage.getLikePlaces());
     }
 
-    public void addLikePlace(final Long likePlaceStorageId, final LikePlaceAddRequest request) {
+    public void addLikePlaces(final Long likePlaceStorageId, final LikePlaceAddRequest request) {
         final LikePlaceStorage likePlaceStorage = likePlaceStorageRepository.findById(likePlaceStorageId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 장소 보관함을 찾을 수 없습니다."));
 

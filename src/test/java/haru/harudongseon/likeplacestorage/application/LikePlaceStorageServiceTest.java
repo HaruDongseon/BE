@@ -19,7 +19,6 @@ import haru.harudongseon.likeplacestorage.domain.LikePlaceStorageRepository;
 import haru.harudongseon.likeplacestorage.domain.StoredLikePlace;
 import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
 import haru.harudongseon.member.domain.Member;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -42,9 +41,6 @@ class LikePlaceStorageServiceTest extends ServiceTest {
 
     @Autowired
     private LikePlaceStorageService likePlaceStorageService;
-
-    @Autowired
-    private EntityManager em;
 
     @Nested
     @DisplayName("장소 보관함 추가 시")
@@ -264,7 +260,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when
-            likePlaceStorageService.addLikePlace(likePlaceStorage.getId(), request);
+            likePlaceStorageService.addLikePlaces(likePlaceStorage.getId(), request);
             final LikePlaceStorage findLikePlaceStorage = likePlaceStorageRepository.findById(likePlaceStorage.getId()).get();
             final List<StoredLikePlace> likePlaces = findLikePlaceStorage.getLikePlaces();
 
@@ -285,7 +281,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when & then
-            assertThatThrownBy(() -> likePlaceStorageService.addLikePlace(notExistLikePlaceStorageId, request))
+            assertThatThrownBy(() -> likePlaceStorageService.addLikePlaces(notExistLikePlaceStorageId, request))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 장소 보관함을 찾을 수 없습니다.");
         }
@@ -304,10 +300,10 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final LikePlaceAddRequest request2 = new LikePlaceAddRequest(List.of(notExistLikePlaceId));
 
             // when & then
-            assertThatThrownBy(() -> likePlaceStorageService.addLikePlace(likePlaceStorage.getId(), request1))
+            assertThatThrownBy(() -> likePlaceStorageService.addLikePlaces(likePlaceStorage.getId(), request1))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 보관 장소가 존재하지 않습니다.");
-            assertThatThrownBy(() -> likePlaceStorageService.addLikePlace(likePlaceStorage.getId(), request2))
+            assertThatThrownBy(() -> likePlaceStorageService.addLikePlaces(likePlaceStorage.getId(), request2))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 보관 장소가 존재하지 않습니다.");
         }
