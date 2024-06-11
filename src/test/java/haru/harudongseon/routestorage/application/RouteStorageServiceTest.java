@@ -103,7 +103,7 @@ class RouteStorageServiceTest extends ServiceTest {
             final Route route3 = routeBuilder.defaultRoute(member).build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(new ArrayList<>(List.of(route1, route2, route3)));
 
-            final RouteDeleteRequest request = new RouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), route3.getId()));
+            final StoredRouteDeleteRequest request = new StoredRouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), route3.getId()));
 
             // when & then
             assertDoesNotThrow(() -> routeStorageService.deleteRouteStorage(member.getId(), request));
@@ -120,7 +120,7 @@ class RouteStorageServiceTest extends ServiceTest {
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(new ArrayList<>(List.of(route1, route2, route3)));
 
             final Long notExistRouteStorageId = -1L;
-            final RouteDeleteRequest request = new RouteDeleteRequest(notExistRouteStorageId, List.of(route1.getId(), route3.getId()));
+            final StoredRouteDeleteRequest request = new StoredRouteDeleteRequest(notExistRouteStorageId, List.of(route1.getId(), route3.getId()));
 
             // when & then
             assertThatThrownBy(() -> routeStorageService.deleteRouteStorage(member.getId(), request))
@@ -228,7 +228,7 @@ class RouteStorageServiceTest extends ServiceTest {
             final Route route2 = routeBuilder.defaultRoute(member).title("5월 놀이공원 데이트").build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(Collections.emptyList()));
 
-            final RouteAddRequest request = new RouteAddRequest(List.of(route1.getId(), route2.getId()));
+            final StoredRouteAddRequest request = new StoredRouteAddRequest(List.of(route1.getId(), route2.getId()));
 
             // when
             routeStorageService.addRoutes(routeStorage.getId(), request);
@@ -250,7 +250,7 @@ class RouteStorageServiceTest extends ServiceTest {
 
             final Long notExistRouteStorageId = -1L;
 
-            final RouteAddRequest request = new RouteAddRequest(List.of(route1.getId(), route2.getId()));
+            final StoredRouteAddRequest request = new StoredRouteAddRequest(List.of(route1.getId(), route2.getId()));
 
             // when & then
             assertThatThrownBy(() -> routeStorageService.addRoutes(notExistRouteStorageId, request))
@@ -268,8 +268,8 @@ class RouteStorageServiceTest extends ServiceTest {
 
             final Long notExistRouteId = -1L;
 
-            final RouteAddRequest request1 = new RouteAddRequest(List.of(notExistRouteId));
-            final RouteAddRequest request2 = new RouteAddRequest(List.of(notExistRouteId, route1.getId()));
+            final StoredRouteAddRequest request1 = new StoredRouteAddRequest(List.of(notExistRouteId));
+            final StoredRouteAddRequest request2 = new StoredRouteAddRequest(List.of(notExistRouteId, route1.getId()));
 
             // when & then
             assertSoftly(softly -> {
@@ -291,7 +291,7 @@ class RouteStorageServiceTest extends ServiceTest {
             final Route route2 = routeBuilder.defaultRoute(member).title("5월 놀이공원 데이트").build();
             final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).name("데이트").build(new ArrayList<>(List.of(route1)));
 
-            final RouteAddRequest request = new RouteAddRequest(List.of(route1.getId(), route2.getId()));
+            final StoredRouteAddRequest request = new StoredRouteAddRequest(List.of(route1.getId(), route2.getId()));
 
             // when & then
             assertThatThrownBy(() -> routeStorageService.addRoutes(routeStorage.getId(), request))

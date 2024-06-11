@@ -50,7 +50,7 @@ public class RouteStorageController {
     @DeleteMapping("/routes")
     public ResponseEntity<Void> deleteRoutes(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
-            @Valid @RequestBody RouteDeleteRequest request
+            @Valid @RequestBody StoredRouteDeleteRequest request
     ) {
         final Long memberId = authMemberDto.memberId();
         routeStorageService.deleteRouteStorage(memberId, request);
@@ -93,7 +93,7 @@ public class RouteStorageController {
     @PostMapping("/{route-storage-id}/routes")
     public ResponseEntity<Void> addRoutes(
             @PathVariable("route-storage-id") Long routeStorageId,
-            @Valid @RequestBody RouteAddRequest request
+            @Valid @RequestBody StoredRouteAddRequest request
     ) {
         routeStorageService.addRoutes(routeStorageId, request);
         return ResponseEntity.ok().build();

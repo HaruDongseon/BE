@@ -102,7 +102,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
             final LikePlace likePlace3 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference3")).name("성수건설").build();
             final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).build(List.of(likePlace1, likePlace2, likePlace3));
-            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(likePlaceStorage.getId(), List.of(likePlace1.getId(), likePlace2.getId()));
+            final StoredLikePlaceDeleteRequest request = new StoredLikePlaceDeleteRequest(likePlaceStorage.getId(), List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when
             likePlaceStorageService.deleteLikePlace(request);
@@ -123,7 +123,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final LikePlace likePlace = likePlaceBuilder.defaultLikePlace(member).build();
 
             final Long notExistLikePlaceStorageId = -1L;
-            final LikePlaceDeleteRequest request = new LikePlaceDeleteRequest(notExistLikePlaceStorageId, List.of(likePlace.getId()));
+            final StoredLikePlaceDeleteRequest request = new StoredLikePlaceDeleteRequest(notExistLikePlaceStorageId, List.of(likePlace.getId()));
 
             // when & then
             assertThatThrownBy(() -> likePlaceStorageService.deleteLikePlace(request))
@@ -257,7 +257,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
             final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(Collections.emptyList());
 
-            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+            final StoredLikePlaceAddRequest request = new StoredLikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when
             likePlaceStorageService.addLikePlaces(likePlaceStorage.getId(), request);
@@ -278,7 +278,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
 
             final Long notExistLikePlaceStorageId = -1L;
-            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+            final StoredLikePlaceAddRequest request = new StoredLikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when & then
             assertThatThrownBy(() -> likePlaceStorageService.addLikePlaces(notExistLikePlaceStorageId, request))
@@ -296,8 +296,8 @@ class LikePlaceStorageServiceTest extends ServiceTest {
 
             final Long notExistLikePlaceId = -1L;
 
-            final LikePlaceAddRequest request1 = new LikePlaceAddRequest(List.of(notExistLikePlaceId, likePlace.getId()));
-            final LikePlaceAddRequest request2 = new LikePlaceAddRequest(List.of(notExistLikePlaceId));
+            final StoredLikePlaceAddRequest request1 = new StoredLikePlaceAddRequest(List.of(notExistLikePlaceId, likePlace.getId()));
+            final StoredLikePlaceAddRequest request2 = new StoredLikePlaceAddRequest(List.of(notExistLikePlaceId));
 
             // when & then
             assertThatThrownBy(() -> likePlaceStorageService.addLikePlaces(likePlaceStorage.getId(), request1))
@@ -317,7 +317,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
             final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(List.of(likePlace1, likePlace2));
 
-            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+            final StoredLikePlaceAddRequest request = new StoredLikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
 
             // when & then
             assertThatThrownBy(() -> likePlaceStorageService.addLikePlaces(likePlaceStorage.getId(), request))

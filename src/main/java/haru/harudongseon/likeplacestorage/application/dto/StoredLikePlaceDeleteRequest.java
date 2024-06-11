@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record LikePlaceDeleteRequest(
+public record StoredLikePlaceDeleteRequest(
 
         @NotNull(message = "장소 보관함 ID는 공백일 수 없습니다.")
         @Schema(description = "장소 보관함 ID", nullable = false, example = "1")
