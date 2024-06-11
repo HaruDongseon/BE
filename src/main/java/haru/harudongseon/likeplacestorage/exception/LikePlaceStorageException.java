@@ -19,4 +19,11 @@ public class LikePlaceStorageException extends RuntimeException {
             super("장소 보관함에 해당하는 장소가 존재하지 않습니다.");
         }
     }
+
+    public static class AlreadyExistLikePlaceException extends LikePlaceStorageException {
+
+        public AlreadyExistLikePlaceException() {
+            super("장소 보관함에 이미 존재하는 보관 장소입니다.");
+        }
+    }
 }

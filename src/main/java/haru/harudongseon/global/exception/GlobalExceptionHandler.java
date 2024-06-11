@@ -69,6 +69,7 @@ public class GlobalExceptionHandler {
             RouteException.DuplicateRoutePlacePhotoException.class,
             RouteException.DuplicateSameDateException.class,
             LikePlaceStorageException.DuplicateException.class,
+            LikePlaceStorageException.AlreadyExistLikePlaceException.class,
             RouteStorageException.DuplicateException.class,
             RouteStorageException.NotOwnerException.class
     })

@@ -307,5 +307,22 @@ class LikePlaceStorageServiceTest extends ServiceTest {
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 보관 장소가 존재하지 않습니다.");
         }
+
+        @Test
+        @DisplayName("추가할 장소 중 이미 보관함에 존재하는 장소면 예외가 발생한다.")
+        void throws_already_exist_like_place() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(List.of(likePlace1, likePlace2));
+
+            final LikePlaceAddRequest request = new LikePlaceAddRequest(List.of(likePlace1.getId(), likePlace2.getId()));
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceStorageService.addLikePlaces(likePlaceStorage.getId(), request))
+                    .isInstanceOf(LikePlaceStorageException.AlreadyExistLikePlaceException.class)
+                    .hasMessage("장소 보관함에 이미 존재하는 보관 장소입니다.");
+        }
     }
 }

@@ -2,6 +2,7 @@ package haru.harudongseon.likeplacestorage.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import haru.harudongseon.global.BaseEntity;
 import haru.harudongseon.likeplace.domain.LikePlace;
@@ -58,5 +59,16 @@ public class LikePlaceStorage extends BaseEntity {
                 .orElseThrow(LikePlaceStorageException.NotExistLikePlaceException::new);
 
         likePlaces.remove(likePlaceToRemove);
+    }
+
+    public boolean isAlreadyExistLikePlace(final Long likePlaceId) {
+        final Optional<StoredLikePlace> optionalLikePlace = likePlaces.stream()
+                .filter(likePlace -> likePlace.isEqualToLikePlaceId(likePlaceId))
+                .findFirst();
+
+        if (optionalLikePlace.isPresent()) {
+            return true;
+        }
+        return false;
     }
 }
