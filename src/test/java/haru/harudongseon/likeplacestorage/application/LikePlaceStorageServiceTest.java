@@ -19,6 +19,7 @@ import haru.harudongseon.likeplacestorage.domain.LikePlaceStorageRepository;
 import haru.harudongseon.likeplacestorage.domain.StoredLikePlace;
 import haru.harudongseon.likeplacestorage.exception.LikePlaceStorageException;
 import haru.harudongseon.member.domain.Member;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -41,6 +42,9 @@ class LikePlaceStorageServiceTest extends ServiceTest {
 
     @Autowired
     private LikePlaceStorageService likePlaceStorageService;
+
+    @Autowired
+    private EntityManager em;
 
     @Nested
     @DisplayName("장소 보관함 추가 시")
@@ -111,7 +115,7 @@ class LikePlaceStorageServiceTest extends ServiceTest {
             // then
             assertSoftly(softly -> {
                 softly.assertThat(likePlaceStorageAfterDelete.getLikePlaces().size()).isEqualTo(1);
-                softly.assertThat(likePlaceStorageAfterDelete.getLikePlaces().get(0).getId()).isEqualTo(likePlace3.getId());
+                softly.assertThat(likePlaceStorageAfterDelete.getLikePlaces().get(0).getLikePlace().getId()).isEqualTo(likePlace3.getId());
             });
         }
 
