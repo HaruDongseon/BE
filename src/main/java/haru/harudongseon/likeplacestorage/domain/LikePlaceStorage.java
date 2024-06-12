@@ -42,10 +42,9 @@ public class LikePlaceStorage extends BaseEntity {
         this.likePlaces = likePlaces;
     }
 
-    public StoredLikePlace addLikePlace(final LikePlace likePlace) {
+    public void addLikePlace(final LikePlace likePlace) {
         final StoredLikePlace storedLikePlace = new StoredLikePlace();
         storedLikePlace.associate(likePlace, this);
-        return storedLikePlace;
     }
 
     public void removeLikePlaces(final List<Long> likePlaceIds) {

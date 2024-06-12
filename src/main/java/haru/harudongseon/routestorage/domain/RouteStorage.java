@@ -36,10 +36,9 @@ public class RouteStorage extends BaseEntity {
         this.name = name;
     }
 
-    public StoredRoute addRoute(final Route route) {
+    public void addRoute(final Route route) {
         final StoredRoute storedRoute = new StoredRoute();
         storedRoute.associate(route, this);
-        return storedRoute;
     }
 
     public void removeRoutes(final Long memberId, final List<Long> routeIds) {
