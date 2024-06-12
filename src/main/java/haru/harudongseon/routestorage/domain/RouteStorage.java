@@ -36,26 +36,53 @@ public class RouteStorage extends BaseEntity {
         this.name = name;
     }
 
+    public void moveRoutes(final List<RouteStorage> routeStoragesToMove, final List<Route> routesToMove) {
+        validateAvailableMove(routeStoragesToMove, routesToMove);
+
+        routeStoragesToMove.forEach(routeStorageToMove -> routeStorageToMove.addRoutes(routesToMove));
+        final List<Long> routeIdsToMove = routesToMove.stream()
+                .map(Route::getId)
+                .toList();
+        this.removeRoutes(routeIdsToMove);
+    }
+
+    private void validateAvailableMove(final List<RouteStorage> routeStoragesToMove, final List<Route> routesToMove) {
+        validateAddRoute(routeStoragesToMove, routesToMove);
+        validateRemoveRoute(routesToMove);
+    }
+
+    private void validateAddRoute(final List<RouteStorage> routeStoragesToMove, final List<Route> routesToMove) {
+        for (RouteStorage routeStorageToMove : routeStoragesToMove) {
+            for (Route routeToMove : routesToMove) {
+                routeStorageToMove.validateAlreadyExistRoute(routeToMove.getId());
+            }
+        }
+    }
+
+    private void validateRemoveRoute(final List<Route> routesToMove) {
+        final List<Long> routeIds = this.routes.stream()
+                .map(storedRoute -> storedRoute.getRoute().getId())
+                .toList();
+        for (Route routeToMove : routesToMove) {
+            final Long routeIdToMove = routeToMove.getId();
+            if (!routeIds.contains(routeIdToMove)) {
+                throw new RouteStorageException.NotExistRouteException();
+            }
+        }
+    }
+
     public void addRoutes(final List<Route> routes) {
+        routes.forEach(route -> this.validateAlreadyExistRoute(route.getId()));
         routes.forEach(this::addRoute);
     }
 
     private void addRoute(final Route route) {
-        validateAlreadyExistRoute(route.getId());
-
         final StoredRoute storedRoute = new StoredRoute();
         storedRoute.associate(route, this);
     }
 
-    public void removeRoutes(final Long memberId, final List<Long> routeIds) {
-        validateOwner(memberId);
+    public void removeRoutes(final List<Long> routeIds) {
         routeIds.forEach(this::removeRoute);
-    }
-
-    private void validateOwner(final Long memberId) {
-        if (!member.getId().equals(memberId)) {
-            throw new RouteStorageException.NotOwnerException();
-        }
     }
 
     private void removeRoute(final Long routeId) {

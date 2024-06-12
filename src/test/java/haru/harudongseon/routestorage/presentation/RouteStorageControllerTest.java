@@ -234,30 +234,6 @@ class RouteStorageControllerTest extends E2ETest {
         }
 
         @Test
-        @DisplayName("로그인한 멤버가 동선 보관함을 가진 멤버가 아니면 실패한다.")
-        void fail_not_owner() {
-            // given
-            final Member member = memberBuilder.defaultMember().build();
-            final Member notOwnerMember = memberBuilder.defaultMember().build();
-            final String notOwnerMemberAccessToken = jwtService.createAccessToken(notOwnerMember.getId());
-            final Route route1 = routeBuilder.defaultRoute(member).build();
-            final Route route2 = routeBuilder.defaultRoute(member).build();
-            final Route route3 = routeBuilder.defaultRoute(member).build();
-            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(new ArrayList<>(List.of(route1, route2, route3)));
-
-            final StoredRouteDeleteRequest notExistRouteStorageRequest = new StoredRouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), route3.getId()));
-
-            // when
-            final ExtractableResponse<Response> notOwnerMemberResponse = DELETE_ROUTE_REQUEST(notOwnerMemberAccessToken, notExistRouteStorageRequest);
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(notOwnerMemberResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                softly.assertThat(notOwnerMemberResponse.jsonPath().getString("errorMessage")).contains("로그인한 회원이 해당 동선 보관함을 가진 회원이 아닙니다.");
-            });
-        }
-
-        @Test
         @DisplayName("삭제할 동선들 중 하나라도 존재하지 않으면 실패한다.")
         void fail_not_exist_route() {
             // given
@@ -499,6 +475,214 @@ class RouteStorageControllerTest extends E2ETest {
         }
     }
 
+    @Nested
+    @DisplayName("동선 보관함 동선 이동 시")
+    class MoveLikePlaces {
+
+        @Test
+        @DisplayName("장소 이동에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route1, route2));
+
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+            final RouteStorage routeStorage2ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId()), List.of(routeStorage1ToMove.getId(), routeStorage2ToMove.getId()));
+
+            // when
+            final ExtractableResponse<Response> response = MOVE_ROUTES_REQUEST(accessToken, routeStorage.getId(), request);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        }
+
+        @Test
+        @DisplayName("이동할 동선 ID 리스트가 비어있으면 실패한다.")
+        void fail_route_list_empty() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route1, route2));
+
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+            final RouteStorage routeStorage2ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(Collections.emptyList(), List.of(routeStorage1ToMove.getId(), routeStorage2ToMove.getId()));
+
+            // when
+            final ExtractableResponse<Response> response = MOVE_ROUTES_REQUEST(accessToken, routeStorage.getId(), request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("이동할 동선 ID 리스트는 공백일 수 없습니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("이동할 장소 보관함 ID 리스트가 비어있으면 실패한다.")
+        void fail_like_place_storage_list_empty() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route1, route2));
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId()), Collections.emptyList());
+
+            // when
+            final ExtractableResponse<Response> response = MOVE_ROUTES_REQUEST(accessToken, routeStorage.getId(), request);
+
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("이동할 동선 보관함 ID 리스트는 공백일 수 없습니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("동선 보관함 ID에 해당하는 동선 보관함이 존재하지 않으면 실패한다.")
+        void fail_not_exist_route_storage() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final Long notExistRouteStorageId = -1L;
+
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+            final RouteStorage routeStorage2ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId()), List.of(routeStorage1ToMove.getId(), routeStorage2ToMove.getId()));
+
+            // when
+            final ExtractableResponse<Response> response = MOVE_ROUTES_REQUEST(accessToken, notExistRouteStorageId, request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("해당하는 동선 보관함이 존재하지 않습니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("이동할 장소 보관함 ID 중 하나라도 존재하지 않으면 실패한다.")
+        void fail_not_exist_route_storage_to_move() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route1, route2));
+
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+            final Long notExistRouteStorageId = -1L;
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId()), List.of(routeStorage1ToMove.getId(), notExistRouteStorageId));
+
+            // when
+            final ExtractableResponse<Response> response = MOVE_ROUTES_REQUEST(accessToken, routeStorage.getId(), request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("해당하는 이동할 동선 보관함을 찾을 수 없습니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("이동할 보관 장소 ID 중 하나라도 존재하지 않으면 실패한다.")
+        void fail_not_exist_like_place_to_move() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final Long notExistRouteId = -1L;
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route1, route2));
+
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+            final RouteStorage routeStorage2ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId(), notExistRouteId), List.of(routeStorage1ToMove.getId(), routeStorage2ToMove.getId()));
+
+            // when
+            final ExtractableResponse<Response> response = MOVE_ROUTES_REQUEST(accessToken, routeStorage.getId(), request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("해당하는 이동할 동선이 존재하지 않습니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("이동할 장소 중 하나라도 이동할 장소 보관함에 이미 존재하는 장소라면 실패한다.")
+        void fail_already_exist_route_move() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route1, route2));
+
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route2));
+            final RouteStorage routeStorage2ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId()), List.of(routeStorage1ToMove.getId(), routeStorage2ToMove.getId()));
+
+            // when
+            final ExtractableResponse<Response> response = MOVE_ROUTES_REQUEST(accessToken, routeStorage.getId(), request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("동선 보관함에 이미 존재하는 동선입니다.");
+            });
+        }
+
+        @Test
+        @DisplayName("이동할 동선이 기존 동선 보관함에 존재하지 않으면 실패한다.")
+        void fail_not_exist_route_in_original_storage() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final String accessToken = jwtService.createAccessToken(member.getId());
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route1));
+
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+            final RouteStorage routeStorage2ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId()), List.of(routeStorage1ToMove.getId(), routeStorage2ToMove.getId()));
+
+            // when
+            final ExtractableResponse<Response> response = MOVE_ROUTES_REQUEST(accessToken, routeStorage.getId(), request);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response.jsonPath().getString("errorMessage")).contains("동선 보관함에 해당하는 동선이 존재하지 않습니다.");
+            });
+        }
+    }
+
     private static ExtractableResponse<Response> ADD_ROUTE_STORAGE_REQUEST(final String accessToken, final RouteStorageAddRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
@@ -546,6 +730,17 @@ class RouteStorageControllerTest extends E2ETest {
                 .body(request)
                 .when().log().all()
                 .post("/route-storages/{route-storage-id}/routes", routeStorageId)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> MOVE_ROUTES_REQUEST(final String accessToken, final Long routeStorageId, final StoredRouteMoveRequest request) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when().log().all()
+                .post("/route-storages/{route-storage-id}/move-routes", routeStorageId)
                 .then().log().all()
                 .extract();
     }

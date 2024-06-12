@@ -49,11 +49,9 @@ public class RouteStorageController {
     @ApiResponse(responseCode = "404", description = "멤버/동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @DeleteMapping("/routes")
     public ResponseEntity<Void> deleteRoutes(
-            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
             @Valid @RequestBody StoredRouteDeleteRequest request
     ) {
-        final Long memberId = authMemberDto.memberId();
-        routeStorageService.deleteRouteStorage(memberId, request);
+        routeStorageService.deleteRouteStorage(request);
         return ResponseEntity.noContent().build();
     }
 
@@ -96,6 +94,20 @@ public class RouteStorageController {
             @Valid @RequestBody StoredRouteAddRequest request
     ) {
         routeStorageService.addRoutes(routeStorageId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "동선 보관함 동선 이동 API")
+    @ApiResponse(responseCode = "200", description = "동선 보관함 동선 이동 성공")
+    @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "동선 보관함/동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @PostMapping("/{route-storage-id}/move-routes")
+    public ResponseEntity<Void> moveRoutes(
+            @PathVariable("route-storage-id") Long routeStorageId,
+            @Valid @RequestBody StoredRouteMoveRequest request
+    ) {
+        routeStorageService.moveRoutes(routeStorageId, request);
         return ResponseEntity.ok().build();
     }
 }

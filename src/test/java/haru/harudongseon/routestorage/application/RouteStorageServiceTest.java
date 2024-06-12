@@ -19,6 +19,7 @@ import haru.harudongseon.route.domain.Route;
 import haru.harudongseon.routestorage.application.dto.*;
 import haru.harudongseon.routestorage.domain.RouteStorage;
 import haru.harudongseon.routestorage.domain.RouteStorageRepository;
+import haru.harudongseon.routestorage.domain.StoredRoute;
 import haru.harudongseon.routestorage.exception.RouteStorageException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -106,7 +107,7 @@ class RouteStorageServiceTest extends ServiceTest {
             final StoredRouteDeleteRequest request = new StoredRouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), route3.getId()));
 
             // when & then
-            assertDoesNotThrow(() -> routeStorageService.deleteRouteStorage(member.getId(), request));
+            assertDoesNotThrow(() -> routeStorageService.deleteRouteStorage(request));
         }
 
         @Test
@@ -123,7 +124,7 @@ class RouteStorageServiceTest extends ServiceTest {
             final StoredRouteDeleteRequest request = new StoredRouteDeleteRequest(notExistRouteStorageId, List.of(route1.getId(), route3.getId()));
 
             // when & then
-            assertThatThrownBy(() -> routeStorageService.deleteRouteStorage(member.getId(), request))
+            assertThatThrownBy(() -> routeStorageService.deleteRouteStorage(request))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("해당하는 동선 보관함이 존재하지 않습니다.");
         }
@@ -297,6 +298,110 @@ class RouteStorageServiceTest extends ServiceTest {
             assertThatThrownBy(() -> routeStorageService.addRoutes(routeStorage.getId(), request))
                     .isInstanceOf(RouteStorageException.AlreadyExistRouteException.class)
                     .hasMessage("동선 보관함에 이미 존재하는 동선입니다.");
+        }
+    }
+
+    @Nested
+    @DisplayName("동선 보관함 동선 이동 시")
+    class MoveRoutes {
+
+        @Test
+        @DisplayName("동선 이동에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route1, route2));
+            final List<StoredRoute> originalRoutes = routeStorage.getRoutes();
+
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+            final RouteStorage routeStorage2ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+            final int beforeMoveSize1 = routeStorage1ToMove.getRoutes().size();
+            final int beforeMoveSize2 = routeStorage2ToMove.getRoutes().size();
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId()), List.of(routeStorage1ToMove.getId(), routeStorage2ToMove.getId()));
+
+            // when
+            routeStorageService.moveRoutes(routeStorage.getId(), request);
+            final List<StoredRoute> afterMoveRoute1 = routeStorage1ToMove.getRoutes();
+            final List<StoredRoute> afterMoveRoute2 = routeStorage2ToMove.getRoutes();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(beforeMoveSize1).isEqualTo(0);
+                softly.assertThat(beforeMoveSize2).isEqualTo(0);
+                softly.assertThat(afterMoveRoute1.size()).isEqualTo(1);
+                softly.assertThat(afterMoveRoute2.size()).isEqualTo(1);
+                softly.assertThat(originalRoutes.size()).isEqualTo(1);
+                softly.assertThat(afterMoveRoute1.get(0).getRoute()).isEqualTo(route2);
+                softly.assertThat(afterMoveRoute2.get(0).getRoute()).isEqualTo(route2);
+            });
+        }
+
+        @Test
+        @DisplayName("동선 보관함 ID에 해당하는 동선 보관함이 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_route_storage() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+            final RouteStorage routeStorage2ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+
+            final Long notExistLikePlaceStorageId = -1L;
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId()), List.of(routeStorage1ToMove.getId(), routeStorage2ToMove.getId()));
+
+            // when & then
+            assertThatThrownBy(() -> routeStorageService.moveRoutes(notExistLikePlaceStorageId, request))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 동선 보관함이 존재하지 않습니다.");
+        }
+
+        @Test
+        @DisplayName("이동할 동선 보관함 ID 중 하나라도 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_route_storage_to_move() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route1, route2));
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+
+            final Long notExistRouteStorageId = -1L;
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId()), List.of(routeStorage1ToMove.getId(), notExistRouteStorageId));
+
+            // when & then
+            assertThatThrownBy(() -> routeStorageService.moveRoutes(routeStorage.getId(), request))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 이동할 동선 보관함을 찾을 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("이동할 보관 장소 ID 중 하나라도 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_route_to_move() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final Route route1 = routeBuilder.defaultRoute(member).build();
+            final Route route2 = routeBuilder.defaultRoute(member).build();
+            final Long notExistRouteIdToMove = -1L;
+            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(List.of(route1, route2));
+
+            final RouteStorage routeStorage1ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+            final RouteStorage routeStorage2ToMove = routeStorageBuilder.defaultRouteStorage(member).build(Collections.emptyList());
+
+            final StoredRouteMoveRequest request =
+                    new StoredRouteMoveRequest(List.of(route2.getId(), notExistRouteIdToMove), List.of(routeStorage1ToMove.getId(), routeStorage2ToMove.getId()));
+
+            // when & then
+            assertThatThrownBy(() -> routeStorageService.moveRoutes(routeStorage.getId(), request))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 이동할 동선이 존재하지 않습니다.");
         }
     }
 }
