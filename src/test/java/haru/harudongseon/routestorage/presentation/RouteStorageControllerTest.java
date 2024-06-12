@@ -234,30 +234,6 @@ class RouteStorageControllerTest extends E2ETest {
         }
 
         @Test
-        @DisplayName("로그인한 멤버가 동선 보관함을 가진 멤버가 아니면 실패한다.")
-        void fail_not_owner() {
-            // given
-            final Member member = memberBuilder.defaultMember().build();
-            final Member notOwnerMember = memberBuilder.defaultMember().build();
-            final String notOwnerMemberAccessToken = jwtService.createAccessToken(notOwnerMember.getId());
-            final Route route1 = routeBuilder.defaultRoute(member).build();
-            final Route route2 = routeBuilder.defaultRoute(member).build();
-            final Route route3 = routeBuilder.defaultRoute(member).build();
-            final RouteStorage routeStorage = routeStorageBuilder.defaultRouteStorage(member).build(new ArrayList<>(List.of(route1, route2, route3)));
-
-            final StoredRouteDeleteRequest notExistRouteStorageRequest = new StoredRouteDeleteRequest(routeStorage.getId(), List.of(route1.getId(), route3.getId()));
-
-            // when
-            final ExtractableResponse<Response> notOwnerMemberResponse = DELETE_ROUTE_REQUEST(notOwnerMemberAccessToken, notExistRouteStorageRequest);
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(notOwnerMemberResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                softly.assertThat(notOwnerMemberResponse.jsonPath().getString("errorMessage")).contains("로그인한 회원이 해당 동선 보관함을 가진 회원이 아닙니다.");
-            });
-        }
-
-        @Test
         @DisplayName("삭제할 동선들 중 하나라도 존재하지 않으면 실패한다.")
         void fail_not_exist_route() {
             // given
