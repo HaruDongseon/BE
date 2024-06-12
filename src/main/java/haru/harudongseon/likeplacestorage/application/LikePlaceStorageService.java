@@ -71,13 +71,12 @@ public class LikePlaceStorageService {
         final LikePlaceStorage likePlaceStorage = likePlaceStorageRepository.findById(likePlaceStorageId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 장소 보관함을 찾을 수 없습니다."));
 
-        final List<Long> likePlaceIds = request.likePlaceIds();
-        validateAlreadyExist(likePlaceIds, likePlaceStorage);
-
-        likePlaceIds.stream()
+        final List<LikePlace> likePlaces = request.likePlaceIds().stream()
                 .map(likePlaceId -> likePlaceRepository.findById(likePlaceId)
                         .orElseThrow(() -> new EntityNotFoundException("해당하는 보관 장소가 존재하지 않습니다."))
-                ).forEach(likePlaceStorage::addLikePlace);
+                ).toList();
+
+        likePlaceStorage.addLikePlaces(likePlaces);
     }
 
     private void validateAlreadyExist(final List<Long> likePlaceIds, final LikePlaceStorage likePlaceStorage) {

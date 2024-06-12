@@ -42,7 +42,13 @@ public class LikePlaceStorage extends BaseEntity {
         this.likePlaces = likePlaces;
     }
 
-    public void addLikePlace(final LikePlace likePlace) {
+    public void addLikePlaces(final List<LikePlace> likePlaces) {
+        likePlaces.forEach(this::addLikePlace);
+    }
+
+    private void addLikePlace(final LikePlace likePlace) {
+        validateAlreadyExistLikePlace(likePlace.getId());
+
         final StoredLikePlace storedLikePlace = new StoredLikePlace();
         storedLikePlace.associate(likePlace, this);
     }
@@ -60,14 +66,13 @@ public class LikePlaceStorage extends BaseEntity {
         likePlaces.remove(likePlaceToRemove);
     }
 
-    public boolean isAlreadyExistLikePlace(final Long likePlaceId) {
+    private void validateAlreadyExistLikePlace(final Long likePlaceId) {
         final Optional<StoredLikePlace> optionalLikePlace = likePlaces.stream()
                 .filter(likePlace -> likePlace.isEqualToLikePlaceId(likePlaceId))
                 .findFirst();
 
         if (optionalLikePlace.isPresent()) {
-            return true;
+            throw new LikePlaceStorageException.AlreadyExistLikePlaceException();
         }
-        return false;
     }
 }

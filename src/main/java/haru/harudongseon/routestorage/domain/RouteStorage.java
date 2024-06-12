@@ -36,7 +36,13 @@ public class RouteStorage extends BaseEntity {
         this.name = name;
     }
 
-    public void addRoute(final Route route) {
+    public void addRoutes(final List<Route> routes) {
+        routes.forEach(this::addRoute);
+    }
+
+    private void addRoute(final Route route) {
+        validateAlreadyExistRoute(route.getId());
+
         final StoredRoute storedRoute = new StoredRoute();
         storedRoute.associate(route, this);
     }
@@ -61,14 +67,13 @@ public class RouteStorage extends BaseEntity {
         routes.remove(routeToRemove);
     }
 
-    public boolean isAlreadyExistRoute(final Long routeId) {
+    private void validateAlreadyExistRoute(final Long routeId) {
         final Optional<StoredRoute> optionalRoute = routes.stream()
                 .filter(route -> route.isEqualToRouteId(routeId))
                 .findFirst();
 
         if (optionalRoute.isPresent()) {
-            return true;
+            throw new RouteStorageException.AlreadyExistRouteException();
         }
-        return false;
     }
 }
