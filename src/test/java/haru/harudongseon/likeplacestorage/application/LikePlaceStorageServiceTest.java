@@ -325,4 +325,107 @@ class LikePlaceStorageServiceTest extends ServiceTest {
                     .hasMessage("장소 보관함에 이미 존재하는 보관 장소입니다.");
         }
     }
+
+    @Nested
+    @DisplayName("장소 보관함 장소 이동 시")
+    class MoveLikePlaces {
+
+        @Test
+        @DisplayName("장소 이동에 성공한다.")
+        void success() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(List.of(likePlace1, likePlace2));
+            final List<StoredLikePlace> originalLikePlaces = likePlaceStorage.getLikePlaces();
+
+            final LikePlaceStorage likePlaceStorage1ToMove = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("데이트").build(Collections.emptyList());
+            final LikePlaceStorage likePlaceStorage2ToMove = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("동아리").build(Collections.emptyList());
+            final int beforeMoveSize1 = likePlaceStorage1ToMove.getLikePlaces().size();
+            final int beforeMoveSize2 = likePlaceStorage2ToMove.getLikePlaces().size();
+
+            final StoredLikePlaceMoveRequest request =
+                    new StoredLikePlaceMoveRequest(List.of(likePlace2.getId()), List.of(likePlaceStorage1ToMove.getId(), likePlaceStorage2ToMove.getId()));
+
+            // when
+            likePlaceStorageService.moveLikePlaces(likePlaceStorage.getId(), request);
+            final List<StoredLikePlace> afterMoveLikePlaces1 = likePlaceStorage1ToMove.getLikePlaces();
+            final List<StoredLikePlace> afterMoveLikePlaces2 = likePlaceStorage2ToMove.getLikePlaces();
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(beforeMoveSize1).isEqualTo(0);
+                softly.assertThat(beforeMoveSize2).isEqualTo(0);
+                softly.assertThat(afterMoveLikePlaces1.size()).isEqualTo(1);
+                softly.assertThat(afterMoveLikePlaces2.size()).isEqualTo(1);
+                softly.assertThat(originalLikePlaces.size()).isEqualTo(1);
+                softly.assertThat(afterMoveLikePlaces1.get(0).getLikePlace()).isEqualTo(likePlace2);
+                softly.assertThat(afterMoveLikePlaces2.get(0).getLikePlace()).isEqualTo(likePlace2);
+            });
+        }
+
+        @Test
+        @DisplayName("장소 보관함 ID에 해당하는 장소 보관함이 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_like_place_storage() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final Long notExistLikePlaceStorageId = -1L;
+
+            final LikePlaceStorage likePlaceStorage1ToMove = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("데이트").build(Collections.emptyList());
+            final LikePlaceStorage likePlaceStorage2ToMove = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("동아리").build(Collections.emptyList());
+
+            final StoredLikePlaceMoveRequest request =
+                    new StoredLikePlaceMoveRequest(List.of(likePlace2.getId()), List.of(likePlaceStorage1ToMove.getId(), likePlaceStorage2ToMove.getId()));
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceStorageService.moveLikePlaces(notExistLikePlaceStorageId, request))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 장소 보관함을 찾을 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("이동할 장소 보관함 ID 중 하나라도 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_like_place_storage_to_move() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(List.of(likePlace1, likePlace2));
+
+            final LikePlaceStorage likePlaceStorage1ToMove = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("데이트").build(Collections.emptyList());
+            final Long notExistLikePlaceStorageIdToMove = -1L;
+
+            final StoredLikePlaceMoveRequest request =
+                    new StoredLikePlaceMoveRequest(List.of(likePlace2.getId()), List.of(likePlaceStorage1ToMove.getId(), notExistLikePlaceStorageIdToMove));
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceStorageService.moveLikePlaces(likePlaceStorage.getId(), request))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 이동할 장소 보관함을 찾을 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("이동할 보관 장소 ID 중 하나라도 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_like_place_to_move() {
+            // given
+            final Member member = memberBuilder.defaultMember().build();
+            final LikePlace likePlace1 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference1")).name("스타벅스 대화역점").build();
+            final LikePlace likePlace2 = likePlaceBuilder.defaultLikePlace(member).photoReferences(List.of("reference2")).name("스타벅스 성수점").build();
+            final Long notExistLikePlaceIdToMove = -1L;
+            final LikePlaceStorage likePlaceStorage = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("카페").build(List.of(likePlace1, likePlace2));
+
+            final LikePlaceStorage likePlaceStorage1ToMove = likePlaceStorageBuilder.defaultLikePlaceStorage(member).name("데이트").build(Collections.emptyList());
+
+            final StoredLikePlaceMoveRequest request =
+                    new StoredLikePlaceMoveRequest(List.of(likePlace2.getId(), notExistLikePlaceIdToMove), List.of(likePlaceStorage1ToMove.getId()));
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceStorageService.moveLikePlaces(likePlaceStorage.getId(), request))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("해당하는 이동할 보관 장소가 존재하지 않습니다.");
+        }
+    }
 }

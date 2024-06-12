@@ -2,6 +2,7 @@ package haru.harudongseon.likeplacestorage.application;
 
 import java.util.List;
 
+import haru.harudongseon.likeplace.domain.LikePlace;
 import haru.harudongseon.likeplace.domain.LikePlaceRepository;
 import haru.harudongseon.likeplacestorage.application.dto.*;
 import haru.harudongseon.likeplacestorage.domain.LikePlaceStorage;
@@ -79,11 +80,20 @@ public class LikePlaceStorageService {
         likePlaceStorage.addLikePlaces(likePlaces);
     }
 
-    private void validateAlreadyExist(final List<Long> likePlaceIds, final LikePlaceStorage likePlaceStorage) {
-        for (Long likePlaceId : likePlaceIds) {
-            if (likePlaceStorage.isAlreadyExistLikePlace(likePlaceId)) {
-                throw new LikePlaceStorageException.AlreadyExistLikePlaceException();
-            }
-        }
+    public void moveLikePlaces(final Long likePlaceStorageId, final StoredLikePlaceMoveRequest request) {
+        final LikePlaceStorage likePlaceStorage = likePlaceStorageRepository.findById(likePlaceStorageId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 장소 보관함을 찾을 수 없습니다."));
+
+        final List<LikePlaceStorage> likePlaceStoragesToMove = request.likePlaceStorageIds().stream()
+                .map(likePlaceStorageIdToMove -> likePlaceStorageRepository.findById(likePlaceStorageIdToMove)
+                        .orElseThrow(() -> new EntityNotFoundException("해당하는 이동할 장소 보관함을 찾을 수 없습니다."))
+                ).toList();
+
+        final List<LikePlace> likePlacesToMove = request.likePlaceIds().stream()
+                .map(likePlaceId -> likePlaceRepository.findById(likePlaceId)
+                        .orElseThrow(() -> new EntityNotFoundException("해당하는 이동할 보관 장소가 존재하지 않습니다."))
+                ).toList();
+
+        likePlaceStorage.moveLikePlaces(likePlaceStoragesToMove, likePlacesToMove);
     }
 }
