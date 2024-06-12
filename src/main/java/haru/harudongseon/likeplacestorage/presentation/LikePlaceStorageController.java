@@ -95,4 +95,18 @@ public class LikePlaceStorageController {
         likePlaceStorageService.addLikePlaces(likePlaceStorageId, request);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "장소 보관함 장소 이동 API")
+    @ApiResponse(responseCode = "200", description = "장소 보관함 장소 이동 성공")
+    @ApiResponse(responseCode = "400", description = "요청 Field Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "장소 보관함/보관 장소 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @PostMapping("/{like-place-storage-id}/move-like-places")
+    public ResponseEntity<Void> moveLikePlaces(
+            @PathVariable("like-place-storage-id") Long likePlaceStorageId,
+            @Valid @RequestBody StoredLikePlaceMoveRequest request
+    ) {
+        likePlaceStorageService.moveLikePlaces(likePlaceStorageId, request);
+        return ResponseEntity.ok().build();
+    }
 }
