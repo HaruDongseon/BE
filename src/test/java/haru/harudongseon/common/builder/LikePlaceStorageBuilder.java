@@ -54,9 +54,7 @@ public class LikePlaceStorageBuilder {
 
     public LikePlaceStorage build(final List<LikePlace> likePlaces) {
         final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(name, member);
-        for (LikePlace likePlace : likePlaces) {
-            likePlaceStorage.addLikePlace(likePlace);
-        }
+        likePlaceStorage.addLikePlaces(likePlaces);
         return likePlaceStorageRepository.save(likePlaceStorage);
     }
 }

@@ -19,6 +19,31 @@ import org.junit.jupiter.api.Test;
 class LikePlaceStorageTest {
 
     @Nested
+    @DisplayName("장소 보관함에서 보관 장소 추가 시")
+    class AddLikePlaces {
+
+        @Test
+        @DisplayName("추가할 보관 장소 중 하나라도 이미 존재하는 보관 장소면 예외가 발생한다.")
+        void success() {
+            // given
+            final Long likePlace1Id = 1L;
+            final Long likePlace2Id = 2L;
+            final Member member = 기본_회원_엔티티();
+            final LikePlace likePlace1 = 기본_보관_장소_도메인_이름_파라미터(likePlace1Id, member, "성수 베이커리");
+            final LikePlace likePlace2 = 기본_보관_장소_도메인_이름_파라미터(likePlace2Id, member, "스타벅스 성수점");
+
+            final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(기본_장소_보관함_이름, member);
+            likePlaceStorage.addLikePlaces(List.of(likePlace1));
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceStorage.addLikePlaces(List.of(likePlace1, likePlace2)))
+                    .isInstanceOf(LikePlaceStorageException.AlreadyExistLikePlaceException.class)
+                    .hasMessage("장소 보관함에 이미 존재하는 보관 장소입니다.");
+
+        }
+    }
+
+    @Nested
     @DisplayName("보관 장소함에서 보관 장소 삭제 시")
     class RemoveLikePlace {
 
@@ -33,8 +58,7 @@ class LikePlaceStorageTest {
             final LikePlace likePlace2 = 기본_보관_장소_도메인_이름_파라미터(likePlace2Id, member, "스타벅스 성수점");
 
             final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(기본_장소_보관함_이름, member);
-            likePlaceStorage.addLikePlace(likePlace1);
-            likePlaceStorage.addLikePlace(likePlace2);
+            likePlaceStorage.addLikePlaces(List.of(likePlace1, likePlace2));
 
             // when
             likePlaceStorage.removeLikePlaces(List.of(likePlace1Id));
@@ -58,13 +82,93 @@ class LikePlaceStorageTest {
             final LikePlace likePlace1 = 기본_보관_장소_도메인_이름_파라미터(likePlace1Id, member, "성수 베이커리");
             final LikePlace likePlace2 = 기본_보관_장소_도메인_이름_파라미터(likePlace2Id, member, "스타벅스 성수점");
             final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(기본_장소_보관함_이름, member);
-            likePlaceStorage.addLikePlace(likePlace1);
-            likePlaceStorage.addLikePlace(likePlace2);
+            likePlaceStorage.addLikePlaces(List.of(likePlace1, likePlace2));
 
             final Long notExistLikePlaceId = -1L;
 
             // when & then
             assertThatThrownBy(() -> likePlaceStorage.removeLikePlaces(List.of(notExistLikePlaceId)))
+                    .isInstanceOf(LikePlaceStorageException.NotExistLikePlaceException.class)
+                    .hasMessage("장소 보관함에 해당하는 장소가 존재하지 않습니다.");
+        }
+    }
+
+    @Nested
+    @DisplayName("장소 보관함에서 보관 장소 이동 시")
+    class MoveLikePlaces {
+
+        @Test
+        @DisplayName("이동에 성공한다.")
+        void success() {
+            // given
+            final Long likePlace1Id = 1L;
+            final Long likePlace2Id = 2L;
+            final Member member = 기본_회원_엔티티();
+            final LikePlace likePlace1 = 기본_보관_장소_도메인_이름_파라미터(likePlace1Id, member, "성수 베이커리");
+            final LikePlace likePlace2 = 기본_보관_장소_도메인_이름_파라미터(likePlace2Id, member, "스타벅스 성수점");
+
+            final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(기본_장소_보관함_이름, member);
+            likePlaceStorage.addLikePlaces(List.of(likePlace1, likePlace2));
+
+            final LikePlaceStorage likePlaceStorage1ToMove = new LikePlaceStorage("데이트", member);
+            final LikePlaceStorage likePlaceStorage2ToMove = new LikePlaceStorage("동아리", member);
+            final int beforeMoveLikePlaceStorage1LikePlacesSize = likePlaceStorage1ToMove.getLikePlaces().size();
+            final int beforeMoveLikePlaceStorage2LikePlacesSize = likePlaceStorage2ToMove.getLikePlaces().size();
+
+            // when
+            likePlaceStorage.moveLikePlaces(List.of(likePlaceStorage1ToMove, likePlaceStorage2ToMove), List.of(likePlace2));
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(beforeMoveLikePlaceStorage1LikePlacesSize).isEqualTo(0);
+                softly.assertThat(beforeMoveLikePlaceStorage2LikePlacesSize).isEqualTo(0);
+                softly.assertThat(likePlaceStorage.getLikePlaces().size()).isEqualTo(1);
+                softly.assertThat(likePlaceStorage1ToMove.getLikePlaces().size()).isEqualTo(1);
+                softly.assertThat(likePlaceStorage1ToMove.getLikePlaces().get(0).getLikePlace()).isEqualTo(likePlace2);
+                softly.assertThat(likePlaceStorage2ToMove.getLikePlaces().size()).isEqualTo(1);
+                softly.assertThat(likePlaceStorage2ToMove.getLikePlaces().get(0).getLikePlace()).isEqualTo(likePlace2);
+            });
+        }
+
+        @Test
+        @DisplayName("이동할 장소 중 하나라도 이동할 장소 보관함에 이미 존재하는 장소라면 예외가 발생한다.")
+        void throws_already_exist_like_place_move() {
+            // given
+            final Long likePlace1Id = 1L;
+            final Long likePlace2Id = 2L;
+            final Member member = 기본_회원_엔티티();
+            final LikePlace likePlace1 = 기본_보관_장소_도메인_이름_파라미터(likePlace1Id, member, "성수 베이커리");
+            final LikePlace likePlace2 = 기본_보관_장소_도메인_이름_파라미터(likePlace2Id, member, "스타벅스 성수점");
+
+            final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(기본_장소_보관함_이름, member);
+            likePlaceStorage.addLikePlaces(List.of(likePlace1, likePlace2));
+
+            final LikePlaceStorage likePlaceStorageToMove = new LikePlaceStorage("데이트", member);
+            likePlaceStorageToMove.addLikePlaces(List.of(likePlace2));
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceStorage.moveLikePlaces(List.of(likePlaceStorageToMove), List.of(likePlace2)))
+                    .isInstanceOf(LikePlaceStorageException.AlreadyExistLikePlaceException.class)
+                    .hasMessage("장소 보관함에 이미 존재하는 보관 장소입니다.");
+        }
+
+        @Test
+        @DisplayName("이동할 장소가 기존 장소 보관함에 존재하지 않으면 예외가 발생한다.")
+        void throws_not_exist_like_place_in_original_storage() {
+            // given
+            final Long likePlace1Id = 1L;
+            final Long likePlace2Id = 2L;
+            final Member member = 기본_회원_엔티티();
+            final LikePlace likePlace1 = 기본_보관_장소_도메인_이름_파라미터(likePlace1Id, member, "성수 베이커리");
+            final LikePlace likePlace2 = 기본_보관_장소_도메인_이름_파라미터(likePlace2Id, member, "스타벅스 성수점");
+
+            final LikePlaceStorage likePlaceStorage = new LikePlaceStorage(기본_장소_보관함_이름, member);
+            likePlaceStorage.addLikePlaces(List.of(likePlace1));
+
+            final LikePlaceStorage likePlaceStorageToMove = new LikePlaceStorage("데이트", member);
+
+            // when & then
+            assertThatThrownBy(() -> likePlaceStorage.moveLikePlaces(List.of(likePlaceStorageToMove), List.of(likePlace2)))
                     .isInstanceOf(LikePlaceStorageException.NotExistLikePlaceException.class)
                     .hasMessage("장소 보관함에 해당하는 장소가 존재하지 않습니다.");
         }

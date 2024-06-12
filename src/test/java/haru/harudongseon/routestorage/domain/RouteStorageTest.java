@@ -32,9 +32,7 @@ class RouteStorageTest {
             final Route route1 = 기본_동선_도메인(1L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
             final Route route2 = 기본_동선_도메인(2L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
             final Route route3 = 기본_동선_도메인(3L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
-            routeStorage.addRoute(route1);
-            routeStorage.addRoute(route2);
-            routeStorage.addRoute(route3);
+            routeStorage.addRoutes(List.of(route1, route2, route3));
 
             final List<Long> removeRouteIds = List.of(route1.getId(), route3.getId());
 
@@ -59,9 +57,7 @@ class RouteStorageTest {
             final Route route1 = 기본_동선_도메인(1L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
             final Route route2 = 기본_동선_도메인(2L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
             final Route route3 = 기본_동선_도메인(3L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
-            routeStorage.addRoute(route1);
-            routeStorage.addRoute(route2);
-            routeStorage.addRoute(route3);
+            routeStorage.addRoutes(List.of(route1, route2, route3));
 
             final List<Long> removeRouteIds = List.of(route1.getId(), route3.getId());
 
@@ -80,8 +76,7 @@ class RouteStorageTest {
             final Route route1 = 기본_동선_도메인(1L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
             final Route route2 = 기본_동선_도메인(2L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
             final Route route3 = 기본_동선_도메인(3L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
-            routeStorage.addRoute(route1);
-            routeStorage.addRoute(route2);
+            routeStorage.addRoutes(List.of(route1, route2));
 
             final List<Long> removeRouteIds = List.of(route1.getId(), route3.getId());
 

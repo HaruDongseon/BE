@@ -42,14 +42,63 @@ public class LikePlaceStorage extends BaseEntity {
         this.likePlaces = likePlaces;
     }
 
-    public StoredLikePlace addLikePlace(final LikePlace likePlace) {
-        final StoredLikePlace storedLikePlace = new StoredLikePlace();
-        storedLikePlace.associate(likePlace, this);
-        return storedLikePlace;
+    public void moveLikePlaces(final List<LikePlaceStorage> likePlaceStoragesToMove, final List<LikePlace> likePlacesToMove) {
+        validateAvailableMove(likePlaceStoragesToMove, likePlacesToMove);
+
+        likePlaceStoragesToMove.forEach(likePlaceStorageToMove -> likePlaceStorageToMove.addLikePlaces(likePlacesToMove));
+        final List<Long> likePlaceIdsToMove = likePlacesToMove.stream()
+                .map(LikePlace::getId)
+                .toList();
+        this.removeLikePlaces(likePlaceIdsToMove);
     }
 
-    public void removeLikePlaces(final List<Long> likePlaceIds) {
-        likePlaceIds.forEach(this::removeLikePlace);
+    private void validateAvailableMove(final List<LikePlaceStorage> likePlaceStoragesToMove, final List<LikePlace> likePlacesToMove) {
+        validateAddLikePlace(likePlaceStoragesToMove, likePlacesToMove);
+        validateRemoveLikePlace(likePlacesToMove);
+    }
+
+    private void validateAddLikePlace(final List<LikePlaceStorage> likePlaceStoragesToMove, final List<LikePlace> likePlacesToMove) {
+        for (LikePlaceStorage likePlaceStorageToMove : likePlaceStoragesToMove) {
+            for (LikePlace likePlaceToMove : likePlacesToMove) {
+                likePlaceStorageToMove.validateAlreadyExistLikePlace(likePlaceToMove.getId());
+            }
+        }
+    }
+
+    private void validateRemoveLikePlace(final List<LikePlace> likePlacesToMove) {
+        final List<Long> likePlaceIds = this.likePlaces.stream()
+                .map(storedLikePlace -> storedLikePlace.getLikePlace().getId())
+                .toList();
+        for (LikePlace likePlaceToMove : likePlacesToMove) {
+            final Long likePlaceIdToMove = likePlaceToMove.getId();
+            if (!likePlaceIds.contains(likePlaceIdToMove)) {
+                throw new LikePlaceStorageException.NotExistLikePlaceException();
+            }
+        }
+    }
+
+    public void addLikePlaces(final List<LikePlace> likePlaces) {
+        likePlaces.forEach(likePlace -> this.validateAlreadyExistLikePlace(likePlace.getId()));
+        likePlaces.forEach(this::addLikePlace);
+    }
+
+    private void addLikePlace(final LikePlace likePlace) {
+        final StoredLikePlace storedLikePlace = new StoredLikePlace();
+        storedLikePlace.associate(likePlace, this);
+    }
+
+    public void removeLikePlaces(final List<Long> likePlaceIdsToRemove) {
+        final List<Long> likePlaceIds = this.likePlaces.stream()
+                .map(storedLikePlace -> storedLikePlace.getLikePlace().getId())
+                .toList();
+
+        for (Long likePlaceIdToRemove : likePlaceIdsToRemove) {
+            if (!likePlaceIds.contains(likePlaceIdToRemove)) {
+                throw new LikePlaceStorageException.NotExistLikePlaceException();
+            }
+        }
+
+        likePlaceIdsToRemove.forEach(this::removeLikePlace);
     }
 
     private void removeLikePlace(final Long likePlaceId) {
@@ -61,14 +110,13 @@ public class LikePlaceStorage extends BaseEntity {
         likePlaces.remove(likePlaceToRemove);
     }
 
-    public boolean isAlreadyExistLikePlace(final Long likePlaceId) {
+    private void validateAlreadyExistLikePlace(final Long likePlaceId) {
         final Optional<StoredLikePlace> optionalLikePlace = likePlaces.stream()
                 .filter(likePlace -> likePlace.isEqualToLikePlaceId(likePlaceId))
                 .findFirst();
 
         if (optionalLikePlace.isPresent()) {
-            return true;
+            throw new LikePlaceStorageException.AlreadyExistLikePlaceException();
         }
-        return false;
     }
 }

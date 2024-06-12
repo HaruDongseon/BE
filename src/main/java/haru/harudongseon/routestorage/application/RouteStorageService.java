@@ -4,6 +4,7 @@ import java.util.List;
 
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.member.domain.MemberRepository;
+import haru.harudongseon.route.domain.Route;
 import haru.harudongseon.route.domain.RouteRepository;
 import haru.harudongseon.routestorage.application.dto.*;
 import haru.harudongseon.routestorage.domain.RouteStorage;
@@ -74,21 +75,11 @@ public class RouteStorageService {
         final RouteStorage routeStorage = routeStorageRepository.findById(routeStorageId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 동선 보관함이 존재하지 않습니다."));
 
-        final List<Long> routeIds = request.routeIds();
-        validateAlreadyExist(routeIds, routeStorage);
+        final List<Route> routes = request.routeIds().stream()
+                .map(routeId -> routeRepository.findById(routeId)
+                        .orElseThrow(() -> new EntityNotFoundException("해당하는 동선이 존재하지 않습니다."))
+                ).toList();
 
-        routeIds.stream()
-                .map(routeId -> {
-                    return routeRepository.findById(routeId)
-                            .orElseThrow(() -> new EntityNotFoundException("해당하는 동선이 존재하지 않습니다."));
-                }).forEach(routeStorage::addRoute);
-    }
-
-    private void validateAlreadyExist(final List<Long> routeIds, final RouteStorage routeStorage) {
-        for (Long routeId : routeIds) {
-            if (routeStorage.isAlreadyExistRoute(routeId)) {
-                throw new RouteStorageException.AlreadyExistRouteException();
-            }
-        }
+        routeStorage.addRoutes(routes);
     }
 }

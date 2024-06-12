@@ -50,9 +50,7 @@ public class RouteStorageBuilder {
 
     public RouteStorage build(final List<Route> routes) {
         final RouteStorage routeStorage = new RouteStorage(member, name);
-        for (Route route : routes) {
-            routeStorage.addRoute(route);
-        }
+        routeStorage.addRoutes(routes);
         return routeStorageRepository.save(routeStorage);
     }
 }
