@@ -37,7 +37,7 @@ class RouteStorageTest {
             final List<Long> removeRouteIds = List.of(route1.getId(), route3.getId());
 
             // when
-            routeStorage.removeRoutes(member.getId(), removeRouteIds);
+            routeStorage.removeRoutes(removeRouteIds);
             final List<StoredRoute> routesAfterRemove = routeStorage.getRoutes();
 
             // then
@@ -45,26 +45,6 @@ class RouteStorageTest {
                 softly.assertThat(routesAfterRemove.size()).isEqualTo(1);
                 softly.assertThat(routesAfterRemove.get(0).getRoute().getId()).isEqualTo(route2.getId());
             });
-        }
-
-        @Test
-        @DisplayName("동선 보관함의 주인이 아닌 회원이면 예외가 발생한다.")
-        void throws_not_owner() {
-            // given
-            final Member member = 기본_회원_도메인(1L);
-            final Member notOwnerMember = 기본_회원_도메인(2L);
-            final RouteStorage routeStorage = new RouteStorage(member, 기본_동선_보관함_이름);
-            final Route route1 = 기본_동선_도메인(1L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
-            final Route route2 = 기본_동선_도메인(2L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
-            final Route route3 = 기본_동선_도메인(3L, member, List.of(기본_동선_태그_도메인(1L)), List.of(기본_장소_도메인(1L)));
-            routeStorage.addRoutes(List.of(route1, route2, route3));
-
-            final List<Long> removeRouteIds = List.of(route1.getId(), route3.getId());
-
-            // when & then
-            assertThatThrownBy(() -> routeStorage.removeRoutes(notOwnerMember.getId(), removeRouteIds))
-                    .isInstanceOf(RouteStorageException.NotOwnerException.class)
-                    .hasMessage("로그인한 회원이 해당 동선 보관함을 가진 회원이 아닙니다.");
         }
 
         @Test
@@ -81,7 +61,7 @@ class RouteStorageTest {
             final List<Long> removeRouteIds = List.of(route1.getId(), route3.getId());
 
             // when & then
-            assertThatThrownBy(() -> routeStorage.removeRoutes(member.getId(), removeRouteIds))
+            assertThatThrownBy(() -> routeStorage.removeRoutes(removeRouteIds))
                     .isInstanceOf(RouteStorageException.NotExistRouteException.class)
                     .hasMessage("동선 보관함에 해당하는 동선이 존재하지 않습니다.");
         }

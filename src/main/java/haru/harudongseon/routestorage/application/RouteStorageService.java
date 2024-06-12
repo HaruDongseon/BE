@@ -43,14 +43,14 @@ public class RouteStorageService {
         }
     }
 
-    public void deleteRouteStorage(final Long memberId, final StoredRouteDeleteRequest request) {
+    public void deleteRouteStorage(final StoredRouteDeleteRequest request) {
         final Long routeStorageId = request.routeStorageId();
         final List<Long> routeIds = request.routeIds();
 
         final RouteStorage routeStorage = routeStorageRepository.findById(routeStorageId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 동선 보관함이 존재하지 않습니다."));
 
-        routeStorage.removeRoutes(memberId, routeIds);
+        routeStorage.removeRoutes(routeIds);
     }
 
     @Transactional(readOnly = true)
@@ -81,5 +81,22 @@ public class RouteStorageService {
                 ).toList();
 
         routeStorage.addRoutes(routes);
+    }
+
+    public void moveRoutes(final Long routeStorageId, final StoredRouteMoveRequest request) {
+        final RouteStorage routeStorage = routeStorageRepository.findById(routeStorageId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 동선 보관함이 존재하지 않습니다."));
+
+        final List<RouteStorage> routeStoragesToMove = request.routeStorageIds().stream()
+                .map(routeStorageIdToMove -> routeStorageRepository.findById(routeStorageIdToMove)
+                        .orElseThrow(() -> new EntityNotFoundException("해당하는 이동할 동선 보관함을 찾을 수 없습니다."))
+                ).toList();
+
+        final List<Route> routesToMove = request.routeIds().stream()
+                .map(routeId -> routeRepository.findById(routeId)
+                        .orElseThrow(() -> new EntityNotFoundException("해당하는 이동할 동선이 존재하지 않습니다."))
+                ).toList();
+
+        routeStorage.moveRoutes(routeStoragesToMove, routesToMove);
     }
 }

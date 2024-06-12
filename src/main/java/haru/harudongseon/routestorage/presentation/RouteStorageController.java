@@ -49,11 +49,9 @@ public class RouteStorageController {
     @ApiResponse(responseCode = "404", description = "멤버/동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @DeleteMapping("/routes")
     public ResponseEntity<Void> deleteRoutes(
-            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
             @Valid @RequestBody StoredRouteDeleteRequest request
     ) {
-        final Long memberId = authMemberDto.memberId();
-        routeStorageService.deleteRouteStorage(memberId, request);
+        routeStorageService.deleteRouteStorage(request);
         return ResponseEntity.noContent().build();
     }
 
