@@ -83,15 +83,15 @@ public class RouteService {
 
     private void addTag(final List<String> tagNames, final Route savedRoute) {
         for (String tagName : tagNames) {
-            final boolean isAlreadyExistTag = routeTagRepository.existsByName(tagName);
-            if (isAlreadyExistTag) {
-                final RouteTag findRouteTag = routeTagRepository.findByName(tagName).get();
+            final Optional<RouteTag> optionalRouteTag = routeTagRepository.findByName(tagName);
+            if (optionalRouteTag.isPresent()) {
+                final RouteTag findRouteTag = optionalRouteTag.get();
                 findRouteTag.selected();
                 final SelectedTag selectedTag = savedRoute.addTag(findRouteTag);
                 selectedTagRepository.save(selectedTag);
             }
 
-            if (!isAlreadyExistTag) {
+            if (optionalRouteTag.isEmpty()) {
                 final RouteTag savedRouteTag = routeTagRepository.save(new RouteTag(tagName));
                 final SelectedTag selectedTag = savedRoute.addTag(savedRouteTag);
                 selectedTagRepository.save(selectedTag);
