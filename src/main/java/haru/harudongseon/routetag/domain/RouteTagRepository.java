@@ -22,6 +22,8 @@ public interface RouteTagRepository extends JpaRepository<RouteTag, Long> {
     )
     List<RouteTag> findByKeywordContainingIgnoreCaseAndOrderBySelectCountDesc(@Param("keyword") final String keyword);
 
+    boolean existsByName(final String name);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT rt FROM RouteTag rt WHERE rt.name = :name")
     Optional<RouteTag> findByName(final String name);
