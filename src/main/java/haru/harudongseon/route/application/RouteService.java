@@ -132,6 +132,12 @@ public class RouteService {
         return RoutesResponse.from(findRoutes);
     }
 
+    @Transactional(readOnly = true)
+    public RoutesResponse searchByKeyword(final String keyword, final Long memberId) {
+        final List<Route> routes = routeRepository.searchByKeywordAndMemberId(keyword, memberId);
+        return RoutesResponse.from(routes);
+    }
+
     public void editRoute(final Long memberId, final Long routeId, final RouteEditRequest request) {
         final Route findRoute = routeRepository.findByIdAndMemberId(routeId, memberId)
                 .orElseThrow(() -> new EntityNotFoundException("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다."));

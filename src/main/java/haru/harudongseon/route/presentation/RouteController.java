@@ -81,6 +81,18 @@ public class RouteController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "동선 검색 API")
+    @ApiResponse(responseCode = "200", description = "동선 검색 성공")
+    @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @GetMapping("/search")
+    public ResponseEntity<RoutesResponse> searchRoutes(
+            @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
+            @Parameter(description = "검색할 키워드", example = "하루동선") @RequestParam("keyword") final String keyword
+    ) {
+        final RoutesResponse response = routeService.searchByKeyword(keyword, authMemberDto.memberId());
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "동선 편집 API")
     @ApiResponse(responseCode = "200", description = "동선 편집 성공")
     @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
