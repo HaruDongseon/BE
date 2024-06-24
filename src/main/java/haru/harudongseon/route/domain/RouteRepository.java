@@ -6,18 +6,31 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface RouteRepository extends JpaRepository<Route, Long> {
 
     Optional<Route> findByIdAndMemberId(final Long id, final Long memberId);
+
     boolean existsByIdAndMemberId(final Long id, final Long memberId);
 
     @Query(
             "select r from Route r " +
-            "where r.member.id = :memberId and r.date >= :startDate and r.date <= :endDate " +
-            "order by r.date asc"
+                    "where r.member.id = :memberId and r.date >= :startDate and r.date <= :endDate " +
+                    "order by r.date asc"
     )
     List<Route> findByMemberIdAndPeriod(final Long memberId, final LocalDate startDate, final LocalDate endDate);
 
     boolean existsByDateAndMemberId(final LocalDate date, final Long memberId);
+
+    @Query(
+            "SELECT r FROM Route r " +
+                    "WHERE r.title ILIKE concat('%', :keyword, '%') and r.member.id = :memberId " +
+                    "ORDER BY " +
+                    "CASE WHEN r.title = :keyword THEN 0" +
+                    "WHEN r.title ILIKE concat(:keyword, '%') THEN 1" +
+                    "WHEN r.title ILIKE concat('%', :keyword) THEN 2" +
+                    "ELSE 3 END"
+    )
+    List<Route> searchByKeywordAndMemberId(@Param("keyword") final String keyword, final Long memberId);
 }
