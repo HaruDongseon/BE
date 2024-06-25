@@ -7,10 +7,7 @@ import haru.harudongseon.global.exception.ErrorResponse;
 import haru.harudongseon.global.mvc.AuthMemberDto;
 import haru.harudongseon.global.mvc.AuthPrincipal;
 import haru.harudongseon.route.application.RouteService;
-import haru.harudongseon.route.application.dto.RouteAddRequest;
-import haru.harudongseon.route.application.dto.RouteEditRequest;
-import haru.harudongseon.route.application.dto.RouteResponse;
-import haru.harudongseon.route.application.dto.RoutesResponse;
+import haru.harudongseon.route.application.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -112,13 +109,13 @@ public class RouteController {
     @ApiResponse(responseCode = "200", description = "동선 삭제 성공")
     @ApiResponse(responseCode = "401", description = "인증 실패(토큰 오류)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "동선 Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    @DeleteMapping("/{route-id}")
+    @DeleteMapping
     public ResponseEntity<Void> deleteRoute(
             @Parameter(hidden = true) @AuthPrincipal AuthMemberDto authMemberDto,
-            @PathVariable("route-id") Long routeId
-    ) {
+            @RequestBody @Valid RouteDeleteRequest request
+            ) {
         final Long memberId = authMemberDto.memberId();
-        routeService.deleteRoute(memberId, routeId);
+        routeService.deleteRoute(memberId, request);
         return ResponseEntity.ok().build();
     }
 }
