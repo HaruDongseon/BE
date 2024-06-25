@@ -41,6 +41,7 @@ public class GlobalExceptionHandler {
         final String exceptionTypeInfo = String.format("%n class type : %s", exception.getClass());
 
         log.error(message + logErrorKeyInfo + exceptionTypeInfo);
+        log.error("An error occurred", exception);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(DEFAULT_ERROR_MESSAGE + String.format("error key : %s", sb)));
