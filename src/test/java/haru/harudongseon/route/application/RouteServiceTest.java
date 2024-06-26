@@ -645,8 +645,10 @@ class RouteServiceTest extends ServiceTest {
             final Long memberId = member.getId();
             final Long routeId = route.getId();
 
+            final RouteDeleteRequest request = new RouteDeleteRequest(route.getDate(), routeId);
+
             // when
-            routeService.deleteRoute(memberId, routeId);
+            routeService.deleteRoute(memberId, request);
 
             // then
             assertThat(routeRepository.existsByIdAndMemberId(memberId, memberId)).isFalse();
@@ -663,16 +665,18 @@ class RouteServiceTest extends ServiceTest {
 
             final Long notExistMemberId = -1L;
             final Long notExistRouteId = -1L;
+            final RouteDeleteRequest notExistRouteIdRequest = new RouteDeleteRequest(route.getDate(), notExistRouteId);
+            final RouteDeleteRequest successRequest = new RouteDeleteRequest(route.getDate(), routeId);
 
             // when & then
             assertSoftly(softly -> {
-                softly.assertThatThrownBy(() -> routeService.deleteRoute(notExistMemberId, notExistRouteId))
+                softly.assertThatThrownBy(() -> routeService.deleteRoute(notExistMemberId, notExistRouteIdRequest))
                         .isInstanceOf(EntityNotFoundException.class)
                         .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
-                softly.assertThatThrownBy(() -> routeService.deleteRoute(memberId, notExistRouteId))
+                softly.assertThatThrownBy(() -> routeService.deleteRoute(memberId, notExistRouteIdRequest))
                         .isInstanceOf(EntityNotFoundException.class)
                         .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
-                softly.assertThatThrownBy(() -> routeService.deleteRoute(notExistMemberId, routeId))
+                softly.assertThatThrownBy(() -> routeService.deleteRoute(notExistMemberId, successRequest))
                         .isInstanceOf(EntityNotFoundException.class)
                         .hasMessage("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
             });

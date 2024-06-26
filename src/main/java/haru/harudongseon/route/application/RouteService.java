@@ -18,6 +18,8 @@ import haru.harudongseon.routetag.domain.RouteTagRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,10 @@ public class RouteService {
 
     private final RouteValidator routeValidator;
 
+    @CacheEvict(
+            value = "routes",
+            key = "T(String).valueOf(#memberId).concat(':').concat(T(String).valueOf(T(java.time.YearMonth).of(#request.date().getYear(), #request.date().getMonthValue())))"
+    )
     public Long addRoute(final Long memberId, final RouteAddRequest request) {
         final Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 멤버를 찾을 수 없습니다."));
@@ -126,6 +132,11 @@ public class RouteService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(
+            value = "routes",
+            key = "T(String).valueOf(#memberId).concat(':').concat(T(String).valueOf(T(java.time.YearMonth).of(#startDate.getYear(), #startDate.getMonthValue())))",
+            condition = "#startDate.plusMonths(1).minusDays(1).isEqual(#endDate)"
+    )
     public RoutesResponse findRouteByPeriod(final Long memberId, final LocalDate startDate, final LocalDate endDate) {
         final List<Route> findRoutes = routeRepository.findByMemberIdAndPeriod(memberId, startDate, endDate);
 
@@ -138,6 +149,10 @@ public class RouteService {
         return RoutesResponse.from(routes);
     }
 
+    @CacheEvict(
+            value = "routes",
+            key = "T(String).valueOf(#memberId).concat(':').concat(T(String).valueOf(T(java.time.YearMonth).of(#request.date().getYear(), #request.date().getMonthValue())))"
+    )
     public void editRoute(final Long memberId, final Long routeId, final RouteEditRequest request) {
         final Route findRoute = routeRepository.findByIdAndMemberId(routeId, memberId)
                 .orElseThrow(() -> new EntityNotFoundException("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다."));
@@ -151,7 +166,12 @@ public class RouteService {
         findRoute.changeInfo(request.toEditEntity());
     }
 
-    public void deleteRoute(final Long memberId, final Long routeId) {
+    @CacheEvict(
+            value = "routes",
+            key = "T(String).valueOf(#memberId).concat(':').concat(T(String).valueOf(T(java.time.YearMonth).of(#request.date().getYear(), #request.date().getMonthValue())))"
+    )
+    public void deleteRoute(final Long memberId, final RouteDeleteRequest request) {
+        final Long routeId = request.routeId();
         if (!routeRepository.existsByIdAndMemberId(routeId, memberId)) {
             throw new EntityNotFoundException("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다.");
         }

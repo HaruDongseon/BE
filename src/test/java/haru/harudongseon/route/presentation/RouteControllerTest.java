@@ -6,6 +6,7 @@ import static haru.harudongseon.common.fixtures.RouteTagFixtures.기본_동선_�
 import static haru.harudongseon.common.fixtures.RouteTagFixtures.기본_동선_태그2_엔티티;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,10 +17,7 @@ import haru.harudongseon.common.builder.PlaceBuilder;
 import haru.harudongseon.common.builder.RouteTagBuilder;
 import haru.harudongseon.member.domain.Member;
 import haru.harudongseon.place.domain.Place;
-import haru.harudongseon.route.application.dto.RouteAddRequest;
-import haru.harudongseon.route.application.dto.RoutePlaceDto;
-import haru.harudongseon.route.application.dto.RouteResponse;
-import haru.harudongseon.route.application.dto.RoutesResponse;
+import haru.harudongseon.route.application.dto.*;
 import haru.harudongseon.route.domain.Route;
 import haru.harudongseon.routetag.domain.RouteTag;
 import io.restassured.RestAssured;
@@ -780,12 +778,15 @@ class RouteControllerTest extends E2ETest {
             final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
             final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
+            final LocalDate date = 기본_동선_날짜;
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(date, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
             final ExtractableResponse<Response> addResponse = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
             final long routeId = getLocationId(addResponse);
 
+            final RouteDeleteRequest request = new RouteDeleteRequest(date, routeId);
+
             // when
-            final ExtractableResponse<Response> response = DELETE_ROUTE_REQUEST(accessToken, routeId);
+            final ExtractableResponse<Response> response = DELETE_ROUTE_REQUEST(accessToken, request);
             final ExtractableResponse<Response> findResponse = FIND_ROUTE_REQUEST(accessToken, routeId);
 
             // then
@@ -813,7 +814,8 @@ class RouteControllerTest extends E2ETest {
             final List<String> tag = List.of(기본_동선_태그1, 기본_동선_태그2);
             final List<RoutePlaceDto> routePlaceDtos = List.of(routePlaceDto1, routePlaceDto2);
 
-            final RouteAddRequest routeAddRequest = new RouteAddRequest(기본_동선_날짜, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
+            final LocalDate date = 기본_동선_날짜;
+            final RouteAddRequest routeAddRequest = new RouteAddRequest(date, 기본_동선_제목, tag, 기본_동선_이동수단, routePlaceDtos);
             final ExtractableResponse<Response> addResponse = ADD_ROUTE_REQUEST(accessToken, routeAddRequest);
             final long routeId = getLocationId(addResponse);
 
@@ -821,10 +823,13 @@ class RouteControllerTest extends E2ETest {
             final String notExistRouteMemberAccessToken = jwtService.createAccessToken(notExistRouteMember.getId());
             final Long notExistRouteId = -1L;
 
+            final RouteDeleteRequest notExistRouteIdRequest = new RouteDeleteRequest(date, notExistRouteId);
+            final RouteDeleteRequest successRequest = new RouteDeleteRequest(date, routeId);
+
             // when
-            final ExtractableResponse<Response> response1 = DELETE_ROUTE_REQUEST(notExistRouteMemberAccessToken, notExistRouteId);
-            final ExtractableResponse<Response> response2 = DELETE_ROUTE_REQUEST(accessToken, notExistRouteId);
-            final ExtractableResponse<Response> response3 = DELETE_ROUTE_REQUEST(notExistRouteMemberAccessToken, routeId);
+            final ExtractableResponse<Response> response1 = DELETE_ROUTE_REQUEST(notExistRouteMemberAccessToken, notExistRouteIdRequest);
+            final ExtractableResponse<Response> response2 = DELETE_ROUTE_REQUEST(accessToken, notExistRouteIdRequest);
+            final ExtractableResponse<Response> response3 = DELETE_ROUTE_REQUEST(notExistRouteMemberAccessToken, successRequest);
 
             // then
             assertSoftly(softly -> {
@@ -907,11 +912,13 @@ class RouteControllerTest extends E2ETest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> DELETE_ROUTE_REQUEST(final String accessToken, final Long routeId) {
+    private static ExtractableResponse<Response> DELETE_ROUTE_REQUEST(final String accessToken, final RouteDeleteRequest request) {
         return RestAssured.given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, JWT_PREFIX + accessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
                 .when().log().all()
-                .delete("/routes/{route-id}", routeId)
+                .delete("/routes")
                 .then().log().all()
                 .extract();
     }
