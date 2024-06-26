@@ -1,6 +1,7 @@
 package haru.harudongseon.member.application;
 
 import haru.harudongseon.global.fileupload.FileUploader;
+import haru.harudongseon.global.oauth.LoginType;
 import haru.harudongseon.member.application.dto.MemberImageSaveResponse;
 import haru.harudongseon.member.application.dto.MyProfileEditRequest;
 import haru.harudongseon.member.application.dto.MyProfileResponse;
@@ -29,8 +30,9 @@ public class MemberService {
         final String email = findMember.getEmail();
         final String nickname = findMember.getNickname();
         final String profileImageUrl = findMember.getProfileImageUrl();
+        final LoginType loginType = findMember.getLoginType();
 
-        return new MyProfileResponse(email, nickname, profileImageUrl);
+        return new MyProfileResponse(email, nickname, profileImageUrl, loginType.name());
     }
 
     public void editMyProfile(final Long memberId, final MyProfileEditRequest request) {

@@ -8,6 +8,9 @@ public record MyProfileResponse(
         @Schema(description = "회원 닉네임", example = "seongha")
         String nickname,
         @Schema(description = "회원 프로필 이미지 URL", example = "https://lh3.googleusercontent.com/a/xxx")
-        String profileImageUrl
+        String profileImageUrl,
+
+        @Schema(description = "회원 로그인 Type", example = "NAVER")
+        String loginType
 ) {
 }

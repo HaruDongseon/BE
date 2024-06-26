@@ -46,6 +46,7 @@ class MemberControllerTest extends E2ETest {
             final String email = savedMember.getEmail();
             final String nickname = savedMember.getNickname();
             final String profileImageUrl = savedMember.getProfileImageUrl();
+            final String loginType = savedMember.getLoginType().name();
             final String accessToken = jwtService.createAccessToken(memberId);
 
             // when
@@ -58,6 +59,7 @@ class MemberControllerTest extends E2ETest {
                 softly.assertThat(jsonPath.getString("email")).isEqualTo(email);
                 softly.assertThat(jsonPath.getString("nickname")).isEqualTo(nickname);
                 softly.assertThat(jsonPath.getString("profileImageUrl")).isEqualTo(profileImageUrl);
+                softly.assertThat(jsonPath.getString("loginType")).isEqualTo(loginType);
             });
         }
 

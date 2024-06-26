@@ -39,7 +39,7 @@ public class MemberServiceTest extends ServiceTest {
             // given
             final Member member = memberBuilder.defaultMember().build();
             final Long memberId = member.getId();
-            final MyProfileResponse expected = new MyProfileResponse(member.getEmail(), member.getNickname(), member.getProfileImageUrl());
+            final MyProfileResponse expected = new MyProfileResponse(member.getEmail(), member.getNickname(), member.getProfileImageUrl(), member.getLoginType().name());
 
             // when
             final MyProfileResponse actual = memberService.findMyProfile(memberId);
