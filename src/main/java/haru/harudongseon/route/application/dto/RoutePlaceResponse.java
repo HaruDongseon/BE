@@ -1,6 +1,7 @@
 package haru.harudongseon.route.application.dto;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import haru.harudongseon.place.domain.Place;
@@ -91,7 +92,7 @@ public class RoutePlaceResponse {
         final String providerPlaceId = place.getProviderPlaceId();
         final String name = place.getName();
         final String category = place.getCategory();
-        final List<String> photoReferences = place.getPhotoReferences();
+        final List<String> photoReferences = new ArrayList<>(place.getPhotoReferences());
         final BigDecimal latitude = place.getCoordinates().getLatitude();
         final BigDecimal longitude = place.getCoordinates().getLongitude();
         final String openingHours = place.getOpeningHours();
