@@ -1,6 +1,7 @@
 package haru.harudongseon.route.application;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +19,7 @@ import haru.harudongseon.routetag.domain.RouteTagRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
@@ -41,6 +43,7 @@ public class RouteService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     private final RedisTemplate redisTemplate;
+    private final CacheManager cacheManager;
 
     private final RouteValidator routeValidator;
 
@@ -149,13 +152,16 @@ public class RouteService {
         return RoutesResponse.from(routes);
     }
 
-    @CacheEvict(
-            value = "routes",
-            key = "T(String).valueOf(#memberId).concat(':').concat(T(String).valueOf(T(java.time.YearMonth).of(#request.date().getYear(), #request.date().getMonthValue())))"
-    )
     public void editRoute(final Long memberId, final Long routeId, final RouteEditRequest request) {
         final Route findRoute = routeRepository.findByIdAndMemberId(routeId, memberId)
                 .orElseThrow(() -> new EntityNotFoundException("멤버 ID와 동선 ID에 해당하는 동선이 존재하지 않습니다."));
+
+        final YearMonth findRouteYearMonth = YearMonth.of(findRoute.getDate().getYear(), findRoute.getDate().getMonthValue());
+        final YearMonth editRouteYearMonth = YearMonth.of(request.date().getYear(), request.date().getMonthValue());
+        final String findRouteCacheKey = memberId + ":" + findRouteYearMonth;
+        final String editRouteCacheKey = memberId + ":" + editRouteYearMonth;
+        cacheManager.getCache("routes").evictIfPresent(findRouteCacheKey);
+        cacheManager.getCache("routes").evictIfPresent(editRouteCacheKey);
 
         findRoute.deleteTagAll();
         addTag(request.tag(), findRoute);
