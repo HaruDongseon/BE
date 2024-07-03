@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @RequiredArgsConstructor
-@Profile({"test", "local"})
+@Profile({"test", "local", "dev"})
 public class QueryCounterAop {
 
     private final QueryCounter queryCounter;

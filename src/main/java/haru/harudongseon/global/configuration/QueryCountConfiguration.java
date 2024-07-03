@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @RequiredArgsConstructor
-@Profile({"local", "test"})
+@Profile({"local", "test", "dev"})
 public class QueryCountConfiguration implements WebMvcConfigurer {
 
     private final QueryCountLoggingInterceptor queryCountLoggingInterceptor;
